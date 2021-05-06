@@ -43,7 +43,7 @@ public class StateMachineImpl implements StateMachine {
     private Boolean retryPersistModeUpdate;
     private Boolean compensatePersistModeUpdate;
     private String type = "STATE_LANG";
-    private transient String content;
+    private String content;
     private Date gmtCreate;
     private Map<String, State> states = new LinkedHashMap<>();
 

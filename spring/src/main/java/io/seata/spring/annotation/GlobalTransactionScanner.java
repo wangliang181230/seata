@@ -284,7 +284,7 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
                 return bean;
             }
         } catch (Exception exx) {
-            throw new RuntimeException(exx);
+            throw new RuntimeException("Failed to scan", exx);
         }
     }
 

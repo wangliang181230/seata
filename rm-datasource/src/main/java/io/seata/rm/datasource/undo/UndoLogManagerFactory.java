@@ -24,9 +24,12 @@ import io.seata.common.util.CollectionUtils;
 /**
  * @author jsbxyyx
  */
-public class UndoLogManagerFactory {
+public final class UndoLogManagerFactory {
 
     private static final Map<String, UndoLogManager> UNDO_LOG_MANAGER_MAP = new ConcurrentHashMap<>();
+
+    private UndoLogManagerFactory() {
+    }
 
     /**
      * get undo log manager.

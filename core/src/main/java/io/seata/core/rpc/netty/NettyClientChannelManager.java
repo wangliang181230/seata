@@ -100,7 +100,7 @@ class NettyClientChannelManager {
             }
         }
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("will connect to " + serverAddress);
+            LOGGER.info("will connect to {}", serverAddress);
         }
         Object lockObj = CollectionUtils.computeIfAbsent(channelLocks, serverAddress, key -> new Object());
         synchronized (lockObj) {
@@ -221,8 +221,8 @@ class NettyClientChannelManager {
             channelFromPool = nettyClientKeyPool.borrowObject(poolKeyMap.get(serverAddress));
             channels.put(serverAddress, channelFromPool);
         } catch (Exception exx) {
-            LOGGER.error("{} register RM failed.",FrameworkErrorCode.RegisterRM.getErrCode(), exx);
-            throw new FrameworkException("can not register RM,err:" + exx.getMessage());
+            LOGGER.error("{} register RM failed.", FrameworkErrorCode.RegisterRM.getErrCode(), exx);
+            throw new FrameworkException("can not register RM, err:" + exx.getMessage());
         }
         return channelFromPool;
     }

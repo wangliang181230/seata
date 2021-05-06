@@ -39,7 +39,7 @@ public class YamlFileConfig implements FileConfig {
     public YamlFileConfig(File file, String name) {
         Yaml yaml = new Yaml();
         try {
-            configMap = (Map) yaml.load(new FileInputStream(file));
+            configMap = yaml.load(new FileInputStream(file));
         } catch (FileNotFoundException e) {
             throw new IllegalArgumentException("file not found");
         }

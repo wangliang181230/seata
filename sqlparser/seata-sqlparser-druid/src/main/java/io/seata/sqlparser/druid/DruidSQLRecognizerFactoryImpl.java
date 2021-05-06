@@ -47,9 +47,9 @@ class DruidSQLRecognizerFactoryImpl implements SQLRecognizerFactory {
         }
         List<SQLRecognizer> recognizers = null;
         SQLRecognizer recognizer = null;
+        SQLOperateRecognizerHolder recognizerHolder =
+                SQLOperateRecognizerHolderFactory.getSQLRecognizerHolder(dbType.toLowerCase());
         for (SQLStatement ast : asts) {
-            SQLOperateRecognizerHolder recognizerHolder =
-                    SQLOperateRecognizerHolderFactory.getSQLRecognizerHolder(dbType.toLowerCase());
             if (ast instanceof SQLInsertStatement) {
                 recognizer = recognizerHolder.getInsertRecognizer(sql, ast);
             } else if (ast instanceof SQLUpdateStatement) {

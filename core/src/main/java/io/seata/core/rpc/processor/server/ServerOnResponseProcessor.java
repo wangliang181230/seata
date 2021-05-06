@@ -74,7 +74,7 @@ public class ServerOnResponseProcessor implements RemotingProcessor {
             } else {
                 try {
                     if (LOGGER.isInfoEnabled()) {
-                        LOGGER.info("closeChannelHandlerContext channel:" + ctx.channel());
+                        LOGGER.info("closeChannelHandlerContext channel: {}", ctx.channel());
                     }
                     ctx.disconnect();
                     ctx.close();
@@ -82,7 +82,7 @@ public class ServerOnResponseProcessor implements RemotingProcessor {
                     LOGGER.error(exx.getMessage());
                 }
                 if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info(String.format("close a unhandled connection! [%s]", ctx.channel().toString()));
+                    LOGGER.info("close a unhandled connection! [{}]", ctx.channel());
                 }
             }
         }

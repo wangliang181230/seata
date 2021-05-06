@@ -28,15 +28,6 @@ public class TransactionException extends Exception {
     protected TransactionExceptionCode code = TransactionExceptionCode.Unknown;
 
     /**
-     * Gets code.
-     *
-     * @return the code
-     */
-    public TransactionExceptionCode getCode() {
-        return code;
-    }
-
-    /**
      * Instantiates a new Transaction exception.
      *
      * @param code the code
@@ -105,5 +96,15 @@ public class TransactionException extends Exception {
     public TransactionException(TransactionExceptionCode code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
+    }
+
+
+    /**
+     * Gets code.
+     *
+     * @return the code
+     */
+    public TransactionExceptionCode getCode() {
+        return code;
     }
 }

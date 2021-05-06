@@ -69,20 +69,20 @@ public class RootContext {
     public static final String KEY_GLOBAL_LOCK_FLAG = "TX_LOCK";
     public static final Boolean VALUE_GLOBAL_LOCK_FLAG = true;
 
-    private static ContextCore CONTEXT_HOLDER = ContextCoreLoader.load();
+    private static ContextCore contextHolder = ContextCoreLoader.load();
 
-    private static BranchType DEFAULT_BRANCH_TYPE;
+    private static BranchType defaultBranchType;
 
     public static void setDefaultBranchType(BranchType defaultBranchType) {
         if (defaultBranchType != AT && defaultBranchType != XA) {
             throw new IllegalArgumentException("The default branch type must be " + AT + " or " + XA + "." +
                 " the value of the argument is: " + defaultBranchType);
         }
-        if (DEFAULT_BRANCH_TYPE != null && DEFAULT_BRANCH_TYPE != defaultBranchType && LOGGER.isWarnEnabled()) {
+        if (RootContext.defaultBranchType != null && RootContext.defaultBranchType != defaultBranchType && LOGGER.isWarnEnabled()) {
             LOGGER.warn("The `{}.DEFAULT_BRANCH_TYPE` has been set repeatedly. The value changes from {} to {}",
-                RootContext.class.getSimpleName(), DEFAULT_BRANCH_TYPE, defaultBranchType);
+                RootContext.class.getSimpleName(), RootContext.defaultBranchType, defaultBranchType);
         }
-        DEFAULT_BRANCH_TYPE = defaultBranchType;
+        RootContext.defaultBranchType = defaultBranchType;
     }
 
     /**
@@ -92,7 +92,7 @@ public class RootContext {
      */
     @Nullable
     public static String getXID() {
-        return (String) CONTEXT_HOLDER.get(KEY_XID);
+        return (String) contextHolder.get(KEY_XID);
     }
 
     /**
@@ -111,7 +111,7 @@ public class RootContext {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("bind {}", xid);
             }
-            CONTEXT_HOLDER.put(KEY_XID, xid);
+            contextHolder.put(KEY_XID, xid);
         }
     }
 
@@ -124,7 +124,7 @@ public class RootContext {
         }
 
         //just put something not null
-        CONTEXT_HOLDER.put(KEY_GLOBAL_LOCK_FLAG, VALUE_GLOBAL_LOCK_FLAG);
+        contextHolder.put(KEY_GLOBAL_LOCK_FLAG, VALUE_GLOBAL_LOCK_FLAG);
     }
 
     /**
@@ -134,7 +134,7 @@ public class RootContext {
      */
     @Nullable
     public static String unbind() {
-        String xid = (String) CONTEXT_HOLDER.remove(KEY_XID);
+        String xid = (String) contextHolder.remove(KEY_XID);
         if (xid != null) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("unbind {} ", xid);
@@ -145,7 +145,7 @@ public class RootContext {
     }
 
     public static void unbindGlobalLockFlag() {
-        Boolean lockFlag = (Boolean) CONTEXT_HOLDER.remove(KEY_GLOBAL_LOCK_FLAG);
+        Boolean lockFlag = (Boolean) contextHolder.remove(KEY_GLOBAL_LOCK_FLAG);
         if (LOGGER.isDebugEnabled() && lockFlag != null) {
             LOGGER.debug("unbind global lock flag");
         }
@@ -157,7 +157,7 @@ public class RootContext {
      * @return the boolean
      */
     public static boolean inGlobalTransaction() {
-        return CONTEXT_HOLDER.get(KEY_XID) != null;
+        return contextHolder.get(KEY_XID) != null;
     }
 
     /**
@@ -186,12 +186,12 @@ public class RootContext {
     @Nullable
     public static BranchType getBranchType() {
         if (inGlobalTransaction()) {
-            BranchType branchType = (BranchType) CONTEXT_HOLDER.get(KEY_BRANCH_TYPE);
+            BranchType branchType = (BranchType) contextHolder.get(KEY_BRANCH_TYPE);
             if (branchType != null) {
                 return branchType;
             }
             //Returns the default branch type.
-            return DEFAULT_BRANCH_TYPE != null ? DEFAULT_BRANCH_TYPE : BranchType.AT;
+            return defaultBranchType != null ? defaultBranchType : BranchType.AT;
         }
         return null;
     }
@@ -209,7 +209,7 @@ public class RootContext {
             LOGGER.debug("bind branch type {}", branchType);
         }
 
-        CONTEXT_HOLDER.put(KEY_BRANCH_TYPE, branchType);
+        contextHolder.put(KEY_BRANCH_TYPE, branchType);
     }
 
     /**
@@ -219,7 +219,7 @@ public class RootContext {
      */
     @Nullable
     public static BranchType unbindBranchType() {
-        BranchType unbindBranchType = (BranchType) CONTEXT_HOLDER.remove(KEY_BRANCH_TYPE);
+        BranchType unbindBranchType = (BranchType) contextHolder.remove(KEY_BRANCH_TYPE);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("unbind branch type {}", unbindBranchType);
         }
@@ -232,7 +232,7 @@ public class RootContext {
      * @return the boolean
      */
     public static boolean requireGlobalLock() {
-        return CONTEXT_HOLDER.get(KEY_GLOBAL_LOCK_FLAG) != null;
+        return contextHolder.get(KEY_GLOBAL_LOCK_FLAG) != null;
     }
 
     /**
@@ -250,6 +250,6 @@ public class RootContext {
      * @return the key-value map
      */
     public static Map<String, Object> entries() {
-        return CONTEXT_HOLDER.entries();
+        return contextHolder.entries();
     }
 }

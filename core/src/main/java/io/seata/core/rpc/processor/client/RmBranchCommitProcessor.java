@@ -53,7 +53,7 @@ public class RmBranchCommitProcessor implements RemotingProcessor {
         String remoteAddress = NetUtil.toStringAddress(ctx.channel().remoteAddress());
         Object msg = rpcMessage.getBody();
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("rm client handle branch commit process:" + msg);
+            LOGGER.info("rm client handle branch commit process: {}", msg);
         }
         handleBranchCommit(rpcMessage, remoteAddress, (BranchCommitRequest) msg);
     }
@@ -62,12 +62,12 @@ public class RmBranchCommitProcessor implements RemotingProcessor {
         BranchCommitResponse resultMessage;
         resultMessage = (BranchCommitResponse) handler.onRequest(branchCommitRequest, null);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("branch commit result:" + resultMessage);
+            LOGGER.debug("branch commit result: {}", resultMessage);
         }
         try {
             this.remotingClient.sendAsyncResponse(serverAddress, request, resultMessage);
-        } catch (Throwable throwable) {
-            LOGGER.error("branch commit error: {}", throwable.getMessage(), throwable);
+        } catch (Exception e) {
+            LOGGER.error("branch commit error: {}", e.getMessage(), e);
         }
     }
 }

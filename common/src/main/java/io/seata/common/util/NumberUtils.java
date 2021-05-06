@@ -20,7 +20,10 @@ package io.seata.common.util;
  *
  * @author helloworlde
  */
-public class NumberUtils {
+public final class NumberUtils {
+
+    private NumberUtils() {
+    }
 
     /**
      * <p>Convert a <code>String</code> to an <code>int</code>, returning a

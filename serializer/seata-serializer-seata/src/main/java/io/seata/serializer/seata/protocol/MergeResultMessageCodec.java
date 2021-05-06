@@ -54,10 +54,8 @@ public class MergeResultMessageCodec extends AbstractMessageCodec {
 
         int length = out.readableBytes() - 4;
         out.setInt(writeIndex,length);
-        if (msgs.length > 20) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("msg in one services merge packet:" + msgs.length + ",buffer size:" + length);
-            }
+        if (msgs.length > 20 && LOGGER.isDebugEnabled()) {
+            LOGGER.debug("msg in one services merge packet: {}, buffer size: {}", msgs.length, length);
         }
     }
 

@@ -309,8 +309,8 @@ public class EnhancedServiceLoader {
                     ExtensionDefinition definition = classToDefinitionMap.get(clazz);
                     allInstances.add(getExtensionInstance(definition, loader, argsType, args));
                 }
-            } catch (Throwable t) {
-                throw new EnhancedServiceNotFoundException(t);
+            } catch (Exception e) {
+                throw new EnhancedServiceNotFoundException(e);
             }
             return allInstances;
         }

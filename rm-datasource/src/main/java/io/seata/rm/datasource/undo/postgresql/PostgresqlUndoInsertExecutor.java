@@ -64,7 +64,7 @@ public class PostgresqlUndoInsertExecutor extends AbstractUndoExecutor {
 
     private String generateDeleteSql(List<Row> rows, TableRecords afterImage) {
         List<String> pkNameList = getOrderedPkList(afterImage, rows.get(0), JdbcConstants.POSTGRESQL).stream().map(
-            e -> e.getName()).collect(Collectors.toList());
+                Field::getName).collect(Collectors.toList());
         String whereSql = SqlGenerateUtils.buildWhereConditionByPKs(pkNameList, JdbcConstants.POSTGRESQL);
         return String.format(DELETE_SQL_TEMPLATE, sqlUndoLog.getTableName(), whereSql);
     }

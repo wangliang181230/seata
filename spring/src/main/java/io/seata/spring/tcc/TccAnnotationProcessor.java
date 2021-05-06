@@ -107,7 +107,10 @@ public class TccAnnotationProcessor implements BeanPostProcessor {
                 Object proxyBean = TCCBeanParserUtils.createProxy(interfaceClass, fieldValue, actionInterceptor);
                 field.setAccessible(true);
                 field.set(bean, proxyBean);
-                LOGGER.info("Bean[" + bean.getClass().getName() + "] with name [" + field.getName() + "] would use proxy [" + actionInterceptor.getClass().getName() + "]");
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info("Bean[{}] with name [{}] would use proxy [{}]",
+                            bean.getClass().getName(), field.getName(), actionInterceptor.getClass().getName());
+                }
             }
         }
     }

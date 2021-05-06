@@ -23,8 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import io.seata.common.loader.LoadLevel;
 import io.seata.saga.statelang.parser.JsonParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,8 +35,6 @@ import java.util.List;
  */
 @LoadLevel(name = JacksonJsonParser.NAME)
 public class JacksonJsonParser implements JsonParser {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JacksonJsonParser.class);
 
     private ObjectMapper objectMapperWithAutoType = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

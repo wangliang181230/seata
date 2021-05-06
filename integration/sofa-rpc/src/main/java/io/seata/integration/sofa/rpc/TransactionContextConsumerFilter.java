@@ -42,12 +42,16 @@ public class TransactionContextConsumerFilter extends Filter {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionContextConsumerFilter.class);
 
+    /**
+     *
+     * @throws SofaRpcException the sofaRpcException
+     */
     @Override
-    public SofaResponse invoke(FilterInvoker filterInvoker, SofaRequest sofaRequest) throws SofaRpcException {
+    public SofaResponse invoke(FilterInvoker filterInvoker, SofaRequest sofaRequest) {
         String xid = RootContext.getXID();
         String rpcXid = getRpcXid();
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("xid in RootContext[" + xid + "] xid in RpcContext[" + rpcXid + "]");
+            LOGGER.debug("xid in RootContext[{}] xid in RpcContext[{}]", xid, rpcXid);
         }
         boolean bind = false;
         if (xid != null) {
@@ -57,7 +61,7 @@ public class TransactionContextConsumerFilter extends Filter {
                 RootContext.bind(rpcXid);
                 bind = true;
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("bind[" + rpcXid + "] to RootContext");
+                    LOGGER.debug("bind[{}] to RootContext", rpcXid);
                 }
             }
         }
@@ -67,16 +71,16 @@ public class TransactionContextConsumerFilter extends Filter {
             if (bind) {
                 String unbindXid = RootContext.unbind();
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("unbind[" + unbindXid + "] from RootContext");
+                    LOGGER.debug("unbind[{}] from RootContext", unbindXid);
                 }
                 if (!rpcXid.equalsIgnoreCase(unbindXid)) {
                     if (LOGGER.isWarnEnabled()) {
-                        LOGGER.warn("xid in change during RPC from " + rpcXid + " to " + unbindXid);
+                        LOGGER.warn("xid in change during RPC from {} to {}", rpcXid, unbindXid);
                     }
                     if (unbindXid != null) {
                         RootContext.bind(unbindXid);
                         if (LOGGER.isWarnEnabled()) {
-                            LOGGER.warn("bind [" + unbindXid + "] back to RootContext");
+                            LOGGER.warn("bind [{}] back to RootContext", unbindXid);
                         }
                     }
                 }

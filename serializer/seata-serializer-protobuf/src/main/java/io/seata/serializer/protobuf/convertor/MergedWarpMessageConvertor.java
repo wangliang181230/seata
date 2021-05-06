@@ -49,11 +49,8 @@ public class MergedWarpMessageConvertor implements PbConvertor<MergedWarpMessage
             lists.add(Any.pack((Message)pbConvertor.convert2Proto(msg)));
         }
 
-        MergedWarpMessageProto mergedWarpMessageProto = MergedWarpMessageProto.newBuilder().setAbstractMessage(
+        return MergedWarpMessageProto.newBuilder().setAbstractMessage(
             abstractMessage).addAllMsgs(lists).addAllMsgIds(mergedWarpMessage.msgIds).build();
-
-        return mergedWarpMessageProto;
-
     }
 
     @Override

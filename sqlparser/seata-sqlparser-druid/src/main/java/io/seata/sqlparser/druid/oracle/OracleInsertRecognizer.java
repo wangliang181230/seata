@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -91,6 +93,7 @@ public class OracleInsertRecognizer extends BaseOracleRecognizer implements SQLI
     }
 
     @Override
+    @Nullable
     public List<String> getInsertColumns() {
         List<SQLExpr> columnSQLExprs = ast.getColumns();
         if (columnSQLExprs.isEmpty()) {

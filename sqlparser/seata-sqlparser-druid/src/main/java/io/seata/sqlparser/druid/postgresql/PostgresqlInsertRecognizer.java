@@ -41,6 +41,7 @@ import io.seata.sqlparser.struct.SqlSequenceExpr;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * @author japsercloud
@@ -91,9 +92,10 @@ public class PostgresqlInsertRecognizer extends BasePostgresqlRecognizer impleme
     }
 
     @Override
+    @Nullable
     public List<String> getInsertColumns() {
         List<SQLExpr> columnSQLExprs = ast.getColumns();
-        if (columnSQLExprs.size() == 0) {
+        if (columnSQLExprs.isEmpty()) {
             // INSERT INTO ta VALUES (...), without fields clarified
             return null;
         }
@@ -128,7 +130,7 @@ public class PostgresqlInsertRecognizer extends BasePostgresqlRecognizer impleme
                     SQLMethodInvokeExpr sqlMethodInvokeExpr = (SQLMethodInvokeExpr) expr;
                     String function = sqlMethodInvokeExpr.getMethodName();
                     if (StringUtils.equalsIgnoreCase(function, "nextval")) {
-                        String sequence = sqlMethodInvokeExpr.getParameters().get(0).toString();
+                        String sequence = sqlMethodInvokeExpr.getArguments().get(0).toString();
                         row.add(new SqlSequenceExpr(sequence, function));
                     } else {
                         row.add(SqlMethodExpr.get());

@@ -17,6 +17,8 @@ package io.seata.saga.engine.repo;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.seata.saga.statelang.domain.StateInstance;
 import io.seata.saga.statelang.domain.StateMachineInstance;
 
@@ -50,6 +52,7 @@ public interface StateLogRepository {
      * @param parentId
      * @return
      */
+    @Nullable
     List<StateMachineInstance> queryStateMachineInstanceByParentId(String parentId);
 
     /**
@@ -67,5 +70,6 @@ public interface StateLogRepository {
      * @param stateMachineInstanceId
      * @return
      */
+    @Nullable
     List<StateInstance> queryStateInstanceListByMachineInstanceId(String stateMachineInstanceId);
 }

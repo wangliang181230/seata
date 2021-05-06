@@ -18,10 +18,13 @@ package io.seata.common.util;
 /**
  * @author xingfudeshi@gmail.com
  */
-public class StringFormatUtils {
+public final class StringFormatUtils {
     private static final char MINUS = '-';
     private static final char UNDERLINE = '_';
     public static final char DOT = '.';
+
+    private StringFormatUtils() {
+    }
 
     /**
      * camelTo underline format

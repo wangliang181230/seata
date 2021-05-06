@@ -30,7 +30,10 @@ import io.seata.server.store.SessionStorable;
  *
  * @author wangzhongxiang
  */
-public class SessionConverter {
+public final class SessionConverter {
+
+    private SessionConverter() {
+    }
 
     public static GlobalSession convertGlobalSession(GlobalTransactionDO globalTransactionDO) {
         if (globalTransactionDO == null) {
@@ -66,7 +69,7 @@ public class SessionConverter {
     }
 
     public static GlobalTransactionDO convertGlobalTransactionDO(SessionStorable session) {
-        if (session == null || !(session instanceof GlobalSession)) {
+        if (!(session instanceof GlobalSession)) {
             throw new IllegalArgumentException(
                     "The parameter of SessionStorable is not available, SessionStorable:" + StringUtils.toString(session));
         }
@@ -86,7 +89,7 @@ public class SessionConverter {
     }
 
     public static BranchTransactionDO convertBranchTransactionDO(SessionStorable session) {
-        if (session == null || !(session instanceof BranchSession)) {
+        if (!(session instanceof BranchSession)) {
             throw new IllegalArgumentException(
                     "The parameter of SessionStorable is not available, SessionStorable:" + StringUtils.toString(session));
         }

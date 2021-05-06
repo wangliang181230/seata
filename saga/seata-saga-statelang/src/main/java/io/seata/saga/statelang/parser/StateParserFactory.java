@@ -33,7 +33,10 @@ import io.seata.saga.statelang.parser.impl.SucceedEndStateParser;
  *
  * @author lorne.cl
  */
-public class StateParserFactory {
+public final class StateParserFactory {
+
+    private StateParserFactory() {
+    }
 
     protected static Map<String, StateParser> stateParserMap = new ConcurrentHashMap<>();
 

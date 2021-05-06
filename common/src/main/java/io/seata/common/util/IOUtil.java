@@ -18,7 +18,10 @@ package io.seata.common.util;
 /**
  * @author jsbxyyx
  */
-public class IOUtil {
+public final class IOUtil {
+
+    private IOUtil() {
+    }
 
     /**
      * close Closeable

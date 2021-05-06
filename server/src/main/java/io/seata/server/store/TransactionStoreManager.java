@@ -19,6 +19,7 @@ import io.seata.server.session.GlobalSession;
 import io.seata.server.session.SessionCondition;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * The interface Transaction store manager.
@@ -60,6 +61,7 @@ public interface TransactionStoreManager {
      * @param sessionCondition the session condition
      * @return the list
      */
+    @Nullable
     List<GlobalSession> readSession(SessionCondition sessionCondition);
 
     /**

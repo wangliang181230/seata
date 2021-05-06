@@ -39,12 +39,6 @@ public class LockDO {
     private String rowKey;
 
     /**
-     * Instantiates a new Lock do.
-     */
-    public LockDO() {
-    }
-
-    /**
      * Gets xid.
      *
      * @return the xid

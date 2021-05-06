@@ -19,6 +19,8 @@ import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
+
 import io.seata.config.ConfigurationCache;
 import io.seata.config.ConfigurationFactory;
 
@@ -86,6 +88,7 @@ public interface RegistryService<T> {
      * @return the list
      * @throws Exception the exception
      */
+    @Nullable
     List<InetSocketAddress> lookup(String key) throws Exception;
 
     /**

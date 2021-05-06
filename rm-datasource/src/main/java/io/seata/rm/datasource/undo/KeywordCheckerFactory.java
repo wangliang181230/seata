@@ -26,7 +26,10 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Wu
  */
-public class KeywordCheckerFactory {
+public final class KeywordCheckerFactory {
+
+    private KeywordCheckerFactory() {
+    }
 
     private static final Map<String, KeywordChecker> KEYWORD_CHECKER_MAP = new ConcurrentHashMap<>();
 

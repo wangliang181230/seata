@@ -86,11 +86,11 @@ public interface TransactionalExecutor {
      */
     class ExecutionException extends Exception {
 
-        private GlobalTransaction transaction;
+        private final transient GlobalTransaction transaction;
 
-        private Code code;
+        private final Code code;
 
-        private Throwable originalException;
+        private final Throwable originalException;
 
         /**
          * Instantiates a new Execution exception.
@@ -154,15 +154,6 @@ public interface TransactionalExecutor {
         }
 
         /**
-         * Sets transaction.
-         *
-         * @param transaction the transaction
-         */
-        public void setTransaction(GlobalTransaction transaction) {
-            this.transaction = transaction;
-        }
-
-        /**
          * Gets code.
          *
          * @return the code
@@ -172,30 +163,12 @@ public interface TransactionalExecutor {
         }
 
         /**
-         * Sets code.
-         *
-         * @param code the code
-         */
-        public void setCode(Code code) {
-            this.code = code;
-        }
-
-        /**
          * Gets original exception.
          *
          * @return the original exception
          */
         public Throwable getOriginalException() {
             return originalException;
-        }
-
-        /**
-         * Sets original exception.
-         *
-         * @param originalException the original exception
-         */
-        public void setOriginalException(Throwable originalException) {
-            this.originalException = originalException;
         }
     }
 }

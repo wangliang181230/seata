@@ -36,7 +36,7 @@ public final class TransactionHookManager {
      * @return TransactionHook list
      * @throws IllegalStateException IllegalStateException
      */
-    public static List<TransactionHook> getHooks() throws IllegalStateException {
+    public static List<TransactionHook> getHooks() {
         List<TransactionHook> hooks = LOCAL_HOOKS.get();
 
         if (hooks == null || hooks.isEmpty()) {

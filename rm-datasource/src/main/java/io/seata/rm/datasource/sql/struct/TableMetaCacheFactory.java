@@ -24,9 +24,12 @@ import io.seata.common.util.CollectionUtils;
 /**
  * @author guoyao
  */
-public class TableMetaCacheFactory {
+public final class TableMetaCacheFactory {
 
     private static final Map<String, TableMetaCache> TABLE_META_CACHE_MAP = new ConcurrentHashMap<>();
+
+    private TableMetaCacheFactory() {
+    }
 
     /**
      * get table meta cache

@@ -30,7 +30,7 @@ import io.seata.common.util.CollectionUtils;
  * @author ggndnn
  */
 public class NamedThreadFactory implements ThreadFactory {
-    private final static Map<String, AtomicInteger> PREFIX_COUNTER = new ConcurrentHashMap<>();
+    private static final Map<String, AtomicInteger> PREFIX_COUNTER = new ConcurrentHashMap<>();
     private final ThreadGroup group;
     private final AtomicInteger counter = new AtomicInteger(0);
     private final String prefix;

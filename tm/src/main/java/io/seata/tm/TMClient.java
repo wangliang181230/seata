@@ -22,7 +22,10 @@ import io.seata.core.rpc.netty.TmNettyRemotingClient;
  *
  * @author slievrly
  */
-public class TMClient {
+public final class TMClient {
+
+    private TMClient() {
+    }
 
     /**
      * Init.

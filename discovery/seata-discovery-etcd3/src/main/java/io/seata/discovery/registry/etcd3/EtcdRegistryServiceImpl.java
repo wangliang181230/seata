@@ -79,17 +79,17 @@ public class EtcdRegistryServiceImpl implements RegistryService<Watch.Listener> 
     /**
      * interval for life keep
      */
-    private final static long LIFE_KEEP_INTERVAL = 5;
+    private static final long LIFE_KEEP_INTERVAL = 5;
     /**
      * critical value for life keep
      */
-    private final static long LIFE_KEEP_CRITICAL = 6;
-    private static volatile EtcdRegistryServiceImpl instance;
-    private static volatile Client client;
+    private static final long LIFE_KEEP_CRITICAL = 6;
+    private static EtcdRegistryServiceImpl instance;
+    private static Client client;
     private ConcurrentMap<String, Pair<Long /*revision*/, List<InetSocketAddress>>> clusterAddressMap;
     private ConcurrentMap<String, Set<Watch.Listener>> listenerMap;
     private ConcurrentMap<String, EtcdWatcher> watcherMap;
-    private static long leaseId = 0;
+    private static volatile long leaseId = 0;
     private EtcdLifeKeeper lifeKeeper = null;
     private Future<Boolean> lifeKeeperFuture = null;
     /**

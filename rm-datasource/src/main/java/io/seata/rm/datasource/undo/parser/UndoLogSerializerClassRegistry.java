@@ -50,9 +50,12 @@ import io.seata.rm.datasource.undo.BranchUndoLog;
  * and {@code seata-serializer-kryo}, it will register some classes at startup time (for example {@link KryoSerializerFactory#create})
  * @author funkye
  */
-public class UndoLogSerializerClassRegistry {
+public final class UndoLogSerializerClassRegistry {
 
     private static final Map<Class<?>, Object> REGISTRATIONS = new LinkedHashMap<>();
+
+    private UndoLogSerializerClassRegistry() {
+    }
 
     static {
         // register serializer

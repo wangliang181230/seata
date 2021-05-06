@@ -17,6 +17,7 @@ package io.seata.sqlparser;
 
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * The interface Sql insert recognizer.
@@ -36,6 +37,7 @@ public interface SQLInsertRecognizer extends SQLRecognizer {
      *
      * @return the insert columns
      */
+    @Nullable
     List<String> getInsertColumns();
 
     /**
@@ -44,5 +46,6 @@ public interface SQLInsertRecognizer extends SQLRecognizer {
      * @param primaryKeyIndex insert sql primary key index.
      * @return the insert rows
      */
+    @Nullable
     List<List<Object>> getInsertRows(Collection<Integer> primaryKeyIndex);
 }

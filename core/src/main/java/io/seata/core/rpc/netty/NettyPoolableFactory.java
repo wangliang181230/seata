@@ -53,7 +53,7 @@ public class NettyPoolableFactory implements KeyedPoolableObjectFactory<NettyPoo
     public Channel makeObject(NettyPoolKey key) {
         InetSocketAddress address = NetUtil.toInetSocketAddress(key.getAddress());
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("NettyPool create channel to " + key);
+            LOGGER.info("NettyPool create channel to {}", key);
         }
         Channel tmpChannel = clientBootstrap.getNewChannel(address);
         long start = System.currentTimeMillis();
@@ -117,7 +117,7 @@ public class NettyPoolableFactory implements KeyedPoolableObjectFactory<NettyPoo
     public void destroyObject(NettyPoolKey key, Channel channel) throws Exception {
         if (channel != null) {
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("will destroy channel:" + channel);
+                LOGGER.info("will destroy channel: {}", channel);
             }
             channel.disconnect();
             channel.close();
@@ -130,7 +130,7 @@ public class NettyPoolableFactory implements KeyedPoolableObjectFactory<NettyPoo
             return true;
         }
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("channel valid false,channel:" + obj);
+            LOGGER.info("channel valid false,channel: {}", obj);
         }
         return false;
     }

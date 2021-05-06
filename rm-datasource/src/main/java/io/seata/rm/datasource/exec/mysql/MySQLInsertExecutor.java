@@ -80,9 +80,9 @@ public class MySQLInsertExecutor extends BaseInsertExecutor implements Defaultab
 
     @Override
     public Map<String,List<Object>> getPkValues() throws SQLException {
-        Map<String,List<Object>> pkValuesMap = null;
+        Map<String,List<Object>> pkValuesMap;
         List<String> pkColumnNameList = getTableMeta().getPrimaryKeyOnlyName();
-        Boolean isContainsPk = containsPK();
+        boolean isContainsPk = containsPK();
         //when there is only one pk in the table
         if (getTableMeta().getPrimaryKeyOnlyName().size() == 1) {
             if (isContainsPk) {
@@ -193,7 +193,7 @@ public class MySQLInsertExecutor extends BaseInsertExecutor implements Defaultab
     }
 
     protected Map<String, List<Object>> autoGeneratePks(BigDecimal cursor, String autoColumnName, Integer updateCount) throws SQLException {
-        BigDecimal step = BigDecimal.ONE;
+        BigDecimal step;
         String resourceId = statementProxy.getConnectionProxy().getDataSourceProxy().getResourceId();
         if (RESOURCE_ID_STEP_CACHE.containsKey(resourceId)) {
             step = RESOURCE_ID_STEP_CACHE.get(resourceId);

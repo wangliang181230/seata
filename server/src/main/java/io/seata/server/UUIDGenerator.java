@@ -22,9 +22,12 @@ import io.seata.common.util.IdWorker;
  *
  * @author sharajava
  */
-public class UUIDGenerator {
+public final class UUIDGenerator {
 
-    private static volatile IdWorker idWorker;
+    private static IdWorker idWorker;
+
+    private UUIDGenerator() {
+    }
 
     /**
      * generate UUID using snowflake algorithm

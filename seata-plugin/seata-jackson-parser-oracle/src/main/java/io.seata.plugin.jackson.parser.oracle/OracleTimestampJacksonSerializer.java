@@ -73,8 +73,7 @@ public class OracleTimestampJacksonSerializer implements JacksonSerializer<oracl
             @Override
             public oracle.sql.TIMESTAMP deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
                 try {
-                    oracle.sql.TIMESTAMP timestamp = new oracle.sql.TIMESTAMP(p.getBinaryValue());
-                    return timestamp;
+                    return new oracle.sql.TIMESTAMP(p.getBinaryValue());
                 } catch (IOException e) {
                     LOGGER.error("deserialize oracle.sql.Timestamp error : {}", e.getMessage(), e);
                 }

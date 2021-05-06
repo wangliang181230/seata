@@ -20,7 +20,10 @@ package io.seata.core.constants;
  *
  * @author wangzhongxiang
  */
-public class RedisKeyConstants {
+public final class RedisKeyConstants {
+
+    private RedisKeyConstants() {
+    }
 
     /**
      * The constant redis key of global transaction name xid

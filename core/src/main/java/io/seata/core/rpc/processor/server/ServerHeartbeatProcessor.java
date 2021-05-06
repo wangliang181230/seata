@@ -46,8 +46,8 @@ public class ServerHeartbeatProcessor implements RemotingProcessor {
     public void process(ChannelHandlerContext ctx, RpcMessage rpcMessage) throws Exception {
         try {
             remotingServer.sendAsyncResponse(rpcMessage, ctx.channel(), HeartbeatMessage.PONG);
-        } catch (Throwable throwable) {
-            LOGGER.error("send response error: {}", throwable.getMessage(), throwable);
+        } catch (RuntimeException e) {
+            LOGGER.error("send response error: {}", e.getMessage(), e);
         }
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("received PING from {}", ctx.channel().remoteAddress());

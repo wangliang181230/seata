@@ -143,7 +143,7 @@ public class TransactionalTemplate {
             }
         } finally {
             // If the transaction is suspended, resume it.
-            if (suspendedResourcesHolder != null) {
+            if (tx != null && suspendedResourcesHolder != null) {
                 tx.resume(suspendedResourcesHolder);
             }
         }

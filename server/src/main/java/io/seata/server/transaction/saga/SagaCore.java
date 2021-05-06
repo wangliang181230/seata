@@ -15,7 +15,6 @@
  */
 package io.seata.server.transaction.saga;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -62,17 +61,17 @@ public class SagaCore extends AbstractCore {
 
     @Override
     public BranchStatus branchCommitSend(BranchCommitRequest request, GlobalSession globalSession,
-                                         BranchSession branchSession) throws IOException, TimeoutException {
+                                         BranchSession branchSession) throws TimeoutException {
         Map<String, Channel> channels = ChannelManager.getRmChannels();
         if (CollectionUtils.isEmpty(channels)) {
-            LOGGER.error("Failed to commit SAGA global[" + globalSession.getXid() + ", RM channels is empty.");
+            LOGGER.error("Failed to commit SAGA global[{}], RM channels is empty.", globalSession.getXid());
             return BranchStatus.PhaseTwo_CommitFailed_Retryable;
         }
         String sagaResourceId = getSagaResourceId(globalSession);
         Channel sagaChannel = channels.get(sagaResourceId);
         if (sagaChannel == null) {
-            LOGGER.error("Failed to commit SAGA global[" + globalSession.getXid()
-                    + ", cannot find channel by resourceId[" + sagaResourceId + "]");
+            LOGGER.error("Failed to commit SAGA global[{}], cannot find channel by resourceId[{}]",
+                    globalSession.getXid(), sagaResourceId);
             return BranchStatus.PhaseTwo_CommitFailed_Retryable;
         }
         BranchCommitResponse response = (BranchCommitResponse) remotingServer.sendSyncRequest(sagaChannel, request);
@@ -81,17 +80,17 @@ public class SagaCore extends AbstractCore {
 
     @Override
     public BranchStatus branchRollbackSend(BranchRollbackRequest request, GlobalSession globalSession,
-                                           BranchSession branchSession) throws IOException, TimeoutException {
+                                           BranchSession branchSession) throws TimeoutException {
         Map<String, Channel> channels = ChannelManager.getRmChannels();
         if (CollectionUtils.isEmpty(channels)) {
-            LOGGER.error("Failed to rollback SAGA global[" + globalSession.getXid() + ", RM channels is empty.");
+            LOGGER.error("Failed to rollback SAGA global[{}], RM channels is empty.", globalSession.getXid());
             return BranchStatus.PhaseTwo_RollbackFailed_Retryable;
         }
         String sagaResourceId = getSagaResourceId(globalSession);
         Channel sagaChannel = channels.get(sagaResourceId);
         if (sagaChannel == null) {
-            LOGGER.error("Failed to rollback SAGA global[" + globalSession.getXid()
-                    + ", cannot find channel by resourceId[" + sagaResourceId + "]");
+            LOGGER.error("Failed to rollback SAGA global[{}], cannot find channel by resourceId[{}]",
+                    globalSession.getXid(), sagaResourceId);
             return BranchStatus.PhaseTwo_RollbackFailed_Retryable;
         }
         BranchRollbackResponse response = (BranchRollbackResponse) remotingServer.sendSyncRequest(sagaChannel, request);
@@ -107,10 +106,10 @@ public class SagaCore extends AbstractCore {
             switch (branchStatus) {
                 case PhaseTwo_Committed:
                     removeAllBranches(globalSession);
-                    LOGGER.info("Successfully committed SAGA global[" + globalSession.getXid() + "]");
+                    LOGGER.info("Successfully committed SAGA global[{}]", globalSession.getXid());
                     break;
                 case PhaseTwo_Rollbacked:
-                    LOGGER.info("Successfully rollbacked SAGA global[" + globalSession.getXid() + "]");
+                    LOGGER.info("Successfully rollbacked SAGA global[{}]", globalSession.getXid());
                     removeAllBranches(globalSession);
                     SessionHelper.endRollbacked(globalSession);
                     return false;
@@ -145,13 +144,11 @@ public class SagaCore extends AbstractCore {
                         return false;
                     }
             }
-        } catch (Exception ex) {
-            LOGGER.error("Failed to commit global[" + globalSession.getXid() + "]", ex);
-
+        } catch (RuntimeException ex) {
             if (!retrying) {
                 globalSession.queueToRetryRollback();
             }
-            throw new TransactionException(ex);
+            throw new TransactionException("Failed to commit global[" + globalSession.getXid() + "]", ex);
         }
         return true;
     }
@@ -183,12 +180,11 @@ public class SagaCore extends AbstractCore {
                     }
                     return false;
             }
-        } catch (Exception ex) {
-            LOGGER.error("Failed to rollback global[{}]", globalSession.getXid(), ex);
+        } catch (RuntimeException ex) {
             if (!retrying) {
                 globalSession.queueToRetryRollback();
             }
-            throw new TransactionException(ex);
+            throw new TransactionException("Failed to rollback global[" + globalSession.getXid() + "]", ex);
         }
         return true;
     }

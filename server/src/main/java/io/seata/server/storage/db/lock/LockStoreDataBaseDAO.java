@@ -108,7 +108,9 @@ public class LockStoreDataBaseDAO implements LockStore {
         }
         try {
             conn = lockStoreDataSource.getConnection();
-            if (originalAutoCommit = conn.getAutoCommit()) {
+
+            originalAutoCommit = conn.getAutoCommit();
+            if (originalAutoCommit) {
                 conn.setAutoCommit(false);
             }
             //check lock
@@ -135,7 +137,7 @@ public class LockStoreDataBaseDAO implements LockStore {
                         LOGGER.info("Global lock on [{}:{}] is holding by xid {} branchId {}", dbTableName, dbPk, dbXID,
                             dbBranchId);
                     }
-                    canLock &= false;
+                    canLock = false;
                     break;
                 }
                 dbExistedRowKeys.add(rs.getString(ServerTableColumnsName.LOCK_TABLE_ROW_KEY));
@@ -145,7 +147,7 @@ public class LockStoreDataBaseDAO implements LockStore {
                 conn.rollback();
                 return false;
             }
-            List<LockDO> unrepeatedLockDOs = null;
+            List<LockDO> unrepeatedLockDOs;
             if (CollectionUtils.isNotEmpty(dbExistedRowKeys)) {
                 unrepeatedLockDOs = lockDOs.stream().filter(lockDO -> !dbExistedRowKeys.contains(lockDO.getRowKey()))
                     .collect(Collectors.toList());
@@ -170,7 +172,7 @@ public class LockStoreDataBaseDAO implements LockStore {
                 if (!doAcquireLocks(conn, unrepeatedLockDOs)) {
                     if (LOGGER.isInfoEnabled()) {
                         LOGGER.info("Global lock batch acquire failed, xid {} branchId {} pks {}", unrepeatedLockDOs.get(0).getXid(),
-                            unrepeatedLockDOs.get(0).getBranchId(), unrepeatedLockDOs.stream().map(lockDO -> lockDO.getPk()).collect(Collectors.toList()));
+                            unrepeatedLockDOs.get(0).getBranchId(), unrepeatedLockDOs.stream().map(LockDO::getPk).collect(Collectors.toList()));
                     }
                     conn.rollback();
                     return false;

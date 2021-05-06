@@ -46,11 +46,11 @@ public class EtcdRegistryServiceImplTest {
     private static final String REGISTRY_KEY_PREFIX = "registry-seata-";
     private static final String CLUSTER_NAME = "default";
     @Rule
-    private final static EtcdClusterResource etcd = new EtcdClusterResource(CLUSTER_NAME, 1);
+    private static final EtcdClusterResource etcd = new EtcdClusterResource(CLUSTER_NAME, 1);
 
     private final Client client = Client.builder().endpoints(etcd.cluster().getClientEndpoints()).build();
-    private final static String HOST = "127.0.0.1";
-    private final static int PORT = 8091;
+    private static final String HOST = "127.0.0.1";
+    private static final int PORT = 8091;
 
     @BeforeAll
     public static void beforeClass() throws Exception {

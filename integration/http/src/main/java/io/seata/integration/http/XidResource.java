@@ -25,10 +25,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author wangxb
  */
-public class XidResource {
+public final class XidResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XidResource.class);
 
+    private XidResource() {
+    }
 
     public static void cleanXid(String rpcXid) {
         String xid = RootContext.getXID();

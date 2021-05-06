@@ -35,11 +35,10 @@ public class SqlGenerateUtils {
 
     }
 
-    public static String buildWhereConditionByPKs(List<String> pkNameList, int rowSize, String dbType)
-        throws SQLException {
+    public static String buildWhereConditionByPKs(List<String> pkNameList, int rowSize, String dbType) {
         return buildWhereConditionByPKs(pkNameList, rowSize, dbType, MAX_IN_SIZE);
-
     }
+
     /**
      * each pk is a condition.the result will like :" (id,userCode) in ((?,?),(?,?)) or (id,userCode) in ((?,?),(?,?)
      * ) or (id,userCode) in ((?,?))"
@@ -52,8 +51,7 @@ public class SqlGenerateUtils {
      * @return return where condition sql string.the sql can search all related records not just one.
      * @throws SQLException the sql exception
      */
-    public static String buildWhereConditionByPKs(List<String> pkNameList, int rowSize, String dbType, int maxInSize)
-        throws SQLException {
+    public static String buildWhereConditionByPKs(List<String> pkNameList, int rowSize, String dbType, int maxInSize) {
         StringBuilder whereStr = new StringBuilder();
         //we must consider the situation of composite primary key
         int batchSize = rowSize % maxInSize == 0 ? rowSize / maxInSize : (rowSize / maxInSize) + 1;

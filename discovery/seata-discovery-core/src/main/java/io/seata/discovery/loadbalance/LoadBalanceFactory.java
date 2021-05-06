@@ -25,7 +25,10 @@ import static io.seata.common.DefaultValues.DEFAULT_LOAD_BALANCE;
  *
  * @author slievrly
  */
-public class LoadBalanceFactory {
+public final class LoadBalanceFactory {
+
+    private LoadBalanceFactory() {
+    }
 
     private static final String CLIENT_PREFIX = "client.";
     /**

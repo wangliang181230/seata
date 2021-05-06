@@ -17,6 +17,8 @@ package io.seata.server.session;
 
 import java.util.Collection;
 
+import javax.annotation.Nullable;
+
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
 import io.seata.core.model.BranchType;
@@ -159,8 +161,8 @@ public class SessionHelper {
             try {
                 MDC.put(RootContext.MDC_KEY_XID, globalSession.getXid());
                 handler.handle(globalSession);
-            } catch (Throwable th) {
-                LOGGER.error("handle global session failed: {}", globalSession.getXid(), th);
+            } catch (Exception e) {
+                LOGGER.error("handle global session failed: {}", globalSession.getXid(), e);
             } finally {
                 MDC.remove(RootContext.MDC_KEY_XID);
             }
@@ -174,6 +176,7 @@ public class SessionHelper {
      * @param handler  the handler
      * @since 1.5.0
      */
+    @Nullable
     public static Boolean forEach(Collection<BranchSession> sessions, BranchSessionHandler handler) throws TransactionException {
         Boolean result;
         for (BranchSession branchSession : sessions) {

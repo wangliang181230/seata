@@ -15,7 +15,8 @@
  */
 package io.seata.rm.datasource.xa;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Xid in XA Protocol. Wrap info of Seata xid and branchId.
@@ -24,7 +25,7 @@ import java.io.UnsupportedEncodingException;
  */
 public class XABranchXid implements XAXid {
 
-    private static final String DEFAULT_ENCODE_CHARSET = "UTF-8";
+    private static final Charset DEFAULT_ENCODE_CHARSET = StandardCharsets.UTF_8;
     private static final String BRANCH_ID_PREFIX = "-";
 
     private static final int SEATA_XA_XID_FORMAT_ID = 9752;
@@ -75,19 +76,11 @@ public class XABranchXid implements XAXid {
     }
 
     private byte[] string2byteArray(String string) {
-        try {
-            return string.getBytes(DEFAULT_ENCODE_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return string.getBytes(DEFAULT_ENCODE_CHARSET);
     }
 
     private String byteArray2String(byte[] bytes) {
-        try {
-            return new String(bytes, DEFAULT_ENCODE_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return new String(bytes, DEFAULT_ENCODE_CHARSET);
     }
 
     private void encode() {

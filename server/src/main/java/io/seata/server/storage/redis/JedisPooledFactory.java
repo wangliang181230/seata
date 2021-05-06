@@ -38,13 +38,17 @@ import redis.clients.jedis.JedisSentinelPool;
 /**
  * @author funkye
  */
-public class JedisPooledFactory {
+public final class JedisPooledFactory {
+
+    private JedisPooledFactory() {
+    }
+
     /**
      * The constant LOGGER.
      */
     protected static final Logger LOGGER = LoggerFactory.getLogger(JedisPooledFactory.class);
 
-    private static volatile JedisPoolAbstract jedisPool = null;
+    private static JedisPoolAbstract jedisPool = null;
 
     private static final String HOST = "127.0.0.1";
 
@@ -67,59 +71,55 @@ public class JedisPooledFactory {
      * 
      * @return redisPool
      */
-    public static JedisPoolAbstract getJedisPoolInstance(JedisPoolAbstract... jedisPools) {
+    public static synchronized JedisPoolAbstract getJedisPoolInstance(JedisPoolAbstract... jedisPools) {
         if (jedisPool == null) {
-            synchronized (JedisPooledFactory.class) {
-                if (jedisPool == null) {
-                    if (jedisPools != null && jedisPools.length > 0) {
-                        jedisPool = jedisPools[0];
-                    } else {
-                        String password = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_PASSWORD);
-                        if (StringUtils.isBlank(password)) {
-                            password = null;
-                        } else {
-                            String publicKey = CONFIGURATION.getConfig(ConfigurationKeys.STORE_PUBLIC_KEY);
-                            if (StringUtils.isNotBlank(publicKey)) {
-                                try {
-                                    password = ConfigTools.publicDecrypt(password, publicKey);
-                                } catch (Exception e) {
-                                    LOGGER.error(
-                                        "decryption failed,please confirm whether the ciphertext and secret key are correct! error msg: {}",
-                                        e.getMessage());
-                                }
-                            }
+            if (jedisPools != null && jedisPools.length > 0) {
+                jedisPool = jedisPools[0];
+            } else {
+                String password = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_PASSWORD);
+                if (StringUtils.isBlank(password)) {
+                    password = null;
+                } else {
+                    String publicKey = CONFIGURATION.getConfig(ConfigurationKeys.STORE_PUBLIC_KEY);
+                    if (StringUtils.isNotBlank(publicKey)) {
+                        try {
+                            password = ConfigTools.publicDecrypt(password, publicKey);
+                        } catch (Exception e) {
+                            LOGGER.error(
+                                "decryption failed,please confirm whether the ciphertext and secret key are correct! error msg: {}",
+                                e.getMessage());
                         }
-                        JedisPoolConfig poolConfig = new JedisPoolConfig();
-                        poolConfig.setMinIdle(CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_MIN_CONN, MINCONN));
-                        poolConfig.setMaxIdle(CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_MAX_CONN, MAXCONN));
-                        poolConfig.setMaxTotal(CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_MAX_TOTAL, MAXTOTAL));
-                        String mode = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_MODE,ConfigurationKeys.REDIS_SINGLE_MODE);
-                        if (mode.equals(ConfigurationKeys.REDIS_SENTINEL_MODE)) {
-                            String masterName = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_SENTINEL_MASTERNAME);
-                            if (StringUtils.isBlank(masterName)) {
-                                throw new RedisException("The masterName is null in redis sentinel mode");
-                            }
-                            Set<String> sentinels = new HashSet<>(SENTINEL_HOST_NUMBER);
-                            String[] sentinelHosts = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_SENTINEL_HOST).split(",");
-                            Arrays.asList(sentinelHosts).forEach(sentinelHost -> sentinels.add(sentinelHost));
-                            jedisPool = new JedisSentinelPool(masterName, sentinels, poolConfig, 60000, password,
-                                    CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_DATABASE, DATABASE));
-                        } else if (mode.equals(ConfigurationKeys.REDIS_SINGLE_MODE)) {
-                            String host = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_SINGLE_HOST);
-                            host = StringUtils.isBlank(host) ? CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_HOST, HOST) : host;
-                            int port = CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_SINGLE_PORT);
-                            port = port == 0 ? CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_PORT, PORT) : port;
-                            jedisPool =
-                                    new JedisPool(poolConfig, host, port, 60000, password,
-                                            CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_DATABASE, DATABASE));
-                        } else {
-                            throw new RedisException("Configuration error of redis cluster mode");
-                        }
-                    }
-                    if (LOGGER.isInfoEnabled()) {
-                        LOGGER.info("initialization of the build redis connection pool is complete");
                     }
                 }
+                JedisPoolConfig poolConfig = new JedisPoolConfig();
+                poolConfig.setMinIdle(CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_MIN_CONN, MINCONN));
+                poolConfig.setMaxIdle(CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_MAX_CONN, MAXCONN));
+                poolConfig.setMaxTotal(CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_MAX_TOTAL, MAXTOTAL));
+                String mode = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_MODE,ConfigurationKeys.REDIS_SINGLE_MODE);
+                if (mode.equals(ConfigurationKeys.REDIS_SENTINEL_MODE)) {
+                    String masterName = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_SENTINEL_MASTERNAME);
+                    if (StringUtils.isBlank(masterName)) {
+                        throw new RedisException("The masterName is null in redis sentinel mode");
+                    }
+                    Set<String> sentinels = new HashSet<>(SENTINEL_HOST_NUMBER);
+                    String[] sentinelHosts = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_SENTINEL_HOST).split(",");
+                    sentinels.addAll(Arrays.asList(sentinelHosts));
+                    jedisPool = new JedisSentinelPool(masterName, sentinels, poolConfig, 60000, password,
+                            CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_DATABASE, DATABASE));
+                } else if (mode.equals(ConfigurationKeys.REDIS_SINGLE_MODE)) {
+                    String host = CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_SINGLE_HOST);
+                    host = StringUtils.isBlank(host) ? CONFIGURATION.getConfig(ConfigurationKeys.STORE_REDIS_HOST, HOST) : host;
+                    int port = CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_SINGLE_PORT);
+                    port = port == 0 ? CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_PORT, PORT) : port;
+                    jedisPool =
+                            new JedisPool(poolConfig, host, port, 60000, password,
+                                    CONFIGURATION.getInt(ConfigurationKeys.STORE_REDIS_DATABASE, DATABASE));
+                } else {
+                    throw new RedisException("Configuration error of redis cluster mode");
+                }
+            }
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("initialization of the build redis connection pool is complete");
             }
         }
         return jedisPool;

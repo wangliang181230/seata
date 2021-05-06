@@ -36,16 +36,12 @@ import java.sql.SQLException;
  */
 public final class JdbcUtils {
 
-    private static volatile DbTypeParser dbTypeParser;
+    private static DbTypeParser dbTypeParser;
 
-    static DbTypeParser getDbTypeParser() {
+    static synchronized DbTypeParser getDbTypeParser() {
         if (dbTypeParser == null) {
-            synchronized (JdbcUtils.class) {
-                if (dbTypeParser == null) {
-                    String sqlparserType = ConfigurationFactory.getInstance().getConfig(ConfigurationKeys.SQL_PARSER_TYPE, SqlParserType.SQL_PARSER_TYPE_DRUID);
-                    dbTypeParser = EnhancedServiceLoader.load(DbTypeParser.class, sqlparserType);
-                }
-            }
+            String sqlparserType = ConfigurationFactory.getInstance().getConfig(ConfigurationKeys.SQL_PARSER_TYPE, SqlParserType.SQL_PARSER_TYPE_DRUID);
+            dbTypeParser = EnhancedServiceLoader.load(DbTypeParser.class, sqlparserType);
         }
         return dbTypeParser;
     }
@@ -89,9 +85,7 @@ public final class JdbcUtils {
                 dataSourceResource.setDriver(loadDriver(driverClassName));
                 dataSourceResource.setDbType(com.alibaba.druid.util.JdbcUtils.getDbType(jdbcUrl, driverClassName));
             } finally {
-                if (xaConnection != null) {
-                    xaConnection.close();
-                }
+                xaConnection.close();
             }
         } catch (SQLException e) {
             throw new IllegalStateException("can not get XAConnection from DataSourceResource with " + dataSource, e);
@@ -127,9 +121,7 @@ public final class JdbcUtils {
 
         try {
             return (Driver)clazz.newInstance();
-        } catch (IllegalAccessException e) {
-            throw new SQLException(e.getMessage(), e);
-        } catch (InstantiationException e) {
+        } catch (IllegalAccessException | InstantiationException e) {
             throw new SQLException(e.getMessage(), e);
         }
     }

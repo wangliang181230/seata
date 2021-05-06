@@ -36,7 +36,10 @@ import java.util.Map;
  *
  * @author lorne.cl
  */
-public class ParameterUtils {
+public final class ParameterUtils {
+
+    private ParameterUtils() {
+    }
 
     public static List<Object> createInputParams(ExpressionFactoryManager expressionFactoryManager,
                                                  StateInstanceImpl stateInstance,
@@ -90,8 +93,8 @@ public class ParameterUtils {
             }
         }
         Map<String, Object> outputValues = new LinkedHashMap<>(outputExpressions.size());
-        for (String paramName : outputExpressions.keySet()) {
-            outputValues.put(paramName, getValue(outputExpressions.get(paramName), variablesFrom, null));
+        for (Map.Entry<String, Object> entry : outputExpressions.entrySet()) {
+            outputValues.put(entry.getKey(), getValue(entry.getValue(), variablesFrom, null));
         }
         return outputValues;
     }
@@ -128,7 +131,6 @@ public class ParameterUtils {
 
     public static Object createValueExpression(ExpressionFactoryManager expressionFactoryManager,
                                                 Object paramAssignment) {
-
         Object valueExpression;
 
         if (paramAssignment instanceof Expression) {
@@ -150,8 +152,8 @@ public class ParameterUtils {
         } else if (paramAssignment instanceof String && ((String)paramAssignment).startsWith("$")) {
 
             String expressionStr = (String)paramAssignment;
-            int expTypeStart = expressionStr.indexOf("$");
-            int expTypeEnd = expressionStr.indexOf(".", expTypeStart);
+            int expTypeStart = expressionStr.indexOf('$');
+            int expTypeEnd = expressionStr.indexOf('.', expTypeStart);
 
             String expressionType = null;
             if (expTypeStart >= 0 && expTypeEnd > expTypeStart) {

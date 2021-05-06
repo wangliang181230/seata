@@ -52,13 +52,13 @@ public abstract class AbstractDataSourceProvider implements DataSourceProvider, 
      */
     protected static final Configuration CONFIG = ConfigurationFactory.getInstance();
 
-    private final static String MYSQL_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+    private static final String MYSQL_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
-    private final static String MYSQL8_DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
+    private static final String MYSQL8_DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
 
-    private final static String MYSQL_DRIVER_FILE_PREFIX = "mysql-connector-java-";
+    private static final String MYSQL_DRIVER_FILE_PREFIX = "mysql-connector-java-";
 
-    private final static Map<String, ClassLoader> MYSQL_DRIVER_LOADERS;
+    private static final Map<String, ClassLoader> MYSQL_DRIVER_LOADERS;
 
     private static final int DEFAULT_DB_MAX_CONN = 20;
 

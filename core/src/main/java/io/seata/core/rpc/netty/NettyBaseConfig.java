@@ -70,7 +70,7 @@ public class NettyBaseConfig {
     /**
      * The constant WORKER_THREAD_SIZE.
      */
-    protected static int WORKER_THREAD_SIZE;
+    protected static final int WORKER_THREAD_SIZE;
 
     /**
      * The constant TRANSPORT_SERVER_TYPE.
@@ -174,7 +174,7 @@ public class NettyBaseConfig {
         MAX_READ_IDLE_SECONDS = MAX_WRITE_IDLE_SECONDS * READIDLE_BASE_WRITEIDLE;
     }
 
-    private static void raiseUnsupportedTransportError() throws RuntimeException {
+    private static void raiseUnsupportedTransportError() {
         String errMsg = String.format("Unsupported provider type :[%s] for transport:[%s].", TRANSPORT_SERVER_TYPE,
             TRANSPORT_PROTOCOL_TYPE);
         LOGGER.error(errMsg);

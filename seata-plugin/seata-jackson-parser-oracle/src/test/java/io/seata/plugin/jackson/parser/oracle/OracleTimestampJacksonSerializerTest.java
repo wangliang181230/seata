@@ -15,7 +15,7 @@ public class OracleTimestampJacksonSerializerTest {
     @Test
     public void test_oracleJacksonSerializer() throws Exception {
         List<JacksonSerializer> serializers = EnhancedServiceLoader.loadAll(JacksonSerializer.class);
-        Assertions.assertTrue(serializers.size() > 0, "Jackson Serializer is empty");
+        Assertions.assertTrue(!serializers.isEmpty(), "Jackson Serializer is empty");
         OracleTimestampJacksonSerializer s = null;
         for (JacksonSerializer serializer : serializers) {
             if (serializer instanceof OracleTimestampJacksonSerializer) {

@@ -220,7 +220,7 @@ public class ServiceTaskHandlerInterceptor implements StateHandlerInterceptor {
             DomainConstants.VAR_NAME_STATEMACHINE_INST);
         StateInstance stateInstance = (StateInstance)context.getVariable(DomainConstants.VAR_NAME_STATE_INST);
         if (stateInstance == null || !stateMachineInstance.isRunning()) {
-            LOGGER.warn("StateMachineInstance[id:" + stateMachineInstance.getId() + "] is end. stop running");
+            LOGGER.warn("StateMachineInstance[id:{}] is end. stop running", stateMachineInstance.getId());
             return;
         }
 
@@ -404,14 +404,14 @@ public class ServiceTaskHandlerInterceptor implements StateHandlerInterceptor {
         Evaluator evaluator = null;
         if (StringUtils.hasLength(expressionStr)) {
             if (expressionStr.startsWith("$")) {
-                int expTypeStart = expressionStr.indexOf("$");
-                int expTypeEnd = expressionStr.indexOf("{", expTypeStart);
+                int expTypeStart = expressionStr.indexOf('$');
+                int expTypeEnd = expressionStr.indexOf('{', expTypeStart);
 
                 if (expTypeStart >= 0 && expTypeEnd > expTypeStart) {
                     expressionType = expressionStr.substring(expTypeStart + 1, expTypeEnd);
                 }
 
-                int expEnd = expressionStr.lastIndexOf("}");
+                int expEnd = expressionStr.lastIndexOf('}');
                 if (expTypeEnd > 0 && expEnd > expTypeEnd) {
                     expressionContent = expressionStr.substring(expTypeEnd + 1, expEnd);
                 }

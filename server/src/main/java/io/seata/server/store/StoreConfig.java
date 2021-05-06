@@ -25,10 +25,12 @@ import static io.seata.core.constants.ConfigurationKeys.STORE_FILE_PREFIX;
 /**
  * @author lizhao
  */
-public class StoreConfig {
+public final class StoreConfig {
+
+    private StoreConfig() {
+    }
 
     private static final Configuration CONFIGURATION = ConfigurationFactory.getInstance();
-
 
     /**
      * Default 16kb.

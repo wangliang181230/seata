@@ -38,10 +38,8 @@ public class RegisterTMRequestConvertor implements PbConvertor<RegisterTMRequest
                 extraData == null ? "" : extraData).setTransactionServiceGroup(
                 registerTMRequest.getTransactionServiceGroup()).setVersion(registerTMRequest.getVersion()).build();
 
-        RegisterTMRequestProto result = RegisterTMRequestProto.newBuilder().setAbstractIdentifyRequest(
+        return RegisterTMRequestProto.newBuilder().setAbstractIdentifyRequest(
             abstractIdentifyRequestProto).build();
-
-        return result;
     }
 
     @Override

@@ -68,12 +68,6 @@ public class RedisLocker extends AbstractLocker {
 
     private static final String ROW_KEY = "rowKey";
 
-    /**
-     * Instantiates a new Redis locker.
-     */
-    public RedisLocker() {
-    }
-
     @Override
     public boolean acquireLock(List<RowLock> rowLocks) {
         if (CollectionUtils.isEmpty(rowLocks)) {
@@ -140,7 +134,7 @@ public class RedisLocker extends AbstractLocker {
 
             //If someone has failed,all the lockkey which has been added need to be delete.
             if (FAILED.equals(status)) {
-                if (success.size() > 0) {
+                if (!success.isEmpty()) {
                     jedis.del(success.toArray(new String[0]));
                 }
                 return false;

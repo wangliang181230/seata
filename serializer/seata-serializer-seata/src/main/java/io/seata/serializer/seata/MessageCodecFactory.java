@@ -80,7 +80,10 @@ import io.seata.core.protocol.transaction.UndoLogDeleteRequest;
  *
  * @author zhangsen
  */
-public class MessageCodecFactory {
+public final class MessageCodecFactory {
+
+    private MessageCodecFactory() {
+    }
 
     /**
      * The constant UTF8.
@@ -143,7 +146,7 @@ public class MessageCodecFactory {
 
         try {
             msgCodec = getMergeRequestMessageSeataCodec(typeCode);
-        } catch (Exception exx) {
+        } catch (Exception ignored) {
         }
 
         if (msgCodec != null) {
@@ -180,7 +183,7 @@ public class MessageCodecFactory {
             case MessageType.TYPE_GLOBAL_REPORT:
                 return new GlobalReportRequestCodec();
             default:
-                throw new IllegalArgumentException("not support typeCode," + typeCode);
+                throw new IllegalArgumentException("not support typeCode:" + typeCode);
         }
     }
 
@@ -271,7 +274,7 @@ public class MessageCodecFactory {
 
         try {
             abstractMessage = getMergeRequestInstanceByCode(typeCode);
-        } catch (Exception exx) {
+        } catch (Exception ignored) {
         }
 
         if (abstractMessage != null) {

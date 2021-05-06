@@ -154,7 +154,7 @@ public class ServiceTaskStateHandler implements StateHandler, InterceptableState
         Map<String, Object> startParams = new HashMap<>(0);
         if (input instanceof List) {
             List<Object> listInputParams = (List<Object>) input;
-            if (listInputParams.size() > 0) {
+            if (!listInputParams.isEmpty()) {
                 startParams = (Map<String, Object>) listInputParams.get(0);
             }
         } else if (input instanceof Map) {

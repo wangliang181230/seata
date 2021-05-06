@@ -132,7 +132,7 @@ public class LoopStartStateHandler implements StateHandler {
                     isFinished = semaphore.tryAcquire(maxInstances, AWAIT_TIMEOUT, TimeUnit.MILLISECONDS);
                 }
 
-                if (loopContextList.size() > 0) {
+                if (!loopContextList.isEmpty()) {
                     LoopTaskUtils.putContextToParent(context, loopContextList, instruction.getState(context));
                 }
             }

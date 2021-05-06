@@ -51,7 +51,7 @@ public class ScriptTaskStateHandler implements StateHandler, InterceptableStateH
 
     private List<StateHandlerInterceptor> interceptors = new ArrayList<>();
 
-    private volatile Map<String, ScriptEngine> scriptEngineCache = new ConcurrentHashMap<>();
+    private final Map<String, ScriptEngine> scriptEngineCache = new ConcurrentHashMap<>();
 
     @Override
     public void process(ProcessContext context) throws EngineExecutionException {
@@ -117,7 +117,7 @@ public class ScriptTaskStateHandler implements StateHandler, InterceptableStateH
                         result);
             }
 
-        } catch (Throwable e) {
+        } catch (Exception e) {
 
             LOGGER.error("<<<<<<<<<<<<<<<<<<<<<< ScriptTaskState[{}], ScriptTaskState[{}] Execute failed.",
                     state.getName(), scriptType, e);

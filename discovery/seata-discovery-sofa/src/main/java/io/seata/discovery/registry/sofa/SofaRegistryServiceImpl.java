@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nullable;
+
 import com.alipay.sofa.registry.client.api.RegistryClient;
 import com.alipay.sofa.registry.client.api.RegistryClientConfig;
 import com.alipay.sofa.registry.client.api.SubscriberDataObserver;
@@ -76,9 +78,9 @@ public class SofaRegistryServiceImpl implements RegistryService<SubscriberDataOb
         = new ConcurrentHashMap<>();
     private static final ConcurrentMap<String, List<InetSocketAddress>> CLUSTER_ADDRESS_MAP = new ConcurrentHashMap<>();
     private static Properties registryProps;
-    private static volatile RegistryClient registryClient;
+    private static RegistryClient registryClient;
 
-    private static volatile SofaRegistryServiceImpl instance;
+    private static SofaRegistryServiceImpl instance;
 
     private SofaRegistryServiceImpl() {
     }
@@ -88,14 +90,10 @@ public class SofaRegistryServiceImpl implements RegistryService<SubscriberDataOb
      *
      * @return the instance
      */
-    static SofaRegistryServiceImpl getInstance() {
+    static synchronized SofaRegistryServiceImpl getInstance() {
         if (instance == null) {
-            synchronized (SofaRegistryServiceImpl.class) {
-                if (instance == null) {
-                    registryProps = getNamingProperties();
-                    instance = new SofaRegistryServiceImpl();
-                }
-            }
+            registryProps = getNamingProperties();
+            instance = new SofaRegistryServiceImpl();
         }
         return instance;
     }
@@ -117,25 +115,21 @@ public class SofaRegistryServiceImpl implements RegistryService<SubscriberDataOb
         getRegistryInstance().unregister(clusterName, registryProps.getProperty(PRO_GROUP_KEY), RegistryType.PUBLISHER);
     }
 
-    private RegistryClient getRegistryInstance() {
+    private synchronized RegistryClient getRegistryInstance() {
         if (registryClient == null) {
-            synchronized (SofaRegistryServiceImpl.class) {
-                if (registryClient == null) {
-                    String address = registryProps.getProperty(PRO_SERVER_ADDR_KEY);
-                    final String portStr = StringUtils.substringAfter(address, HOST_SEPERATOR);
+            String address = registryProps.getProperty(PRO_SERVER_ADDR_KEY);
+            final String portStr = StringUtils.substringAfter(address, HOST_SEPERATOR);
 
-                    RegistryClientConfig config = DefaultRegistryClientConfigBuilder.start()
-                        .setAppName(getApplicationName())
-                        .setDataCenter(registryProps.getProperty(PRO_DATACENTER_KEY))
-                        .setZone(registryProps.getProperty(PRO_REGION_KEY))
-                        .setRegistryEndpoint(StringUtils.substringBefore(address, HOST_SEPERATOR))
-                        .setRegistryEndpointPort(Integer.parseInt(portStr)).build();
+            RegistryClientConfig config = DefaultRegistryClientConfigBuilder.start()
+                .setAppName(getApplicationName())
+                .setDataCenter(registryProps.getProperty(PRO_DATACENTER_KEY))
+                .setZone(registryProps.getProperty(PRO_REGION_KEY))
+                .setRegistryEndpoint(StringUtils.substringBefore(address, HOST_SEPERATOR))
+                .setRegistryEndpointPort(Integer.parseInt(portStr)).build();
 
-                    DefaultRegistryClient result = new DefaultRegistryClient(config);
-                    result.init();
-                    registryClient = result;
-                }
-            }
+            DefaultRegistryClient result = new DefaultRegistryClient(config);
+            result.init();
+            registryClient = result;
         }
         return registryClient;
     }
@@ -157,6 +151,7 @@ public class SofaRegistryServiceImpl implements RegistryService<SubscriberDataOb
     }
 
     @Override
+    @Nullable
     public List<InetSocketAddress> lookup(String key) throws Exception {
         String clusterName = getServiceGroup(key);
         if (clusterName == null) {

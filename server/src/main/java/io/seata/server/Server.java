@@ -96,7 +96,7 @@ public class Server {
 
         try {
             nettyRemotingServer.init();
-        } catch (Throwable e) {
+        } catch (RuntimeException e) {
             logger.error("nettyServer init error:{}", e.getMessage(), e);
             System.exit(-1);
         }

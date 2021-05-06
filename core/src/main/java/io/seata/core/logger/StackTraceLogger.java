@@ -31,6 +31,9 @@ import static io.seata.common.DefaultValues.DEFAULT_LOG_EXCEPTION_RATE;
  */
 public final class StackTraceLogger {
 
+    private StackTraceLogger() {
+    }
+
     private static final Configuration CONFIG = ConfigurationFactory.getInstance();
 
     private static final String STACK_TRACE_LOGGER_PREFIX = "[stacktrace]";

@@ -22,7 +22,10 @@ import static io.seata.common.DefaultValues.SERVER_DEFAULT_PORT;
 /**
  * @author wang.liang
  */
-public class PortHelper {
+public final class PortHelper {
+
+    private PortHelper() {
+    }
 
     public static int getPort(String[] args) {
         if (ContainerHelper.isRunningInContainer()) {

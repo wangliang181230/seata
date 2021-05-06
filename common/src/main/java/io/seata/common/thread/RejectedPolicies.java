@@ -25,6 +25,9 @@ import java.util.concurrent.RejectedExecutionHandler;
  */
 public final class RejectedPolicies {
 
+    private RejectedPolicies() {
+    }
+
     /**
      * when rejected happened ,add the new task and run the oldest task
      *

@@ -61,7 +61,7 @@ public class TCCResource implements Resource {
 
     @Override
     public String getResourceId() {
-        return actionName;
+        return getActionName();
     }
 
     @Override

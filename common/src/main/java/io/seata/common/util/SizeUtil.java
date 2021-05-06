@@ -18,8 +18,13 @@ package io.seata.common.util;
 /**
  * @author chd
  */
-public class SizeUtil {
+public final class SizeUtil {
+
+    private SizeUtil() {
+    }
+
     private static final long RADIX = 1024;
+
     /**
      * case size to byte length
      * example:

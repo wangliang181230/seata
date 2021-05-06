@@ -58,7 +58,7 @@ public class OracleUndoUpdateExecutor extends AbstractUndoExecutor {
             Collectors.joining(", "));
 
         List<String> pkNameList = getOrderedPkList(beforeImage, row, JdbcConstants.ORACLE).stream().map(
-            e -> e.getName()).collect(Collectors.toList());
+                Field::getName).collect(Collectors.toList());
         String whereSql = SqlGenerateUtils.buildWhereConditionByPKs(pkNameList, JdbcConstants.ORACLE);
 
         return String.format(UPDATE_SQL_TEMPLATE, sqlUndoLog.getTableName(), updateColumns, whereSql);

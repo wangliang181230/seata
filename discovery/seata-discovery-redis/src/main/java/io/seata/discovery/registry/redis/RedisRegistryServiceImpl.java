@@ -28,6 +28,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import io.seata.common.exception.ShouldNeverHappenException;
 import io.seata.common.thread.NamedThreadFactory;
 import io.seata.common.util.NetUtil;
@@ -55,13 +57,14 @@ public class RedisRegistryServiceImpl implements RegistryService<RedisListener> 
     private static final String REDIS_FILEKEY_PREFIX = "registry.redis.";
     private static final String DEFAULT_CLUSTER = "default";
     private static final String REGISTRY_CLUSTER_KEY = "cluster";
-    private String clusterName;
     private static final String REDIS_DB = "db";
     private static final String REDIS_PASSWORD = "password";
     private static final ConcurrentMap<String, List<RedisListener>> LISTENER_SERVICE_MAP = new ConcurrentHashMap<>();
     private static final ConcurrentMap<String, Set<InetSocketAddress>> CLUSTER_ADDRESS_MAP = new ConcurrentHashMap<>();
-    private static volatile RedisRegistryServiceImpl instance;
-    private static volatile JedisPool jedisPool;
+    private static RedisRegistryServiceImpl instance;
+
+    private String clusterName;
+    private JedisPool jedisPool;
 
     private ExecutorService threadPoolExecutor = new ScheduledThreadPoolExecutor(1,
         new NamedThreadFactory("RedisRegistryService", 1));
@@ -126,13 +129,9 @@ public class RedisRegistryServiceImpl implements RegistryService<RedisListener> 
      *
      * @return the instance
      */
-    static RedisRegistryServiceImpl getInstance() {
+    static synchronized RedisRegistryServiceImpl getInstance() {
         if (instance == null) {
-            synchronized (RedisRegistryServiceImpl.class) {
-                if (instance == null) {
-                    instance = new RedisRegistryServiceImpl();
-                }
-            }
+            instance = new RedisRegistryServiceImpl();
         }
         return instance;
     }
@@ -178,6 +177,7 @@ public class RedisRegistryServiceImpl implements RegistryService<RedisListener> 
     }
 
     @Override
+    @Nullable
     public List<InetSocketAddress> lookup(String key) {
         String clusterName = getServiceGroup(key);
         if (clusterName == null) {
@@ -241,7 +241,7 @@ public class RedisRegistryServiceImpl implements RegistryService<RedisListener> 
     }
 
     private String getRedisRegistryKey() {
-        return REDIS_FILEKEY_PREFIX + clusterName;
+        return REDIS_FILEKEY_PREFIX + this.clusterName;
     }
 
     private String getRedisAddrFileKey() {

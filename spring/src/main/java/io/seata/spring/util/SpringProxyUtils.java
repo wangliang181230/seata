@@ -79,7 +79,7 @@ public class SpringProxyUtils {
      * @return the advised support
      * @throws Exception the exception
      */
-    public static AdvisedSupport getAdvisedSupport(Object proxy) throws Exception {
+    public static AdvisedSupport getAdvisedSupport(Object proxy) throws NoSuchFieldException {
         Field h;
         if (AopUtils.isJdkDynamicProxy(proxy)) {
             h = proxy.getClass().getSuperclass().getDeclaredField("h");

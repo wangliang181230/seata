@@ -32,7 +32,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author diguage
  */
-public class Lz4Util {
+public final class Lz4Util {
+
+    private Lz4Util() {
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Lz4Util.class);
     private static final int ARRAY_SIZE = 1024;
 

@@ -49,9 +49,7 @@ public class RMHandlerAT extends AbstractRMHandler {
             return;
         }
         Date logCreatedSave = getLogCreated(request.getSaveDays());
-        Connection conn = null;
-        try {
-            conn = dataSourceProxy.getPlainConnection();
+        try(Connection conn = dataSourceProxy.getPlainConnection()) {
             int deleteRows = 0;
             do {
                 try {
@@ -69,14 +67,6 @@ public class RMHandlerAT extends AbstractRMHandler {
             } while (deleteRows == LIMIT_ROWS);
         } catch (Exception e) {
             LOGGER.error("Failed to delete expired undo_log, error:{}", e.getMessage(), e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException closeEx) {
-                    LOGGER.warn("Failed to close JDBC resource while deleting undo_log ", closeEx);
-                }
-            }
         }
     }
 

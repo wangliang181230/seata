@@ -17,6 +17,7 @@ package io.seata.config;
 
 import java.time.Duration;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * The interface Configuration.
@@ -282,6 +283,7 @@ public interface Configuration {
      * @param dataId the data id
      * @return the config listeners
      */
+    @Nullable
     Set<ConfigurationChangeListener> getConfigListeners(String dataId);
 
     /**

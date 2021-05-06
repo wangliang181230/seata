@@ -28,7 +28,10 @@ import java.util.Set;
  *
  * @author zhangsen
  */
-public class ReflectionUtil {
+public final class ReflectionUtil {
+
+    private ReflectionUtil() {
+    }
 
     /**
      * The constant MAX_NEST_DEPTH.

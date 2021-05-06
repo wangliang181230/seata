@@ -22,7 +22,10 @@ import io.seata.common.exception.ShouldNeverHappenException;
  *
  * @author sharajava
  */
-public class UndoExecutorFactory {
+public final class UndoExecutorFactory {
+
+    private UndoExecutorFactory() {
+    }
 
     /**
      * Gets undo executor.

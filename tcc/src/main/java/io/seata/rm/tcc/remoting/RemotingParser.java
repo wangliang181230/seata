@@ -15,6 +15,8 @@
  */
 package io.seata.rm.tcc.remoting;
 
+import javax.annotation.Nullable;
+
 import io.seata.common.exception.FrameworkException;
 
 /**
@@ -62,6 +64,7 @@ public interface RemotingParser {
      * @return service desc
      * @throws FrameworkException the framework exception
      */
+    @Nullable
     RemotingDesc getServiceDesc(Object bean, String beanName) throws FrameworkException;
 
     /**

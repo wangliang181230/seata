@@ -45,12 +45,6 @@ public class TCCResourceManager extends AbstractResourceManager {
     private Map<String, Resource> tccResourceCache = new ConcurrentHashMap<>();
 
     /**
-     * Instantiates a new Tcc resource manager.
-     */
-    public TCCResourceManager() {
-    }
-
-    /**
      * registry TCC resource
      *
      * @param resource The resource to be managed.
@@ -107,9 +101,9 @@ public class TCCResourceManager extends AbstractResourceManager {
                 result = true;
             }
             return result ? BranchStatus.PhaseTwo_Committed : BranchStatus.PhaseTwo_CommitFailed_Retryable;
-        } catch (Throwable t) {
+        } catch (Exception e) {
             String msg = String.format("commit TCC resource error, resourceId: %s, xid: %s.", resourceId, xid);
-            LOGGER.error(msg, t);
+            LOGGER.error(msg, e);
             return BranchStatus.PhaseTwo_CommitFailed_Retryable;
         }
     }
@@ -154,9 +148,8 @@ public class TCCResourceManager extends AbstractResourceManager {
                 result = true;
             }
             return result ? BranchStatus.PhaseTwo_Rollbacked : BranchStatus.PhaseTwo_RollbackFailed_Retryable;
-        } catch (Throwable t) {
-            String msg = String.format("rollback TCC resource error, resourceId: %s, xid: %s.", resourceId, xid);
-            LOGGER.error(msg, t);
+        } catch (Exception e) {
+            LOGGER.error("rollback TCC resource error, resourceId: {}, xid: {}.", resourceId, xid, e);
             return BranchStatus.PhaseTwo_RollbackFailed_Retryable;
         }
     }

@@ -31,13 +31,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author slievrly
  */
-public class NetUtil {
+public final class NetUtil {
+
+    private NetUtil() {
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(NetUtil.class);
     private static final String LOCALHOST = "127.0.0.1";
 
     private static final String ANY_HOST = "0.0.0.0";
 
-    private static volatile InetAddress LOCAL_ADDRESS = null;
+    private static InetAddress localAddress = null;
 
     private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
 
@@ -139,12 +143,12 @@ public class NetUtil {
      * @return the local address
      */
     public static InetAddress getLocalAddress() {
-        if (LOCAL_ADDRESS != null) {
-            return LOCAL_ADDRESS;
+        if (NetUtil.localAddress != null) {
+            return NetUtil.localAddress;
         }
-        InetAddress localAddress = getLocalAddress0();
-        LOCAL_ADDRESS = localAddress;
-        return localAddress;
+        InetAddress localAddr = getLocalAddress0();
+        NetUtil.localAddress = localAddr;
+        return localAddr;
     }
 
     private static InetAddress getLocalAddress0() {
@@ -154,8 +158,8 @@ public class NetUtil {
             if (isValidAddress(localAddress)) {
                 return localAddress;
             }
-        } catch (Throwable e) {
-            LOGGER.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to retrieving ip address: {}", e.getMessage(), e);
         }
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -170,16 +174,16 @@ public class NetUtil {
                                 if (isValidAddress(address)) {
                                     return address;
                                 }
-                            } catch (Throwable e) {
-                                LOGGER.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
+                            } catch (Exception e) {
+                                LOGGER.warn("Failed to retrieving ip address: {}", e.getMessage(), e);
                             }
                         }
-                    } catch (Throwable e) {
-                        LOGGER.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
+                    } catch (Exception e) {
+                        LOGGER.warn("Failed to retrieving ip address: {}", e.getMessage(), e);
                     }
                 }
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOGGER.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
         }
         LOGGER.error("Could not get local host ip address, will use 127.0.0.1 instead.");
@@ -243,7 +247,7 @@ public class NetUtil {
             try {
                 return InetAddress.getByName(ip).getHostAddress();
             } catch (UnknownHostException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Failed to get host address", e);
             }
         }
     }

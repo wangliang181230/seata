@@ -32,8 +32,9 @@ import org.springframework.beans.BeansException;
  */
 public class SeataAutoDataSourceProxyCreator extends AbstractAutoProxyCreator {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeataAutoDataSourceProxyCreator.class);
+
     private final List<String> excludes;
-    private final Advisor advisor;
+    private final transient Advisor advisor;
 
     public SeataAutoDataSourceProxyCreator(boolean useJdkProxy, String[] excludes, String dataSourceProxyMode) {
         this.excludes = Arrays.asList(excludes);

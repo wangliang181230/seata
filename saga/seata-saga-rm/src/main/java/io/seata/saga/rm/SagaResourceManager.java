@@ -48,12 +48,6 @@ public class SagaResourceManager extends AbstractResourceManager {
     private Map<String, Resource> sagaResourceCache = new ConcurrentHashMap<>();
 
     /**
-     * Instantiates a new saga resource manager.
-     */
-    public SagaResourceManager() {
-    }
-
-    /**
      * registry saga resource
      *
      * @param resource The resource to be managed.

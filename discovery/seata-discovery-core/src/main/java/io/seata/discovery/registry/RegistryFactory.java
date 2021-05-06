@@ -27,22 +27,21 @@ import io.seata.config.ConfigurationKeys;
  *
  * @author slievrly
  */
-public class RegistryFactory {
+public final class RegistryFactory {
 
-    private static volatile RegistryService instance = null;
+    private RegistryFactory() {
+    }
+
+    private static RegistryService instance = null;
 
     /**
      * Gets instance.
      *
      * @return the instance
      */
-    public static RegistryService getInstance() {
+    public static synchronized RegistryService getInstance() {
         if (instance == null) {
-            synchronized (RegistryFactory.class) {
-                if (instance == null) {
-                    instance = buildRegistryService();
-                }
-            }
+            instance = buildRegistryService();
         }
         return instance;
     }

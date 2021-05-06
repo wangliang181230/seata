@@ -31,7 +31,7 @@ public class MessageFuture {
     private RpcMessage requestMessage;
     private long timeout;
     private long start = System.currentTimeMillis();
-    private transient CompletableFuture<Object> origin = new CompletableFuture<>();
+    private CompletableFuture<Object> origin = new CompletableFuture<>();
 
     /**
      * Is timeout boolean.
@@ -53,7 +53,7 @@ public class MessageFuture {
      */
     public Object get(long timeout, TimeUnit unit) throws TimeoutException,
         InterruptedException {
-        Object result = null;
+        Object result;
         try {
             result = origin.get(timeout, unit);
         } catch (ExecutionException e) {

@@ -20,11 +20,14 @@ package io.seata.common;
  *
  * @author slievrly
  */
-public class XID {
+public final class XID {
 
     private static int port;
 
     private static String ipAddress;
+
+    private XID() {
+    }
 
     /**
      * Sets port.
@@ -65,7 +68,7 @@ public class XID {
             return -1;
         }
 
-        int idx = xid.lastIndexOf(":");
+        int idx = xid.lastIndexOf(':');
         return Long.parseLong(xid.substring(idx + 1));
     }
 

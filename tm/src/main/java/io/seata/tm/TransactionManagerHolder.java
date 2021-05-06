@@ -32,14 +32,14 @@ public class TransactionManagerHolder {
 
     private static class SingletonHolder {
 
-        private static TransactionManager INSTANCE = null;
+        private static TransactionManager instance = null;
 
         static {
             try {
-                INSTANCE = EnhancedServiceLoader.load(TransactionManager.class);
-                LOGGER.info("TransactionManager Singleton {}", INSTANCE);
-            } catch (Throwable anyEx) {
-                LOGGER.error("Failed to load TransactionManager Singleton! ", anyEx);
+                instance = EnhancedServiceLoader.load(TransactionManager.class);
+                LOGGER.info("TransactionManager Singleton {}", instance);
+            } catch (RuntimeException e) {
+                LOGGER.error("Failed to load TransactionManager Singleton! ", e);
             }
         }
     }
@@ -50,10 +50,10 @@ public class TransactionManagerHolder {
      * @return the transaction manager
      */
     public static TransactionManager get() {
-        if (SingletonHolder.INSTANCE == null) {
+        if (SingletonHolder.instance == null) {
             throw new ShouldNeverHappenException("TransactionManager is NOT ready!");
         }
-        return SingletonHolder.INSTANCE;
+        return SingletonHolder.instance;
     }
 
     /**
@@ -62,7 +62,7 @@ public class TransactionManagerHolder {
      * @param mock commonly used for test mocking
      */
     public static void set(TransactionManager mock) {
-        SingletonHolder.INSTANCE = mock;
+        SingletonHolder.instance = mock;
     }
 
     private TransactionManagerHolder() {

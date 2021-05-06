@@ -55,10 +55,8 @@ public class RegisterTMResponseConvertor implements PbConvertor<RegisterTMRespon
             .setAbstractResultMessage(abstractResultMessageProto).setExtraData(extraData == null ? "" : extraData)
             .setVersion(registerTMResponse.getVersion()).setIdentified(registerTMResponse.isIdentified()).build();
 
-        RegisterTMResponseProto result = RegisterTMResponseProto.newBuilder().setAbstractIdentifyResponse(
+        return RegisterTMResponseProto.newBuilder().setAbstractIdentifyResponse(
             abstractIdentifyResponseProto).build();
-
-        return result;
     }
 
     @Override

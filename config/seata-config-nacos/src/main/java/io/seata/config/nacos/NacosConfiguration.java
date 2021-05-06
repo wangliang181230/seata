@@ -100,7 +100,7 @@ public class NacosConfiguration extends AbstractConfiguration {
                 configService = NacosFactory.createConfigService(getConfigProperties());
                 initSeataConfig();
             } catch (NacosException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("init configService Failed", e);
             }
         }
     }

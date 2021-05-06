@@ -24,7 +24,10 @@ import io.seata.core.constants.ConfigurationKeys;
  *
  * @author sharajava
  */
-public class LockerManagerFactory {
+public final class LockerManagerFactory {
+
+    private LockerManagerFactory() {
+    }
 
     /**
      * the lock manager

@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * The type String utils.
@@ -138,6 +140,7 @@ public class StringUtils {
      * @param is the is
      * @return the byte array
      */
+    @Nullable
     public static byte[] inputStream2Bytes(InputStream is) {
         if (is == null) {
             return null;
@@ -160,6 +163,7 @@ public class StringUtils {
      * @param obj the obj
      * @return string string
      */
+    @Nonnull
     public static String toString(Object obj) {
         if (obj == null) {
             return "null";
@@ -215,7 +219,7 @@ public class StringUtils {
                 } else {
                     sb.append(toString(f));
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             sb.append(";");
         }

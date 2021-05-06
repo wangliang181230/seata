@@ -62,7 +62,7 @@ public class MySQLUndoUpdateExecutor extends AbstractUndoExecutor {
             field -> ColumnUtils.addEscape(field.getName(), JdbcConstants.MYSQL) + " = ?").collect(
             Collectors.joining(", "));
 
-        List<String> pkNameList = getOrderedPkList(beforeImage, row, JdbcConstants.MYSQL).stream().map(e -> e.getName())
+        List<String> pkNameList = getOrderedPkList(beforeImage, row, JdbcConstants.MYSQL).stream().map(Field::getName)
             .collect(Collectors.toList());
         String whereSql = SqlGenerateUtils.buildWhereConditionByPKs(pkNameList, JdbcConstants.MYSQL);
 

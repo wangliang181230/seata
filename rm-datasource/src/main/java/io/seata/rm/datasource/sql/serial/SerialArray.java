@@ -18,7 +18,6 @@ package io.seata.rm.datasource.sql.serial;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialClob;
 import javax.sql.rowset.serial.SerialDatalink;
-import javax.sql.rowset.serial.SerialException;
 import javax.sql.rowset.serial.SerialJavaObject;
 import java.net.URL;
 import java.sql.Blob;
@@ -45,7 +44,7 @@ public class SerialArray implements java.sql.Array, java.io.Serializable {
     public SerialArray() {
     }
 
-    public SerialArray(java.sql.Array array) throws SerialException, SQLException {
+    public SerialArray(java.sql.Array array) throws SQLException {
         if (array == null) {
             throw new SQLException("Cannot instantiate a SerialArray " +
                     "object with a null Array object");

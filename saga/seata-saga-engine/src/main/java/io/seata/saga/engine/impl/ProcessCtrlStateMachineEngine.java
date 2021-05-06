@@ -290,8 +290,8 @@ public class ProcessCtrlStateMachineEngine implements StateMachineEngine {
 
                 String next = null;
                 State state = stateMachineInstance.getStateMachine().getState(EngineUtils.getOriginStateName(lastForwardState));
-                if (state != null && state instanceof AbstractTaskState) {
-                    next = ((AbstractTaskState)state).getNext();
+                if (state instanceof AbstractTaskState) {
+                    next = state.getNext();
                 }
                 if (StringUtils.isEmpty(next)) {
                     LOGGER.warn(
@@ -316,7 +316,7 @@ public class ProcessCtrlStateMachineEngine implements StateMachineEngine {
             stateMachineInstance.setRunning(true);
 
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Operation [forward] started  stateMachineInstance[id:" + stateMachineInstance.getId() + "]");
+                LOGGER.info("Operation [forward] started  stateMachineInstance[id:{}]", stateMachineInstance.getId());
             }
 
             if (stateMachineInstance.getStateMachine().isPersist()) {
@@ -334,8 +334,7 @@ public class ProcessCtrlStateMachineEngine implements StateMachineEngine {
                 stateMachineConfig.getProcessCtrlEventPublisher().publish(context);
             }
         } catch (EngineExecutionException e) {
-            LOGGER.error("Operation [forward] failed", e);
-            throw e;
+            throw new EngineExecutionException(e, "Operation [forward] failed");
         }
         return stateMachineInstance;
     }
@@ -514,7 +513,7 @@ public class ProcessCtrlStateMachineEngine implements StateMachineEngine {
         stateMachineInstance.setRunning(true);
 
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Operation [compensate] start.  stateMachineInstance[id:" + stateMachineInstance.getId() + "]");
+            LOGGER.info("Operation [compensate] start.  stateMachineInstance[id:{}]", stateMachineInstance.getId());
         }
 
         if (stateMachineInstance.getStateMachine().isPersist()) {
@@ -533,10 +532,8 @@ public class ProcessCtrlStateMachineEngine implements StateMachineEngine {
             } else {
                 stateMachineConfig.getProcessCtrlEventPublisher().publish(context);
             }
-
         } catch (EngineExecutionException e) {
-            LOGGER.error("Operation [compensate] failed", e);
-            throw e;
+            throw new EngineExecutionException(e, "Operation [compensate] failed");
         }
 
         return stateMachineInstance;

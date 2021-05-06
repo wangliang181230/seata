@@ -17,6 +17,8 @@ package io.seata.config.springcloud;
 
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import io.seata.common.holder.ObjectHolder;
 import io.seata.common.util.StringUtils;
 import io.seata.config.AbstractConfiguration;
@@ -27,23 +29,20 @@ import org.springframework.context.ApplicationContext;
 
 public class SpringCloudConfiguration extends AbstractConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpringCloudConfiguration.class);
+
     private static final String CONFIG_TYPE = "SpringCloudConfig";
-    private static volatile SpringCloudConfiguration instance;
     private static final String PREFIX = "seata.";
 
-    public static SpringCloudConfiguration getInstance() {
+    private static SpringCloudConfiguration instance;
+
+    public static synchronized SpringCloudConfiguration getInstance() {
         if (instance == null) {
-            synchronized (SpringCloudConfiguration.class) {
-                if (instance == null) {
-                    instance = new SpringCloudConfiguration();
-                }
-            }
+            instance = new SpringCloudConfiguration();
         }
         return instance;
     }
 
     private SpringCloudConfiguration() {
-
     }
 
     @Override
@@ -86,6 +85,7 @@ public class SpringCloudConfiguration extends AbstractConfiguration {
     }
 
     @Override
+    @Nullable
     public Set<ConfigurationChangeListener> getConfigListeners(String dataId) {
         return null;
     }

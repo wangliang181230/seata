@@ -113,7 +113,7 @@ public class ProtocolV1Encoder extends MessageToByteEncoder {
             } else {
                 throw new UnsupportedOperationException("Not support this class:" + msg.getClass());
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOGGER.error("Encode request error!", e);
         }
     }

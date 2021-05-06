@@ -15,6 +15,8 @@
  */
 package io.seata.rm.tcc.remoting.parser;
 
+import javax.annotation.Nullable;
+
 import io.seata.common.exception.FrameworkException;
 import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.tcc.remoting.Protocols;
@@ -65,6 +67,7 @@ public class HSFRemotingParser extends AbstractedRemotingParser {
     }
 
     @Override
+    @Nullable
     public RemotingDesc getServiceDesc(Object bean, String beanName) throws FrameworkException {
         if (!this.isRemoting(bean, beanName)) {
             return null;
@@ -91,7 +94,7 @@ public class HSFRemotingParser extends AbstractedRemotingParser {
                 Object metadata = ReflectionUtil.invokeMethod(consumerBean, "getMetadata");
 
                 String interfaceClassName = (String) ReflectionUtil.invokeMethod(metadata, "getInterfaceName");
-                Class<?> interfaceClass = (Class<?>) Class.forName(interfaceClassName);
+                Class<?> interfaceClass = Class.forName(interfaceClassName);
                 String uniqueId = (String) ReflectionUtil.invokeMethod(metadata, "getVersion");
                 String group = (String) ReflectionUtil.invokeMethod(metadata, "getGroup");
                 RemotingDesc serviceBeanDesc = new RemotingDesc();
@@ -105,8 +108,8 @@ public class HSFRemotingParser extends AbstractedRemotingParser {
                 serviceBeanDesc.setProtocol(Protocols.HSF);
                 return serviceBeanDesc;
             }
-        } catch (Throwable t) {
-            throw new FrameworkException(t);
+        } catch (Exception e) {
+            throw new FrameworkException(e);
         }
         return null;
     }

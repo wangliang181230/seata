@@ -35,7 +35,7 @@ public class NettyClientConfig extends NettyBaseConfig {
     private int clientSocketSndBufSize = 153600;
     private int clientSocketRcvBufSize = 153600;
     private int clientWorkerThreads = WORKER_THREAD_SIZE;
-    private final Class<? extends Channel> clientChannelClazz = CLIENT_CHANNEL_CLAZZ;
+    private static final Class<? extends Channel> clientChannelClazz = CLIENT_CHANNEL_CLAZZ;
     private int perHostMaxConn = 2;
     private static final int PER_HOST_MIN_CONN = 2;
     private int pendingConnSize = Integer.MAX_VALUE;

@@ -15,6 +15,8 @@
  */
 package io.seata.rm.tcc.remoting.parser;
 
+import javax.annotation.Nullable;
+
 import io.seata.common.exception.FrameworkException;
 import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.tcc.remoting.Protocols;
@@ -42,6 +44,7 @@ public class DubboRemotingParser extends AbstractedRemotingParser {
     }
 
     @Override
+    @Nullable
     public RemotingDesc getServiceDesc(Object bean, String beanName) throws FrameworkException {
         if (!this.isRemoting(bean, beanName)) {
             return null;

@@ -47,7 +47,10 @@ import static io.seata.common.Constants.UNDOLOG_DELETE;
  *
  * @author sharajava
  */
-public class SessionHolder {
+public final class SessionHolder {
+
+    private SessionHolder() {
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionHolder.class);
 
@@ -163,7 +166,7 @@ public class SessionHolder {
                             queueToAsyncCommitting(globalSession);
                         }
                         break;
-                    default: {
+                    default:
                         if (storeMode == StoreMode.FILE) {
                             lockBranchSessions(globalSession.getSortedBranches());
 
@@ -186,7 +189,6 @@ public class SessionHolder {
                             }
                         }
                         break;
-                    }
                 }
             }
             for (GlobalSession globalSession : removeGlobalSessions) {

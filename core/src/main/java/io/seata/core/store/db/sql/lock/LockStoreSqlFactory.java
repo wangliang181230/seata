@@ -27,9 +27,12 @@ import java.util.Map;
  * @author zhangchenghui.dev@gmail.com
  * @since 1.2.0
  */
-public class LockStoreSqlFactory {
+public final class LockStoreSqlFactory {
 
-    private static Map<String/*dbType*/, LockStoreSql> LOCK_STORE_SQL_MAP = Maps.newConcurrentMap();
+    private LockStoreSqlFactory() {
+    }
+
+    private static final Map<String/*dbType*/, LockStoreSql> LOCK_STORE_SQL_MAP = Maps.newConcurrentMap();
 
     /**
      * get the lock store sql

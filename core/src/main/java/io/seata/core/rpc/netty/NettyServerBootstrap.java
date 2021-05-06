@@ -156,7 +156,6 @@ public class NettyServerBootstrap implements RemotingBootstrap {
         } catch (Exception exx) {
             throw new RuntimeException(exx);
         }
-
     }
 
     @Override

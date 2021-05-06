@@ -15,7 +15,6 @@
  */
 package io.seata.rm.datasource.undo.oracle;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -59,11 +58,10 @@ public class OracleUndoLogManager extends AbstractUndoLogManager {
                 LOGGER.debug("batch delete undo log size {}", deleteRows);
             }
             return deleteRows;
+        } catch (SQLException e) {
+            throw e;
         } catch (Exception e) {
-            if (!(e instanceof SQLException)) {
-                e = new SQLException(e);
-            }
-            throw (SQLException) e;
+            throw new SQLException(e);
         }
     }
 
@@ -89,11 +87,10 @@ public class OracleUndoLogManager extends AbstractUndoLogManager {
             pst.setBytes(4, undoLogContent);
             pst.setInt(5, state.getValue());
             pst.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         } catch (Exception e) {
-            if (!(e instanceof SQLException)) {
-                e = new SQLException(e);
-            }
-            throw (SQLException) e;
+            throw new SQLException(e);
         }
     }
 

@@ -59,42 +59,40 @@ public class ResourceManagerXA extends AbstractDataSourceCacheResourceManager {
     }
 
     private BranchStatus finishBranch(boolean committed, BranchType branchType, String xid, long branchId, String resourceId,
-                                       String applicationData) throws TransactionException {
+                                       String applicationData) {
         XAXid xaBranchXid = XAXidBuilder.build(xid, branchId);
         Resource resource = dataSourceCache.get(resourceId);
         if (resource instanceof AbstractDataSourceProxyXA) {
             try (ConnectionProxyXA connectionProxyXA = ((AbstractDataSourceProxyXA)resource).getConnectionForXAFinish(xaBranchXid)) {
                 if (committed) {
                     connectionProxyXA.xaCommit(xid, branchId, applicationData);
-                    LOGGER.info(xaBranchXid + " was committed.");
+                    LOGGER.info("{} was committed.", xaBranchXid);
                     return BranchStatus.PhaseTwo_Committed;
                 } else {
                     connectionProxyXA.xaRollback(xid, branchId, applicationData);
-                    LOGGER.info(xaBranchXid + " was rollbacked");
+                    LOGGER.info("{} was rollbacked", xaBranchXid);
                     return BranchStatus.PhaseTwo_Rollbacked;
                 }
             } catch (XAException | SQLException sqle) {
-                if (sqle instanceof XAException) {
-                    if (((XAException)sqle).errorCode == XAException.XAER_NOTA) {
-                        if (committed) {
-                            return BranchStatus.PhaseTwo_Committed;
-                        } else {
-                            return BranchStatus.PhaseTwo_Rollbacked;
-                        }
+                if (sqle instanceof XAException && ((XAException)sqle).errorCode == XAException.XAER_NOTA) {
+                    if (committed) {
+                        return BranchStatus.PhaseTwo_Committed;
+                    } else {
+                        return BranchStatus.PhaseTwo_Rollbacked;
                     }
                 }
                 if (committed) {
-                    LOGGER.info(xaBranchXid + " commit failed since " + sqle.getMessage(), sqle);
+                    LOGGER.info("{} commit failed since: {}", xaBranchXid, sqle.getMessage(), sqle);
                     // FIXME: case of PhaseTwo_CommitFailed_Unretryable
                     return BranchStatus.PhaseTwo_CommitFailed_Retryable;
                 } else {
-                    LOGGER.info(xaBranchXid + " rollback failed since " + sqle.getMessage(), sqle);
+                    LOGGER.info("{} rollback failed since: {}", xaBranchXid, sqle.getMessage(), sqle);
                     // FIXME: case of PhaseTwo_RollbackFailed_Unretryable
                     return BranchStatus.PhaseTwo_RollbackFailed_Retryable;
                 }
             }
         } else {
-            LOGGER.error("Unknown Resource for XA resource " + resourceId + " " + resource);
+            LOGGER.error("Unknown Resource for XA resource {} {}", resourceId, resource);
             if (committed) {
                 return BranchStatus.PhaseTwo_CommitFailed_Unretryable;
             } else {

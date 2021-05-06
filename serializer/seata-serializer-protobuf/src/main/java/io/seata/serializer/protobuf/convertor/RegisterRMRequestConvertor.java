@@ -37,11 +37,10 @@ public class RegisterRMRequestConvertor implements PbConvertor<RegisterRMRequest
             .setAbstractMessage(abstractMessage).setApplicationId(registerRMRequest.getApplicationId()).setExtraData(
                 extraData == null ? "" : extraData).setTransactionServiceGroup(
                 registerRMRequest.getTransactionServiceGroup()).setVersion(registerRMRequest.getVersion()).build();
-        RegisterRMRequestProto result = RegisterRMRequestProto.newBuilder().setAbstractIdentifyRequest(
+
+        return RegisterRMRequestProto.newBuilder().setAbstractIdentifyRequest(
             abstractIdentifyRequestProto).setResourceIds(
             registerRMRequest.getResourceIds() == null ? "" : registerRMRequest.getResourceIds()).build();
-
-        return result;
     }
 
     @Override

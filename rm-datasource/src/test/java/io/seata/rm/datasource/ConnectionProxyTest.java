@@ -40,11 +40,11 @@ import java.lang.reflect.Modifier;
 public class ConnectionProxyTest {
     private DataSourceProxy dataSourceProxy;
 
-    private final static String TEST_RESOURCE_ID = "testResourceId";
+    private static final String TEST_RESOURCE_ID = "testResourceId";
 
-    private final static String TEST_XID = "testXid";
+    private static final String TEST_XID = "testXid";
 
-    private final static String lockKey = "order:123";
+    private static final String lockKey = "order:123";
 
     private Field branchRollbackFlagField;
 

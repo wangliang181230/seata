@@ -37,16 +37,13 @@ public class ProcessControllerImpl implements ProcessController {
 
     @Override
     public void process(ProcessContext context) throws FrameworkException {
-
         try {
-
             businessProcessor.process(context);
 
             businessProcessor.route(context);
-
         } catch (FrameworkException fex) {
             throw fex;
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Unknown exception occurred, context = {}", context, ex);
             throw new FrameworkException(ex, "Unknown exception occurred", FrameworkErrorCode.UnknownAppError);
         }

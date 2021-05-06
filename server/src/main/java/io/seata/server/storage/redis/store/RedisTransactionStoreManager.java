@@ -16,6 +16,7 @@
 package io.seata.server.storage.redis.store;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -74,20 +77,16 @@ public class RedisTransactionStoreManager extends AbstractTransactionStoreManage
     /**the prefix of the global transaction status*/
     private static final String REDIS_SEATA_STATUS_PREFIX = "SEATA_STATUS_";
 
-    private static volatile RedisTransactionStoreManager instance;
+    private static RedisTransactionStoreManager instance;
 
     private static final String OK = "OK";
 
     /**
      * Get the instance.
      */
-    public static RedisTransactionStoreManager getInstance() {
+    public static synchronized RedisTransactionStoreManager getInstance() {
         if (instance == null) {
-            synchronized (RedisTransactionStoreManager.class) {
-                if (instance == null) {
-                    instance = new RedisTransactionStoreManager();
-                }
-            }
+            instance = new RedisTransactionStoreManager();
         }
         return instance;
     }
@@ -351,7 +350,7 @@ public class RedisTransactionStoreManager extends AbstractTransactionStoreManage
             List<List<String>> list = (List<List<String>>)(List)pipelined.syncAndReturnAll();
             List<String> xids = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(list)) {
-                xids = list.stream().flatMap(ll -> ll.stream()).collect(Collectors.toList());
+                xids = list.stream().flatMap(Collection::stream).collect(Collectors.toList());
             }
             List<GlobalSession> globalSessions = new ArrayList<>();
             xids.parallelStream().forEach(xid -> {
@@ -370,6 +369,7 @@ public class RedisTransactionStoreManager extends AbstractTransactionStoreManage
      * @return the global sessions
      */
     @Override
+    @Nullable
     public List<GlobalSession> readSession(SessionCondition sessionCondition) {
         List<GlobalSession> globalSessions = new ArrayList<>();
         if (StringUtils.isNotEmpty(sessionCondition.getXid())) {
@@ -448,7 +448,7 @@ public class RedisTransactionStoreManager extends AbstractTransactionStoreManage
         List<String> branchKeys = jedis.lrange(branchListKey, 0, -1);
         Pipeline pipeline = jedis.pipelined();
         if (CollectionUtils.isNotEmpty(branchKeys)) {
-            branchKeys.stream().forEachOrdered(branchKey -> pipeline.hgetAll(branchKey));
+            branchKeys.forEach(pipeline::hgetAll);
             List<Object> branchInfos = pipeline.syncAndReturnAll();
             for (Object branchInfo : branchInfos) {
                 if (branchInfo != null) {

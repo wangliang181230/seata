@@ -64,7 +64,10 @@ import io.seata.core.protocol.transaction.UndoLogDeleteRequest;
  * and {@code seata-serializer-kryo}, it will register some classes at startup time (for example {@link KryoSerializerFactory#create})
  * @author funkye
  */
-public class SerializerClassRegistry {
+public final class SerializerClassRegistry {
+
+    private SerializerClassRegistry() {
+    }
 
     private static final Map<Class<?>, Object> REGISTRATIONS = new LinkedHashMap<>();
 

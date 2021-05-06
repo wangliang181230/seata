@@ -15,7 +15,6 @@
  */
 package io.seata.server.coordinator;
 
-import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import io.seata.core.context.RootContext;
@@ -162,7 +161,7 @@ public abstract class AbstractCore implements Core {
             request.setApplicationData(branchSession.getApplicationData());
             request.setBranchType(branchSession.getBranchType());
             return branchCommitSend(request, globalSession, branchSession);
-        } catch (IOException | TimeoutException e) {
+        } catch (TimeoutException e) {
             throw new BranchTransactionException(FailedToSendBranchCommitRequest,
                     String.format("Send branch commit failed, xid = %s branchId = %s", branchSession.getXid(),
                             branchSession.getBranchId()), e);
@@ -170,7 +169,7 @@ public abstract class AbstractCore implements Core {
     }
 
     protected BranchStatus branchCommitSend(BranchCommitRequest request, GlobalSession globalSession,
-                                            BranchSession branchSession) throws IOException, TimeoutException {
+                                            BranchSession branchSession) throws TimeoutException {
         BranchCommitResponse response = (BranchCommitResponse) remotingServer.sendSyncRequest(
                 branchSession.getResourceId(), branchSession.getClientId(), request);
         return response.getBranchStatus();
@@ -186,7 +185,7 @@ public abstract class AbstractCore implements Core {
             request.setApplicationData(branchSession.getApplicationData());
             request.setBranchType(branchSession.getBranchType());
             return branchRollbackSend(request, globalSession, branchSession);
-        } catch (IOException | TimeoutException e) {
+        } catch (TimeoutException e) {
             throw new BranchTransactionException(FailedToSendBranchRollbackRequest,
                     String.format("Send branch rollback failed, xid = %s branchId = %s",
                             branchSession.getXid(), branchSession.getBranchId()), e);
@@ -194,7 +193,7 @@ public abstract class AbstractCore implements Core {
     }
 
     protected BranchStatus branchRollbackSend(BranchRollbackRequest request, GlobalSession globalSession,
-                                              BranchSession branchSession) throws IOException, TimeoutException {
+                                              BranchSession branchSession) throws TimeoutException {
         BranchRollbackResponse response = (BranchRollbackResponse) remotingServer.sendSyncRequest(
                 branchSession.getResourceId(), branchSession.getClientId(), request);
         return response.getBranchStatus();

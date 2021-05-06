@@ -27,7 +27,7 @@ import org.apache.commons.lang.ArrayUtils;
  * @author sharajava
  */
 public class IndexMeta {
-    private List<ColumnMeta> values = new ArrayList<ColumnMeta>();
+    private List<ColumnMeta> values = new ArrayList<>();
 
     private boolean nonUnique;
     private String indexQualifier;
@@ -37,12 +37,6 @@ public class IndexMeta {
     private String ascOrDesc;
     private int cardinality;
     private int ordinalPosition;
-
-    /**
-     * Instantiates a new Index meta.
-     */
-    public IndexMeta() {
-    }
 
     /**
      * Gets values.

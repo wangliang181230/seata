@@ -26,9 +26,12 @@ import io.seata.common.util.CollectionUtils;
  *
  * @author: Zhibei Hao
  */
-public class UndoExecutorHolderFactory {
+public final class UndoExecutorHolderFactory {
 
     private static final Map<String, UndoExecutorHolder> UNDO_EXECUTOR_HOLDER_MAP = new ConcurrentHashMap<>();
+
+    private UndoExecutorHolderFactory() {
+    }
 
     /**
      * Get UndoExecutorHolder by db type

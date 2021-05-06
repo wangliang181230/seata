@@ -27,9 +27,12 @@ import java.util.zip.ZipOutputStream;
  *
  * @author ph3636
  */
-public class ZipUtil {
+public final class ZipUtil {
 
     private static final int BUFFER_SIZE = 8192;
+
+    private ZipUtil() {
+    }
 
     public static byte[] compress(byte[] bytes) {
         if (bytes == null) {

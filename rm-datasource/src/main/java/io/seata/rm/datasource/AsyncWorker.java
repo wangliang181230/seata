@@ -97,7 +97,7 @@ public class AsyncWorker {
     void doBranchCommitSafely() {
         try {
             doBranchCommit();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOGGER.error("Exception occur when doing branch commit", e);
         }
     }

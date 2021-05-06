@@ -151,9 +151,9 @@ public class AnsiOutput {
             if ((consoleAvailable == null) && (System.console() == null)) {
                 return false;
             }
-            return !(OPERATING_SYSTEM_NAME.indexOf("win") >= 0);
+            return !OPERATING_SYSTEM_NAME.contains("win");
         }
-        catch (Throwable ex) {
+        catch (Exception ex) {
             return false;
         }
     }

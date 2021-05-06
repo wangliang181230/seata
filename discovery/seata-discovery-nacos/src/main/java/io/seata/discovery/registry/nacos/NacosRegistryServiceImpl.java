@@ -16,6 +16,7 @@
 package io.seata.discovery.registry.nacos;
 
 import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.listener.EventListener;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
@@ -35,6 +36,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 /**
  * The type Nacos registry service.
@@ -55,10 +57,10 @@ public class NacosRegistryServiceImpl implements RegistryService<EventListener> 
     private static final String USER_NAME = "username";
     private static final String PASSWORD = "password";
     private static final Configuration FILE_CONFIG = ConfigurationFactory.CURRENT_FILE_INSTANCE;
-    private static volatile NamingService naming;
+    private static NamingService naming;
     private static final ConcurrentMap<String, List<EventListener>> LISTENER_SERVICE_MAP = new ConcurrentHashMap<>();
     private static final ConcurrentMap<String, List<InetSocketAddress>> CLUSTER_ADDRESS_MAP = new ConcurrentHashMap<>();
-    private static volatile NacosRegistryServiceImpl instance;
+    private static NacosRegistryServiceImpl instance;
     private static final Object LOCK_OBJ = new Object();
 
     private NacosRegistryServiceImpl() {
@@ -69,13 +71,9 @@ public class NacosRegistryServiceImpl implements RegistryService<EventListener> 
      *
      * @return the instance
      */
-    static NacosRegistryServiceImpl getInstance() {
+    static synchronized NacosRegistryServiceImpl getInstance() {
         if (instance == null) {
-            synchronized (NacosRegistryServiceImpl.class) {
-                if (instance == null) {
-                    instance = new NacosRegistryServiceImpl();
-                }
-            }
+            instance = new NacosRegistryServiceImpl();
         }
         return instance;
     }
@@ -116,6 +114,7 @@ public class NacosRegistryServiceImpl implements RegistryService<EventListener> 
     }
 
     @Override
+    @Nullable
     public List<InetSocketAddress> lookup(String key) throws Exception {
         String clusterName = getServiceGroup(key);
         if (clusterName == null) {
@@ -161,15 +160,11 @@ public class NacosRegistryServiceImpl implements RegistryService<EventListener> 
      * Gets naming instance.
      *
      * @return the naming instance
-     * @throws Exception the exception
+     * @throws NacosException the exception
      */
-    public static NamingService getNamingInstance() throws Exception {
+    public static synchronized NamingService getNamingInstance() throws NacosException {
         if (naming == null) {
-            synchronized (NacosRegistryServiceImpl.class) {
-                if (naming == null) {
-                    naming = NacosFactory.createNamingService(getNamingProperties());
-                }
-            }
+            naming = NacosFactory.createNamingService(getNamingProperties());
         }
         return naming;
     }

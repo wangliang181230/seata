@@ -35,13 +35,12 @@ import org.slf4j.LoggerFactory;
 public class MotanTransactionFilter implements Filter {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotanTransactionFilter.class);
 
-    public MotanTransactionFilter(){}
     @Override
     public Response filter(final Caller<?> caller, final Request request) {
         String currentXid = RootContext.getXID();
         String requestXid = getRpcXid(request);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("xid in RootContext [" + currentXid + "] xid in Request [" + requestXid + "]");
+            LOGGER.debug("xid in RootContext [{}] xid in Request [{}]", currentXid, requestXid);
         }
         boolean bind = false;
         if (currentXid != null) {
@@ -50,7 +49,7 @@ public class MotanTransactionFilter implements Filter {
             RootContext.bind(requestXid);
             bind = true;
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("bind [" + requestXid + "] to RootContext");
+                LOGGER.debug("bind [{}] to RootContext", requestXid);
             }
 
         }
@@ -60,13 +59,13 @@ public class MotanTransactionFilter implements Filter {
             if (bind) {
                 String unbindXid = RootContext.unbind();
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("unbind [" + unbindXid + "] from RootContext");
+                    LOGGER.debug("unbind [{}] from RootContext", unbindXid);
                 }
                 if (!requestXid.equalsIgnoreCase(unbindXid)) {
-                    LOGGER.warn("xid has changed, during RPC from " + requestXid + " to " + unbindXid);
+                    LOGGER.warn("xid has changed, during RPC from {} to {}", requestXid, unbindXid);
                     if (unbindXid != null) {
                         RootContext.bind(unbindXid);
-                        LOGGER.warn("bind [" + unbindXid + "] back to RootContext");
+                        LOGGER.warn("bind [{}] back to RootContext", unbindXid);
                     }
                 }
             }

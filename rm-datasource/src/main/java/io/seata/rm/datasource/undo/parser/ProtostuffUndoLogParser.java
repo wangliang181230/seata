@@ -54,9 +54,9 @@ public class ProtostuffUndoLogParser implements UndoLogParser, Initialize {
 
     public static final String NAME = "protostuff";
 
-    private final DefaultIdStrategy idStrategy = (DefaultIdStrategy) RuntimeEnv.ID_STRATEGY;
+    private static final DefaultIdStrategy ID_STRATEGY = (DefaultIdStrategy) RuntimeEnv.ID_STRATEGY;
 
-    private final Schema<BranchUndoLog> schema = RuntimeSchema.getSchema(BranchUndoLog.class, idStrategy);
+    private final Schema<BranchUndoLog> schema = RuntimeSchema.getSchema(BranchUndoLog.class, ID_STRATEGY);
 
     @Override
     public void init() {
@@ -64,7 +64,7 @@ public class ProtostuffUndoLogParser implements UndoLogParser, Initialize {
             List<ProtostuffDelegate> delegates = EnhancedServiceLoader.loadAll(ProtostuffDelegate.class);
             if (CollectionUtils.isNotEmpty(delegates)) {
                 for (ProtostuffDelegate delegate : delegates) {
-                    idStrategy.registerDelegate(delegate.create());
+                    ID_STRATEGY.registerDelegate(delegate.create());
                     LOGGER.info("protostuff undo log parser load [{}].", delegate.getClass().getName());
                 }
             }
@@ -72,10 +72,10 @@ public class ProtostuffUndoLogParser implements UndoLogParser, Initialize {
             LOGGER.warn("ProtostuffDelegate not found children class.", e);
         }
 
-        idStrategy.registerDelegate(new DateDelegate());
-        idStrategy.registerDelegate(new TimestampDelegate());
-        idStrategy.registerDelegate(new SqlDateDelegate());
-        idStrategy.registerDelegate(new TimeDelegate());
+        ID_STRATEGY.registerDelegate(new DateDelegate());
+        ID_STRATEGY.registerDelegate(new TimestampDelegate());
+        ID_STRATEGY.registerDelegate(new SqlDateDelegate());
+        ID_STRATEGY.registerDelegate(new TimeDelegate());
     }
 
     @Override

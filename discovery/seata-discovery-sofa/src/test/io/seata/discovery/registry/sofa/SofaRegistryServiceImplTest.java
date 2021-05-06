@@ -71,7 +71,7 @@ public class SofaRegistryServiceImplTest {
             Assertions.fail(e.getMessage());
         }
 
-        Assertions.assertTrue(result.size() > 0);
+        Assertions.assertFalse(result.isEmpty());
         Assertions.assertEquals(address, result.get(0));
 
 

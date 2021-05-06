@@ -25,7 +25,10 @@ import java.util.function.Predicate;
  *
  * @author zjinlei
  */
-public class LambdaUtils {
+public final class LambdaUtils {
+
+    private LambdaUtils() {
+    }
 
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();

@@ -15,6 +15,8 @@
  */
 package io.seata.rm.tcc.remoting.parser;
 
+import javax.annotation.Nullable;
+
 import io.seata.common.exception.FrameworkException;
 import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.tcc.remoting.Protocols;
@@ -43,6 +45,7 @@ public class SofaRpcRemotingParser extends AbstractedRemotingParser {
     }
 
     @Override
+    @Nullable
     public RemotingDesc getServiceDesc(Object bean, String beanName) throws FrameworkException {
         if (!this.isRemoting(bean, beanName)) {
             return null;
@@ -61,8 +64,8 @@ public class SofaRpcRemotingParser extends AbstractedRemotingParser {
                 serviceBeanDesc.setTargetBean(targetBean);
             }
             return serviceBeanDesc;
-        } catch (Throwable t) {
-            throw new FrameworkException(t);
+        } catch (Exception e) {
+            throw new FrameworkException(e, "Failed to get the service desc, the bean name: " + beanName);
         }
     }
 

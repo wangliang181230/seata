@@ -38,6 +38,7 @@ import io.seata.sqlparser.struct.SqlMethodExpr;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * The type My sql insert recognizer.
@@ -90,6 +91,7 @@ public class MySQLInsertRecognizer extends BaseMySQLRecognizer implements SQLIns
     }
 
     @Override
+    @Nullable
     public List<String> getInsertColumns() {
         List<SQLExpr> columnSQLExprs = ast.getColumns();
         if (columnSQLExprs.isEmpty()) {

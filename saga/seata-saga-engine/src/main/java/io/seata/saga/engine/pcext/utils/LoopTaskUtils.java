@@ -51,7 +51,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author anselleeyy
  */
-public class LoopTaskUtils {
+public final class LoopTaskUtils {
+
+    private LoopTaskUtils() {
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoopTaskUtils.class);
 
@@ -83,7 +86,7 @@ public class LoopTaskUtils {
                     Object expression = ParameterUtils.createValueExpression(
                         stateMachineConfig.getExpressionFactoryManager(), collectionName);
                     Object collection = ParameterUtils.getValue(expression, stateMachineInstance.getContext(), null);
-                    if (collection instanceof Collection && ((Collection)collection).size() > 0) {
+                    if (collection instanceof Collection && !((Collection)collection).isEmpty()) {
                         LoopContextHolder.getCurrent(context, true).setCollection((Collection)collection);
                         return loop;
                     }
@@ -346,10 +349,9 @@ public class LoopTaskUtils {
 
             List<StateMachineInstance> subInst = stateMachineConfig.getStateLogStore()
                 .queryStateMachineInstanceByParentId(EngineUtils.generateParentId(lastRetriedStateInstance));
-            if (CollectionUtils.isNotEmpty(subInst)) {
-                if (ExecutionStatus.SU.equals(subInst.get(0).getCompensationStatus())) {
-                    return false;
-                }
+            if (CollectionUtils.isNotEmpty(subInst)
+                    && ExecutionStatus.SU.equals(subInst.get(0).getCompensationStatus())) {
+                return false;
             }
 
             if (ExecutionStatus.UN.equals(subInst.get(0).getCompensationStatus())) {

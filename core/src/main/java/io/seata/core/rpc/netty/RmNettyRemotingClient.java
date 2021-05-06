@@ -58,7 +58,7 @@ public final class RmNettyRemotingClient extends AbstractNettyRemotingClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RmNettyRemotingClient.class);
     private ResourceManager resourceManager;
-    private static volatile RmNettyRemotingClient instance;
+    private static RmNettyRemotingClient instance;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private static final long KEEP_ALIVE_TIME = Integer.MAX_VALUE;
     private static final int MAX_QUEUE_SIZE = 20000;
@@ -105,19 +105,15 @@ public final class RmNettyRemotingClient extends AbstractNettyRemotingClient {
      *
      * @return the instance
      */
-    public static RmNettyRemotingClient getInstance() {
+    public static synchronized RmNettyRemotingClient getInstance() {
         if (instance == null) {
-            synchronized (RmNettyRemotingClient.class) {
-                if (instance == null) {
-                    NettyClientConfig nettyClientConfig = new NettyClientConfig();
-                    final ThreadPoolExecutor messageExecutor = new ThreadPoolExecutor(
-                        nettyClientConfig.getClientWorkerThreads(), nettyClientConfig.getClientWorkerThreads(),
-                        KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>(MAX_QUEUE_SIZE),
-                        new NamedThreadFactory(nettyClientConfig.getRmDispatchThreadPrefix(),
-                            nettyClientConfig.getClientWorkerThreads()), new ThreadPoolExecutor.CallerRunsPolicy());
-                    instance = new RmNettyRemotingClient(nettyClientConfig, null, messageExecutor);
-                }
-            }
+            NettyClientConfig nettyClientConfig = new NettyClientConfig();
+            final ThreadPoolExecutor messageExecutor = new ThreadPoolExecutor(
+                nettyClientConfig.getClientWorkerThreads(), nettyClientConfig.getClientWorkerThreads(),
+                KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>(MAX_QUEUE_SIZE),
+                new NamedThreadFactory(nettyClientConfig.getRmDispatchThreadPrefix(),
+                    nettyClientConfig.getClientWorkerThreads()), new ThreadPoolExecutor.CallerRunsPolicy());
+            instance = new RmNettyRemotingClient(nettyClientConfig, null, messageExecutor);
         }
         return instance;
     }
@@ -159,12 +155,10 @@ public final class RmNettyRemotingClient extends AbstractNettyRemotingClient {
         }
         getClientChannelManager().registerChannel(serverAddress, channel);
         String dbKey = getMergedResourceKeys();
-        if (registerRMRequest.getResourceIds() != null) {
-            if (!registerRMRequest.getResourceIds().equals(dbKey)) {
-                sendRegisterMessage(serverAddress, channel, dbKey);
-            }
+        if (registerRMRequest.getResourceIds() != null
+                && !registerRMRequest.getResourceIds().equals(dbKey)) {
+            sendRegisterMessage(serverAddress, channel, dbKey);
         }
-
     }
 
     @Override

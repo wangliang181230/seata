@@ -20,8 +20,6 @@ import io.seata.common.util.CollectionUtils;
 import io.seata.common.util.StringUtils;
 import io.seata.core.rpc.netty.ChannelUtil;
 import io.seata.core.rpc.netty.NettyPoolKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -35,8 +33,6 @@ import java.util.concurrent.ConcurrentMap;
  * @author slievrly
  */
 public class RpcContext {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RpcContext.class);
 
     private NettyPoolKey.TransactionRole clientRole;
 
@@ -293,7 +289,7 @@ public class RpcContext {
             return;
         }
         if (resourceSets == null) {
-            this.resourceSets = new HashSet<String>();
+            this.resourceSets = new HashSet<>();
         }
         this.resourceSets.add(resource);
     }
@@ -306,7 +302,7 @@ public class RpcContext {
     public void addResources(Set<String> resources) {
         if (resources == null) { return; }
         if (resourceSets == null) {
-            this.resourceSets = new HashSet<String>();
+            this.resourceSets = new HashSet<>();
         }
         this.resourceSets.addAll(resources);
     }

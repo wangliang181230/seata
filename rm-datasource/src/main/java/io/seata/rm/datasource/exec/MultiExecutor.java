@@ -67,15 +67,15 @@ public class MultiExecutor<T, S extends Statement> extends AbstractDMLBaseExecut
     @Override
     protected TableRecords beforeImage() throws SQLException {
         //group by sqlType
-        multiSqlGroup = sqlRecognizers.stream().collect(Collectors.groupingBy(t -> t.getTableName()));
-        AbstractDMLBaseExecutor<T, S> executor = null;
+        multiSqlGroup = sqlRecognizers.stream().collect(Collectors.groupingBy(SQLRecognizer::getTableName));
+        AbstractDMLBaseExecutor<T, S> executor;
         for (List<SQLRecognizer> value : multiSqlGroup.values()) {
             switch (value.get(0).getSQLType()) {
                 case UPDATE:
-                    executor = new MultiUpdateExecutor<T, S>(statementProxy, statementCallback, value);
+                    executor = new MultiUpdateExecutor<>(statementProxy, statementCallback, value);
                     break;
                 case DELETE:
-                    executor = new MultiDeleteExecutor<T, S>(statementProxy, statementCallback, value);
+                    executor = new MultiDeleteExecutor<>(statementProxy, statementCallback, value);
                     break;
                 default:
                     throw new UnsupportedOperationException("not support sql" + value.get(0).getOriginalSQL());
@@ -88,14 +88,14 @@ public class MultiExecutor<T, S extends Statement> extends AbstractDMLBaseExecut
 
     @Override
     protected TableRecords afterImage(TableRecords beforeImage) throws SQLException {
-        AbstractDMLBaseExecutor<T, S> executor = null;
+        AbstractDMLBaseExecutor<T, S> executor;
         for (List<SQLRecognizer> value : multiSqlGroup.values()) {
             switch (value.get(0).getSQLType()) {
                 case UPDATE:
-                    executor = new MultiUpdateExecutor<T, S>(statementProxy, statementCallback, value);
+                    executor = new MultiUpdateExecutor<>(statementProxy, statementCallback, value);
                     break;
                 case DELETE:
-                    executor = new MultiDeleteExecutor<T, S>(statementProxy, statementCallback, value);
+                    executor = new MultiDeleteExecutor<>(statementProxy, statementCallback, value);
                     break;
                 default:
                     throw new UnsupportedOperationException("not support sql" + value.get(0).getOriginalSQL());
@@ -118,10 +118,9 @@ public class MultiExecutor<T, S extends Statement> extends AbstractDMLBaseExecut
             sqlRecognizer = recognizer = entry.getKey();
             beforeImage = entry.getValue();
             afterImage = afterImagesMap.get(recognizer);
-            if (SQLType.UPDATE == sqlRecognizer.getSQLType()) {
-                if (beforeImage.getRows().size() != afterImage.getRows().size()) {
-                    throw new ShouldNeverHappenException("Before image size is not equaled to after image size, probably because you updated the primary keys.");
-                }
+            if (SQLType.UPDATE == sqlRecognizer.getSQLType()
+                    && beforeImage.getRows().size() != afterImage.getRows().size()) {
+                throw new ShouldNeverHappenException("Before image size is not equaled to after image size, probably because you updated the primary keys.");
             }
             super.prepareUndoLog(beforeImage, afterImage);
         }

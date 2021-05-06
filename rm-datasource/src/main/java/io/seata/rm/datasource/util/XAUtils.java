@@ -23,15 +23,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.XAConnection;
-import javax.transaction.xa.XAException;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 
-public class XAUtils {
+public final class XAUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XAUtils.class);
+
+    private XAUtils() {
+    }
 
     public static String getDbType(String jdbcUrl, String driverClassName) {
         return JdbcUtils.getDbType(jdbcUrl, driverClassName);
@@ -43,18 +45,14 @@ public class XAUtils {
 
     public static XAConnection createXAConnection(Connection physicalConn, Driver driver, String dbType) throws SQLException {
         if (JdbcUtils.ORACLE.equals(dbType)) {
-            try {
-                // https://github.com/alibaba/druid/issues/3707
-                // before Druid issue fixed, just make ORACLE XA connection in my way.
-                // return OracleUtils.OracleXAConnection(physicalConn);
-                String physicalConnClassName = physicalConn.getClass().getName();
-                if ("oracle.jdbc.driver.T4CConnection".equals(physicalConnClassName)) {
-                    return createOracleXAConnection(physicalConn, "oracle.jdbc.driver.T4CXAConnection");
-                } else {
-                    return createOracleXAConnection(physicalConn, "oracle.jdbc.xa.client.OracleXAConnection");
-                }
-            } catch (XAException xae) {
-                throw new SQLException("create xaConnection error", xae);
+            // https://github.com/alibaba/druid/issues/3707
+            // before Druid issue fixed, just make ORACLE XA connection in my way.
+            // return OracleUtils.OracleXAConnection(physicalConn);
+            String physicalConnClassName = physicalConn.getClass().getName();
+            if ("oracle.jdbc.driver.T4CConnection".equals(physicalConnClassName)) {
+                return createOracleXAConnection(physicalConn, "oracle.jdbc.driver.T4CXAConnection");
+            } else {
+                return createOracleXAConnection(physicalConn, "oracle.jdbc.xa.client.OracleXAConnection");
             }
         }
 
@@ -69,19 +67,15 @@ public class XAUtils {
         throw new SQLException("xa not support dbType: " + dbType);
     }
 
-    private static XAConnection createOracleXAConnection(Connection physicalConnection, String xaConnectionClassName) throws XAException, SQLException {
+    private static XAConnection createOracleXAConnection(Connection physicalConnection, String xaConnectionClassName) throws SQLException {
         try {
             Class xaConnectionClass = Class.forName(xaConnectionClassName);
             Constructor<XAConnection> constructor = xaConnectionClass.getConstructor(Connection.class);
             constructor.setAccessible(true);
             return constructor.newInstance(physicalConnection);
         } catch (Exception e) {
-            LOGGER.warn("Failed to create Oracle XA Connection " + xaConnectionClassName + " on " + physicalConnection);
-            if (e instanceof XAException) {
-                throw (XAException) e;
-            } else {
-                throw new SQLException(e);
-            }
+            LOGGER.warn("Failed to create Oracle XA Connection {} on {}", xaConnectionClassName, physicalConnection);
+            throw new SQLException(e);
         }
 
     }

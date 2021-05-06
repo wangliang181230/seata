@@ -59,11 +59,11 @@ public class SpringCloudAlibabaConfiguration implements ApplicationContextAware 
      */
     public String getTxServiceGroup() {
         if (txServiceGroup == null) {
-            String applicationId = getApplicationId();
-            if (applicationId == null) {
+            String appId = getApplicationId();
+            if (appId == null) {
                 LOGGER.warn("{} is null, please set its value", SPRING_APPLICATION_NAME_KEY);
             }
-            txServiceGroup = applicationId + DEFAULT_SPRING_CLOUD_SERVICE_GROUP_POSTFIX;
+            txServiceGroup = appId + DEFAULT_SPRING_CLOUD_SERVICE_GROUP_POSTFIX;
         }
         return txServiceGroup;
     }

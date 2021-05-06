@@ -15,6 +15,8 @@
  */
 package io.seata.tm.api;
 
+import javax.annotation.Nullable;
+
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
 import io.seata.core.model.GlobalStatus;
@@ -43,6 +45,7 @@ public class GlobalTransactionContext {
      *
      * @return null if no transaction context there.
      */
+    @Nullable
     public static GlobalTransaction getCurrent() {
         String xid = RootContext.getXID();
         if (xid == null) {

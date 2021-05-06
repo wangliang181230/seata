@@ -30,8 +30,6 @@ import io.seata.sqlparser.struct.SqlMethodExpr;
 import io.seata.sqlparser.struct.SqlSequenceExpr;
 import io.seata.sqlparser.struct.SqlDefaultExpr;
 import io.seata.sqlparser.util.JdbcConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -45,8 +43,6 @@ import java.util.Map;
  */
 @LoadLevel(name = JdbcConstants.POSTGRESQL, scope = Scope.PROTOTYPE)
 public class PostgresqlInsertExecutor extends BaseInsertExecutor implements Sequenceable, Defaultable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostgresqlInsertExecutor.class);
 
     /**
      * Instantiates a new Abstract dml base executor.

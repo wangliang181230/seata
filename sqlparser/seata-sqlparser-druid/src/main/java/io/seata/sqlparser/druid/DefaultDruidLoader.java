@@ -29,9 +29,9 @@ class DefaultDruidLoader implements DruidLoader {
     /**
      * Default druid location in classpath
      */
-    private final static String DRUID_LOCATION = "lib/sqlparser/druid.jar";
+    private static final String DRUID_LOCATION = "lib/sqlparser/druid.jar";
 
-    private final static DefaultDruidLoader DRUID_LOADER = new DefaultDruidLoader(DRUID_LOCATION);
+    private static final DefaultDruidLoader DRUID_LOADER = new DefaultDruidLoader(DRUID_LOCATION);
 
     private final URL druidUrl;
 

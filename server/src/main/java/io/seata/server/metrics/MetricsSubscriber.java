@@ -20,7 +20,7 @@ import io.seata.core.event.GlobalTransactionEvent;
 import io.seata.core.model.GlobalStatus;
 import io.seata.metrics.registry.Registry;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -40,7 +40,7 @@ public class MetricsSubscriber {
 
     public MetricsSubscriber(Registry registry) {
         this.registry = registry;
-        consumers = new HashMap<>();
+        consumers = new EnumMap<>(GlobalStatus.class);
         consumers.put(GlobalStatus.Begin, this::processGlobalStatusBegin);
         consumers.put(GlobalStatus.Committed, this::processGlobalStatusCommitted);
         consumers.put(GlobalStatus.Rollbacked, this::processGlobalStatusRollbacked);

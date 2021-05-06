@@ -33,6 +33,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nullable;
+
 import io.seata.common.exception.NotSupportYetException;
 import io.seata.common.thread.NamedThreadFactory;
 import io.seata.common.util.CollectionUtils;
@@ -60,7 +62,7 @@ import static io.seata.config.ConfigurationKeys.SEATA_FILE_ROOT_CONFIG;
  * @author crazier.huang
  */
 public class ZookeeperConfiguration extends AbstractConfiguration {
-    private final static Logger LOGGER = LoggerFactory.getLogger(ZookeeperConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperConfiguration.class);
 
     private static final String CONFIG_TYPE = "zk";
     private static final String ZK_PATH_SPLIT_CHAR = "/";
@@ -82,11 +84,12 @@ public class ZookeeperConfiguration extends AbstractConfiguration {
     private static final ExecutorService CONFIG_EXECUTOR = new ThreadPoolExecutor(THREAD_POOL_NUM, THREAD_POOL_NUM,
             Integer.MAX_VALUE, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(),
             new NamedThreadFactory("ZKConfigThread", THREAD_POOL_NUM));
-    private static volatile ZkClient zkClient;
     private static final int MAP_INITIAL_CAPACITY = 8;
     private static final ConcurrentMap<String, ConcurrentMap<ConfigurationChangeListener, ZKListener>> CONFIG_LISTENERS_MAP
             = new ConcurrentHashMap<>(MAP_INITIAL_CAPACITY);
-    private static volatile Properties seataConfig = new Properties();
+
+    private static ZkClient zkClient;
+    private static Properties seataConfig = new Properties();
 
     /**
      * Instantiates a new Zookeeper configuration.
@@ -256,6 +259,7 @@ public class ZookeeperConfiguration extends AbstractConfiguration {
     }
 
     @Override
+    @Nullable
     public Set<ConfigurationChangeListener> getConfigListeners(String dataId) {
         ConcurrentMap<ConfigurationChangeListener, ZKListener> configListeners = CONFIG_LISTENERS_MAP.get(dataId);
         if (CollectionUtils.isNotEmpty(configListeners)) {
@@ -301,7 +305,7 @@ public class ZookeeperConfiguration extends AbstractConfiguration {
      */
     public static class ZKListener implements IZkDataListener {
 
-        private String path;
+        //private String path;
         private ConfigurationChangeListener listener;
 
         /**
@@ -311,7 +315,7 @@ public class ZookeeperConfiguration extends AbstractConfiguration {
          * @param listener the listener
          */
         public ZKListener(String path, ConfigurationChangeListener listener) {
-            this.path = path;
+            //this.path = path;
             this.listener = listener;
         }
 
@@ -374,8 +378,8 @@ public class ZookeeperConfiguration extends AbstractConfiguration {
                 zkSerializer = (ZkSerializer) constructor.newInstance();
             } catch (ClassNotFoundException cfe) {
                 LOGGER.warn("No zk serializer class found, serializer:{}", serializer, cfe);
-            } catch (Throwable cause) {
-                LOGGER.warn("found zk serializer encountered an unknown exception", cause);
+            } catch (Exception e) {
+                LOGGER.warn("found zk serializer encountered an unknown exception", e);
             }
         }
         if (zkSerializer == null) {

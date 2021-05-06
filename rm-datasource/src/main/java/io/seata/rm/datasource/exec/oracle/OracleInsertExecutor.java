@@ -27,8 +27,6 @@ import io.seata.sqlparser.struct.Sequenceable;
 import io.seata.sqlparser.struct.SqlMethodExpr;
 import io.seata.sqlparser.struct.SqlSequenceExpr;
 import io.seata.sqlparser.util.JdbcConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -42,8 +40,6 @@ import java.util.Map;
  */
 @LoadLevel(name = JdbcConstants.ORACLE, scope = Scope.PROTOTYPE)
 public class OracleInsertExecutor extends BaseInsertExecutor implements Sequenceable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OracleInsertExecutor.class);
 
     /**
      * Instantiates a new Abstract dml base executor.

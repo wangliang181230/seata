@@ -24,7 +24,10 @@ import java.lang.reflect.Modifier;
 /**
  * @author leizhiyuan
  */
-public class ProtobufInnerSerializer {
+public final class ProtobufInnerSerializer {
+
+    private ProtobufInnerSerializer() {
+    }
 
     private static final ProtobufHelper PROTOBUF_HELPER = new ProtobufHelper();
 

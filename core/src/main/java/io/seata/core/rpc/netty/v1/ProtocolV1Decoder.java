@@ -26,8 +26,6 @@ import io.seata.core.protocol.HeartbeatMessage;
 import io.seata.core.protocol.ProtocolConstants;
 import io.seata.core.protocol.RpcMessage;
 import io.seata.core.serializer.SerializerType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -60,8 +58,6 @@ import java.util.Map;
  */
 public class ProtocolV1Decoder extends LengthFieldBasedFrameDecoder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolV1Decoder.class);
-
     public ProtocolV1Decoder() {
         // default is 8M
         this(ProtocolConstants.MAX_FRAME_LENGTH);
@@ -85,9 +81,8 @@ public class ProtocolV1Decoder extends LengthFieldBasedFrameDecoder {
             ByteBuf frame = (ByteBuf) decoded;
             try {
                 return decodeFrame(frame);
-            } catch (Exception e) {
-                LOGGER.error("Decode frame error!", e);
-                throw e;
+            } catch (RuntimeException e) {
+                throw new RuntimeException("Decode frame error!", e);
             } finally {
                 frame.release();
             }

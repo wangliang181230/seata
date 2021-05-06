@@ -54,7 +54,7 @@ import static io.seata.core.constants.ConfigurationKeys.SEATA_SECRET_KEY;
 
 public final class TmNettyRemotingClient extends AbstractNettyRemotingClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(TmNettyRemotingClient.class);
-    private static volatile TmNettyRemotingClient instance;
+    private static TmNettyRemotingClient instance;
     private static final long KEEP_ALIVE_TIME = Integer.MAX_VALUE;
     private static final int MAX_QUEUE_SIZE = 2000;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
@@ -106,21 +106,17 @@ public final class TmNettyRemotingClient extends AbstractNettyRemotingClient {
      *
      * @return the instance
      */
-    public static TmNettyRemotingClient getInstance() {
+    public static synchronized TmNettyRemotingClient getInstance() {
         if (instance == null) {
-            synchronized (TmNettyRemotingClient.class) {
-                if (instance == null) {
-                    NettyClientConfig nettyClientConfig = new NettyClientConfig();
-                    final ThreadPoolExecutor messageExecutor = new ThreadPoolExecutor(
-                            nettyClientConfig.getClientWorkerThreads(), nettyClientConfig.getClientWorkerThreads(),
-                            KEEP_ALIVE_TIME, TimeUnit.SECONDS,
-                            new LinkedBlockingQueue<>(MAX_QUEUE_SIZE),
-                            new NamedThreadFactory(nettyClientConfig.getTmDispatchThreadPrefix(),
-                                    nettyClientConfig.getClientWorkerThreads()),
-                            RejectedPolicies.runsOldestTaskPolicy());
-                    instance = new TmNettyRemotingClient(nettyClientConfig, null, messageExecutor);
-                }
-            }
+            NettyClientConfig nettyClientConfig = new NettyClientConfig();
+            final ThreadPoolExecutor messageExecutor = new ThreadPoolExecutor(
+                    nettyClientConfig.getClientWorkerThreads(), nettyClientConfig.getClientWorkerThreads(),
+                    KEEP_ALIVE_TIME, TimeUnit.SECONDS,
+                    new LinkedBlockingQueue<>(MAX_QUEUE_SIZE),
+                    new NamedThreadFactory(nettyClientConfig.getTmDispatchThreadPrefix(),
+                            nettyClientConfig.getClientWorkerThreads()),
+                    RejectedPolicies.runsOldestTaskPolicy());
+            instance = new TmNettyRemotingClient(nettyClientConfig, null, messageExecutor);
         }
         return instance;
     }

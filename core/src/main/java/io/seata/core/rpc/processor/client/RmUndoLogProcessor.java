@@ -46,7 +46,7 @@ public class RmUndoLogProcessor implements RemotingProcessor {
     public void process(ChannelHandlerContext ctx, RpcMessage rpcMessage) throws Exception {
         Object msg = rpcMessage.getBody();
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("rm handle undo log process:" + msg);
+            LOGGER.info("rm handle undo log process: {}", msg);
         }
         handleUndoLogDelete((UndoLogDeleteRequest) msg);
     }
@@ -55,7 +55,7 @@ public class RmUndoLogProcessor implements RemotingProcessor {
         try {
             handler.onRequest(undoLogDeleteRequest, null);
         } catch (Exception e) {
-            LOGGER.error("Failed to delete undo log by undoLogDeleteRequest on" + undoLogDeleteRequest.getResourceId());
+            LOGGER.error("Failed to delete undo log by undoLogDeleteRequest on {}", undoLogDeleteRequest.getResourceId());
         }
     }
 }

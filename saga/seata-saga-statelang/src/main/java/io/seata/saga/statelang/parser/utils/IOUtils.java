@@ -28,7 +28,10 @@ import java.io.Writer;
  *
  * @author lorne.cl
  */
-public class IOUtils {
+public final class IOUtils {
+
+    private IOUtils() {
+    }
 
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 

@@ -28,7 +28,10 @@ import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
  *
  * @author ph3636
  */
-public class SevenZUtil {
+public final class SevenZUtil {
+
+    private SevenZUtil() {
+    }
 
     private static final int BUFFER_SIZE = 8192;
 

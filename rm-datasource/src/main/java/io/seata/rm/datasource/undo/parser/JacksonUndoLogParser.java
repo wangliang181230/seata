@@ -151,8 +151,7 @@ public class JacksonUndoLogParser implements UndoLogParser, Initialize {
         try {
             return mapper.writeValueAsBytes(branchUndoLog);
         } catch (JsonProcessingException e) {
-            LOGGER.error("json encode exception, {}", e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("json encode exception: " + e.getMessage(), e);
         }
     }
 
@@ -167,8 +166,7 @@ public class JacksonUndoLogParser implements UndoLogParser, Initialize {
             }
             return branchUndoLog;
         } catch (IOException e) {
-            LOGGER.error("json decode exception, {}", e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("json decode exception: {}" + e.getMessage(), e);
         }
     }
 

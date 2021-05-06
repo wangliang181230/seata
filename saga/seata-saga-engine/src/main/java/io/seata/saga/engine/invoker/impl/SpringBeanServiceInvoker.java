@@ -75,14 +75,11 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
                 LOGGER.info("Submit Service[{}.{}] to asynchronously executing. stateName: {}", state.getServiceName(),
                         state.getServiceMethod(), state.getName());
             }
-            threadPoolExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        doInvoke(state, input);
-                    } catch (Throwable e) {
-                        LOGGER.error("Invoke Service[" + state.getServiceName() + "." + state.getServiceMethod() + "] failed.", e);
-                    }
+            threadPoolExecutor.execute(() -> {
+                try {
+                    doInvoke(state, input);
+                } catch (Throwable e) {
+                    LOGGER.error("Invoke Service[" + state.getServiceName() + "." + state.getServiceMethod() + "] failed.", e);
                 }
             });
             return null;

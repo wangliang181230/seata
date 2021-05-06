@@ -61,10 +61,8 @@ public class MergedWarpMessageCodec extends AbstractMessageCodec {
         buffer.setInt(0, length - 4);  // minus the placeholder length itself
         buffer.readBytes(content);
 
-        if (msgs.size() > 20) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("msg in one packet:" + msgs.size() + ",buffer size:" + content.length);
-            }
+        if (msgs.size() > 20 && LOGGER.isDebugEnabled()) {
+            LOGGER.debug("msg in one packet: {}, buffer size: {}", msgs.size(), content.length);
         }
         out.writeBytes(content);
     }
@@ -88,7 +86,7 @@ public class MergedWarpMessageCodec extends AbstractMessageCodec {
 
     private void doDecode(MergedWarpMessage mergedWarpMessage, ByteBuffer byteBuffer) {
         short msgNum = byteBuffer.getShort();
-        List<AbstractMessage> msgs = new ArrayList<AbstractMessage>();
+        List<AbstractMessage> msgs = new ArrayList<>();
         for (int idx = 0; idx < msgNum; idx++) {
             short typeCode = byteBuffer.getShort();
             AbstractMessage abstractMessage = MessageCodecFactory.getMessage(typeCode);

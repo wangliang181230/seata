@@ -17,6 +17,8 @@ package io.seata.saga.engine.repo.impl;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.seata.saga.engine.repo.StateLogRepository;
 import io.seata.saga.engine.store.StateLogStore;
 import io.seata.saga.statelang.domain.StateInstance;
@@ -48,6 +50,7 @@ public class StateLogRepositoryImpl implements StateLogRepository {
     }
 
     @Override
+    @Nullable
     public List<StateMachineInstance> queryStateMachineInstanceByParentId(String parentId) {
         if (stateLogStore == null) {
             return null;
@@ -64,6 +67,7 @@ public class StateLogRepositoryImpl implements StateLogRepository {
     }
 
     @Override
+    @Nullable
     public List<StateInstance> queryStateInstanceListByMachineInstanceId(String stateMachineInstanceId) {
         if (stateLogStore == null) {
             return null;

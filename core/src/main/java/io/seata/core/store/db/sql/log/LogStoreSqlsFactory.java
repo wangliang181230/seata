@@ -24,9 +24,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author will
  */
-public class LogStoreSqlsFactory {
+public final class LogStoreSqlsFactory {
 
-    private static Map<String, LogStoreSqls> LOG_STORE_SQLS_MAP = new ConcurrentHashMap<>();
+    private LogStoreSqlsFactory() {
+    }
+
+    private static final Map<String, LogStoreSqls> LOG_STORE_SQLS_MAP = new ConcurrentHashMap<>();
 
     /**
      * get the log store sqls

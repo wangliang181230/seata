@@ -196,15 +196,17 @@ public abstract class BaseInsertExecutor<T, S extends Statement> extends Abstrac
         } else {
             ps = false;
             List<List<Object>> insertRows = recognizer.getInsertRows(pkIndexMap.values());
-            for (List<Object> row : insertRows) {
-                pkIndexMap.forEach((pkKey, pkIndex) -> {
-                    List<Object> pkValues = pkValuesMap.get(pkKey);
-                    if (Objects.isNull(pkValues)) {
-                        pkValuesMap.put(ColumnUtils.delEscape(pkKey, getDbType()), Lists.newArrayList(row.get(pkIndex)));
-                    } else {
-                        pkValues.add(row.get(pkIndex));
-                    }
-                });
+            if (insertRows != null && !insertRows.isEmpty()) {
+                for (List<Object> row : insertRows) {
+                    pkIndexMap.forEach((pkKey, pkIndex) -> {
+                        List<Object> pkValues = pkValuesMap.get(pkKey);
+                        if (Objects.isNull(pkValues)) {
+                            pkValuesMap.put(ColumnUtils.delEscape(pkKey, getDbType()), Lists.newArrayList(row.get(pkIndex)));
+                        } else {
+                            pkValues.add(row.get(pkIndex));
+                        }
+                    });
+                }
             }
         }
         if (pkValuesMap.isEmpty()) {
@@ -263,14 +265,14 @@ public abstract class BaseInsertExecutor<T, S extends Statement> extends Abstrac
         final String sql = sequenceable.getSequenceSql(expr);
         LOGGER.warn("Fail to get auto-generated keys, use '{}' instead. Be cautious, statement could be polluted. Recommend you set the statement to return generated keys.", sql);
 
-        ResultSet genKeys;
-        genKeys = statementProxy.getConnection().createStatement().executeQuery(sql);
-        pkValues = new ArrayList<>();
-        while (genKeys.next()) {
-            Object v = genKeys.getObject(1);
-            pkValues.add(v);
+        try (ResultSet genKeys = statementProxy.getConnection().createStatement().executeQuery(sql)) {
+            pkValues = new ArrayList<>();
+            while (genKeys.next()) {
+                Object v = genKeys.getObject(1);
+                pkValues.add(v);
+            }
+            return pkValues;
         }
-        return pkValues;
     }
 
     /**

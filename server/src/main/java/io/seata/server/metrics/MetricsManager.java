@@ -32,7 +32,7 @@ import io.seata.server.event.EventBusManager;
  */
 public class MetricsManager {
     private static class SingletonHolder {
-        private static MetricsManager INSTANCE = new MetricsManager();
+        private static final MetricsManager INSTANCE = new MetricsManager();
     }
 
     public static final MetricsManager get() {
@@ -53,7 +53,7 @@ public class MetricsManager {
             if (registry != null) {
                 List<Exporter> exporters = ExporterFactory.getInstanceList();
                 //only at least one metrics exporter implement had imported in pom then need register MetricsSubscriber
-                if (exporters.size() != 0) {
+                if (!exporters.isEmpty()) {
                     exporters.forEach(exporter -> exporter.setRegistry(registry));
                     EventBusManager.get().register(new MetricsSubscriber(registry));
                 }

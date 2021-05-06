@@ -28,7 +28,11 @@ import io.seata.core.constants.ConfigurationKeys;
  *
  * @author zhengyangyong
  */
-public class RegistryFactory {
+public final class RegistryFactory {
+
+    private RegistryFactory() {
+    }
+
     public static Registry getInstance() {
         RegistryType registryType;
         String registryTypeName = ConfigurationFactory.getInstance().getConfig(

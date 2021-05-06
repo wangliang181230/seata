@@ -83,7 +83,7 @@ public class SubStateMachineHandler implements StateHandler, InterceptableStateH
         Map<String, Object> startParams = new HashMap<>(0);
         if (inputParamsObj instanceof List) {
             List<Object> listInputParams = (List<Object>)inputParamsObj;
-            if (listInputParams.size() > 0) {
+            if (listInputParams.isEmpty()) {
                 startParams = (Map<String, Object>)listInputParams.get(0);
             }
         } else if (inputParamsObj instanceof Map) {
@@ -115,7 +115,7 @@ public class SubStateMachineHandler implements StateHandler, InterceptableStateH
                     subStateMachineInstance.getCompensationStatus());
             }
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
 
             LOGGER.error("SubStateMachine[{}] execute failed by state[name:{}]", subStateMachine.getStateMachineName(),
                 subStateMachine.getName(), e);
@@ -185,7 +185,7 @@ public class SubStateMachineHandler implements StateHandler, InterceptableStateH
 
         List<StateMachineInstance> subInst = statePersister.queryStateMachineInstanceByParentId(
             EngineUtils.generateParentId(originalStateInst));
-        if (subInst.size() > 0) {
+        if (!subInst.isEmpty()) {
             String subInstId = subInst.get(0).getId();
 
             return engine.forward(subInstId, startParams);
