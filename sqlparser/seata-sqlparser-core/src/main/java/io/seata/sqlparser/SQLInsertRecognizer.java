@@ -48,4 +48,18 @@ public interface SQLInsertRecognizer extends SQLRecognizer {
      */
     @Nullable
     List<List<Object>> getInsertRows(Collection<Integer> primaryKeyIndex);
+
+    /**
+     * Gets insert
+     *
+     * @return  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+     */
+    List<String> getInsertParamsValue();
+
+    /**
+     * Gets DuplicateKey columns.
+     *
+     * @return the duplicateKey columns
+     */
+    List<String> getDuplicateKeyUpdate();
 }
