@@ -46,6 +46,13 @@ public enum ObjectHolder {
             .orElseThrow(() -> new ShouldNeverHappenException("Can't find any object of class " + clazz.getName())));
     }
 
+    /**
+     * Sets object.
+     *
+     * @param objectKey the key
+     * @param object    the object
+     * @return the previous object with the key, or null
+     */
     public Object setObject(String objectKey, Object object) {
         return objectMap.putIfAbsent(objectKey, object);
     }
