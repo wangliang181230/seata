@@ -38,6 +38,8 @@ import io.seata.server.session.BranchSession;
 import io.seata.server.session.GlobalSession;
 import io.seata.server.session.SessionHelper;
 import io.seata.server.session.SessionHolder;
+import io.seata.server.session.SessionManager;
+import io.seata.server.storage.file.session.FileSessionManager;
 
 /**
  * The type saga core.
@@ -117,7 +119,10 @@ public class SagaCore extends AbstractCore {
                 case PhaseTwo_RollbackFailed_Retryable:
                     LOGGER.error("By [{}], failed to rollback SAGA global [{}], will retry later.", branchStatus,
                             globalSession.getXid());
-                    SessionHolder.getRetryCommittingSessionManager().removeGlobalSession(globalSession);
+                    SessionManager sessionManager = SessionHolder.getRetryCommittingSessionManager();
+                    if (sessionManager instanceof FileSessionManager) {
+                        sessionManager.removeGlobalSession(globalSession);
+                    }
                     globalSession.queueToRetryRollback();
                     return false;
                 case PhaseOne_Failed:
@@ -172,7 +177,10 @@ public class SagaCore extends AbstractCore {
                     LOGGER.error("Failed to rollback SAGA global[{}]", globalSession.getXid());
                     return false;
                 case PhaseTwo_CommitFailed_Retryable:
-                    SessionHolder.getRetryRollbackingSessionManager().removeGlobalSession(globalSession);
+                    SessionManager sessionManager = SessionHolder.getRetryRollbackingSessionManager();
+                    if (sessionManager instanceof FileSessionManager) {
+                        sessionManager.removeGlobalSession(globalSession);
+                    }
                     globalSession.queueToRetryCommit();
                     LOGGER.warn("Retry by custom recover strategy [Forward] on timeout, SAGA global[{}]", globalSession.getXid());
                     return false;
