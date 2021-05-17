@@ -25,7 +25,7 @@ import static io.seata.common.exception.FrameworkErrorCode.ThreadPoolFull;
  *
  * @author wang.liang
  */
-public class FrameworkErrorCodeTest {
+class FrameworkErrorCodeTest {
 
     @Test
     void test_getErrCode() {

@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Otis.z
  */
-public class FrameworkExceptionTest {
+class FrameworkExceptionTest {
 
     private Message message = new Message();
 
@@ -35,7 +35,7 @@ public class FrameworkExceptionTest {
      * Test get errcode.
      */
     @Test
-    public void testGetErrcode() {
+    void testGetErrcode() {
         FrameworkException throwable = Assertions.assertThrows(FrameworkException.class, () -> {
             message.print4();
         });
@@ -47,7 +47,7 @@ public class FrameworkExceptionTest {
      * Test nested exception.
      */
     @Test
-    public void testNestedException() {
+    void testNestedException() {
         Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
             message.print();
         });
@@ -62,7 +62,7 @@ public class FrameworkExceptionTest {
      * Test nested exception 1.
      */
     @Test
-    public void testNestedException1() {
+    void testNestedException1() {
         Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
             message.print1();
         });
@@ -73,7 +73,7 @@ public class FrameworkExceptionTest {
      * Test nested exception 2.
      */
     @Test
-    public void testNestedException2() {
+    void testNestedException2() {
         Throwable throwable = Assertions.assertThrows(SQLException.class, () -> {
             message.print2();
         });
@@ -84,7 +84,7 @@ public class FrameworkExceptionTest {
      * Test nested exception 3.
      */
     @Test
-    public void testNestedException3() {
+    void testNestedException3() {
         Throwable throwable = Assertions.assertThrows(SQLException.class, () -> {
             message.print3();
         });
@@ -95,7 +95,7 @@ public class FrameworkExceptionTest {
      * Test nested exception 5.
      */
     @Test
-    public void testNestedException5() {
+    void testNestedException5() {
         Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
             message.print5();
         });
@@ -106,7 +106,7 @@ public class FrameworkExceptionTest {
      * Test nested exception 6.
      */
     @Test
-    public void testNestedException6() {
+    void testNestedException6() {
         Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
             message.print6();
         });
@@ -117,7 +117,7 @@ public class FrameworkExceptionTest {
      * Test nested exception 7.
      */
     @Test
-    public void testNestedException7() {
+    void testNestedException7() {
         Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
             message.print7();
         });
@@ -128,7 +128,7 @@ public class FrameworkExceptionTest {
      * Test nested exception 8.
      */
     @Test
-    public void testNestedException8() {
+    void testNestedException8() {
         Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
             message.print8();
         });
@@ -139,7 +139,7 @@ public class FrameworkExceptionTest {
      * Test nested exception 9.
      */
     @Test
-    public void testNestedException9() {
+    void testNestedException9() {
         Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
             message.print9();
         });
@@ -150,7 +150,7 @@ public class FrameworkExceptionTest {
      * Test nested sql exception.
      */
     @Test
-    public void testNestedSQLException() {
+    void testNestedSQLException() {
         SQLException ex = new SQLException();
         SQLException ex2 = FrameworkException.nestedSQLException(ex);
         Assertions.assertSame(ex, ex2);

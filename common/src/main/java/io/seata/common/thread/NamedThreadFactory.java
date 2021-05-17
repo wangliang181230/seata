@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.sun.istack.internal.NotNull;
 import io.netty.util.concurrent.FastThreadLocalThread;
 import io.seata.common.util.CollectionUtils;
 
@@ -31,7 +32,6 @@ import io.seata.common.util.CollectionUtils;
  */
 public class NamedThreadFactory implements ThreadFactory {
     private final static Map<String, AtomicInteger> PREFIX_COUNTER = new ConcurrentHashMap<>();
-
     private final ThreadGroup group;
     private final AtomicInteger counter = new AtomicInteger(0);
     private final String prefix;
@@ -76,7 +76,7 @@ public class NamedThreadFactory implements ThreadFactory {
     }
 
     @Override
-    public Thread newThread(Runnable r) {
+    public Thread newThread(@NotNull Runnable r) {
         String name = prefix + "_" + counter.incrementAndGet();
         if (totalSize > 1) {
             name += "_" + totalSize;
