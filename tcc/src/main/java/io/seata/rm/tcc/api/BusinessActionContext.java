@@ -145,6 +145,40 @@ public class BusinessActionContext implements Serializable {
     }
 
     /**
+     * Put data to actionContext
+     *
+     * @param key   the action context's key
+     * @param value biz value
+     * @deprecated use the {@link BusinessActionContextUtil#addContext(String, Object)}
+     */
+    @Deprecated
+    public void putData(String key, Object value) {
+        BusinessActionContextUtil.addContext(key, value);
+    }
+
+    /**
+     * Put dataMap to actionContext
+     *
+     * @param dataMap the dataMap
+     * @deprecated use the {@link BusinessActionContextUtil#addContext(Map)}
+     */
+    @Deprecated
+    public void putData(Map<String, Object> dataMap) {
+        BusinessActionContextUtil.addContext(dataMap);
+    }
+
+    /**
+     * Get data from actionContext
+     *
+     * @param key the actionContext's key
+     * @deprecated use the {@link #getActionContext(String, Class)}
+     */
+    @Deprecated
+    public <T> T getData(String key) {
+        return (T)this.getActionContext(key);
+    }
+
+    /**
      * Gets xid.
      *
      * @return the xid
