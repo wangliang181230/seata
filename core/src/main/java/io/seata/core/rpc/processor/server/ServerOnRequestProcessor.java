@@ -75,21 +75,9 @@ public class ServerOnRequestProcessor implements RemotingProcessor {
     @Override
     public void process(ChannelHandlerContext ctx, RpcMessage rpcMessage) throws Exception {
         if (ChannelManager.isRegistered(ctx.channel())) {
-            Throwable t = null;
-            try {
-                // trigger before process request
-                ServerHookTrigger.triggerBeforeProcessRequest(ctx, rpcMessage);
-
+            triggerHook(ctx, rpcMessage, () -> {
                 onRequestMessage(ctx, rpcMessage);
-            } catch (Throwable th) {
-                t = th;
-                // trigger after process request failed
-                ServerHookTrigger.triggerAfterProcessRequestFailed(ctx, rpcMessage, t);
-                throw th;
-            } finally {
-                // trigger after process request
-                ServerHookTrigger.triggerAfterProcessRequest(ctx, rpcMessage, t);
-            }
+            });
         } else {
             try {
                 if (LOGGER.isInfoEnabled()) {
@@ -138,6 +126,24 @@ public class ServerOnRequestProcessor implements RemotingProcessor {
             final AbstractMessage msg = (AbstractMessage) message;
             AbstractResultMessage result = transactionMessageHandler.onRequest(msg, rpcContext);
             remotingServer.sendAsyncResponse(rpcMessage, ctx.channel(), result);
+        }
+    }
+
+    private void triggerHook(ChannelHandlerContext ctx, RpcMessage rpcMessage, Runnable runnable) {
+        Throwable t = null;
+        try {
+            // trigger before process request
+            ServerHookTrigger.triggerBeforeProcessRequest(ctx, rpcMessage);
+
+            runnable.run();
+        } catch (Throwable th) {
+            t = th;
+            // trigger after process request failed
+            ServerHookTrigger.triggerAfterProcessRequestFailed(ctx, rpcMessage, t);
+            throw th;
+        } finally {
+            // trigger after process request
+            ServerHookTrigger.triggerAfterProcessRequest(ctx, rpcMessage, t);
         }
     }
 
