@@ -21,21 +21,28 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
+import com.alibaba.fastjson.JSON;
 import io.seata.common.exception.FrameworkException;
 import io.seata.common.util.StringUtils;
+import io.seata.rm.tcc.api.BusinessActionContext;
 import io.seata.rm.tcc.api.BusinessActionContextParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Extracting TCC Context from Method
  *
  * @author zhangsen
+ * @author wang.liang
  */
-public class ActionContextUtil {
+public final class ActionContextUtil {
 
     private ActionContextUtil() {
-
     }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionContextUtil.class);
 
     /**
      * Extracting context data from parameters
@@ -50,33 +57,76 @@ public class ActionContextUtil {
             getAllField(targetParam.getClass(), fields);
 
             for (Field f : fields) {
-                String fieldName = f.getName();
+                // get annotation
                 BusinessActionContextParameter annotation = f.getAnnotation(BusinessActionContextParameter.class);
-
-                if (annotation != null) {
-                    f.setAccessible(true);
-                    Object paramObject = f.get(targetParam);
-                    int index = annotation.index();
-                    if (annotation.isParamInProperty()) {
-                        if (index >= 0) {
-                            @SuppressWarnings("unchecked")
-                            Object targetObject = ((List<Object>) paramObject).get(index);
-                            context.putAll(fetchContextFromObject(targetObject));
-                        } else {
-                            context.putAll(fetchContextFromObject(paramObject));
-                        }
-                    } else {
-                        if (StringUtils.isBlank(annotation.paramName())) {
-                            context.put(fieldName, paramObject);
-                        } else {
-                            context.put(annotation.paramName(), paramObject);
-                        }
-                    }
+                if (annotation == null) {
+                    continue;
                 }
+
+                // get the field value
+                f.setAccessible(true);
+                Object fieldValue = f.get(targetParam);
+
+                // load param by the config of annotation, and then put to the context
+                String fieldName = f.getName();
+                loadParamByAnnotationAndPutToContext("field", fieldName, fieldValue, annotation, context);
             }
             return context;
         } catch (Throwable t) {
             throw new FrameworkException(t, "fetchContextFromObject failover");
+        }
+    }
+
+    /**
+     * load param by the config of annotation, and then put to the context
+     *
+     * @param objType    the object type, 'param' or 'field'
+     * @param objName    the object key
+     * @param objValue   the object value
+     * @param annotation the annotation on the param or field
+     * @param context    the action context
+     */
+    public static void loadParamByAnnotationAndPutToContext(@Nonnull String objType, String objName, Object objValue,
+                                                            BusinessActionContextParameter annotation, Map<String, Object> context) {
+        if (objValue == null) {
+            return;
+        }
+
+        // If is `List`, get by index
+        int index = annotation.index();
+        if (index >= 0) {
+            if (objValue instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<Object> list = (List<Object>)objValue;
+                if (list.isEmpty()) {
+                    return;
+                }
+                if (list.size() <= index) {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("The index '{}' is out of bounds for the list {} named '{}'," +
+                                " whose size is '{}', so pass this {}", index, objType, objName, list.size(), objType);
+                    }
+                    return;
+                }
+                objValue = list.get(index);
+            } else {
+                LOGGER.warn("the {} named '{}' is not a `List`, so the 'index' field of '@{}' cannot be used on it",
+                        objType, objName, BusinessActionContextParameter.class.getSimpleName());
+            }
+
+            if (objValue == null) {
+                return;
+            }
+        }
+
+        if (annotation.isParamInProperty()) {
+            Map<String, Object> paramContext = fetchContextFromObject(objValue);
+            context.putAll(paramContext);
+        } else {
+            if (StringUtils.isNotBlank(annotation.paramName())) {
+                objName = annotation.paramName();
+            }
+            context.put(objName, objValue);
         }
     }
 
@@ -95,4 +145,93 @@ public class ActionContextUtil {
         getAllField(interFace.getSuperclass(), fields);
     }
 
+    /**
+     * put the action context after handle
+     *
+     * @param actionContext the action context
+     * @param key           the actionContext's key
+     * @param value         the actionContext's key
+     * @return the action context is changed
+     */
+    public static boolean putActionContext(Map<String, Object> actionContext, String key, Object value) {
+        if (value == null) {
+            return false;
+        }
+
+        value = handleActionContext(value);
+        Object previousValue = actionContext.put(key, value);
+        return !value.equals(previousValue);
+    }
+
+    /**
+     * put the action context after handle
+     *
+     * @param actionContext    the action context
+     * @param actionContextMap the actionContextMap
+     * @return the action context is changed
+     */
+    public static boolean putActionContext(Map<String, Object> actionContext, Map<String, Object> actionContextMap) {
+        boolean isChanged = false;
+        for (Map.Entry<String, Object> entry : actionContextMap.entrySet()) {
+            if (putActionContext(actionContext, entry.getKey(), entry.getValue())) {
+                isChanged = true;
+            }
+        }
+        return isChanged;
+    }
+
+    /**
+     * Handle the action context.
+     * It is convenient to convert type in phase 2.
+     *
+     * @param actionContext the action context
+     * @return the action context or JSON string
+     * @see #convertActionContext(String, Object, Class)
+     * @see BusinessActionContext#getActionContext(String, Class)
+     */
+    public static Object handleActionContext(@Nonnull Object actionContext) {
+        if (actionContext instanceof CharSequence || actionContext instanceof Number || actionContext instanceof Boolean) {
+            return actionContext;
+        } else {
+            return JSON.toJSONString(actionContext);
+        }
+    }
+
+    /**
+     * Convert action context
+     *
+     * @param key         the actionContext's key
+     * @param value       the actionContext's value
+     * @param targetClazz the target class
+     * @param <T>         the target type
+     * @return the action context of the target type
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T convertActionContext(String key, Object value, @Nonnull Class<T> targetClazz) {
+        if (value == null) {
+            return null;
+        }
+
+        // same class, or super class, can cast directly
+        if (targetClazz.isAssignableFrom(value.getClass())) {
+            return (T)value;
+        }
+
+        // String class
+        if (String.class.equals(targetClazz)) {
+            return (T)value.toString();
+        }
+
+        try {
+            try {
+                return (T)value;
+            } catch (ClassCastException ignore) {
+                return JSON.parseObject(value.toString(), targetClazz);
+            }
+        } catch (RuntimeException e) {
+            String errorMsg = String.format("Failed to convert the action context with key '%s' from '%s' to '%s'.",
+                    key, value.getClass().getName(), targetClazz.getName());
+            throw new FrameworkException(e, errorMsg);
+        }
+    }
 }

@@ -29,6 +29,7 @@ public interface StarterConstants {
     String SHUTDOWN_PREFIX = TRANSPORT_PREFIX + ".shutdown";
     String SERVICE_PREFIX = SEATA_PREFIX + ".service";
     String CLIENT_PREFIX = SEATA_PREFIX + ".client";
+    String SAGA_PREFIX = SEATA_PREFIX + ".saga";
     String CLIENT_RM_PREFIX = CLIENT_PREFIX + ".rm";
     String CLIENT_TM_PREFIX = CLIENT_PREFIX + ".tm";
     String LOCK_PREFIX = CLIENT_RM_PREFIX + ".lock";
@@ -37,6 +38,8 @@ public interface StarterConstants {
     String LOAD_BALANCE_PREFIX = CLIENT_PREFIX + ".loadBalance";
     String LOG_PREFIX = SEATA_PREFIX + ".log";
     String COMPRESS_PREFIX = UNDO_PREFIX + ".compress";
+    String SAGA_STATE_MACHINE_PREFIX = SAGA_PREFIX + ".state-machine";
+    String SAGA_ASYNC_THREAD_POOL_PREFIX = SAGA_STATE_MACHINE_PREFIX + ".async-thread-pool";
 
     String REGISTRY_PREFIX = SEATA_PREFIX + ".registry";
     String REGISTRY_NACOS_PREFIX = REGISTRY_PREFIX + ".nacos";

@@ -15,6 +15,11 @@
  */
 package io.seata.rm.tcc.interceptor;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.alibaba.fastjson.JSON;
 import io.seata.common.Constants;
 import io.seata.common.exception.FrameworkException;
@@ -32,12 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Handler the TCC Participant Aspect : Setting Context, Creating Branch Record
  *
@@ -47,8 +46,6 @@ public class ActionInterceptorHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionInterceptorHandler.class);
 
-    private static final ThreadLocal<BusinessActionContext> CONTEXT_HOLDER = new ThreadLocal<>();
-
     /**
      * Handler the TCC Aspect
      *
@@ -56,13 +53,11 @@ public class ActionInterceptorHandler {
      * @param arguments      the arguments
      * @param businessAction the business action
      * @param targetCallback the target callback
-     * @return map map
+     * @return the business result
      * @throws Throwable the throwable
      */
-    public Map<String, Object> proceed(Method method, Object[] arguments, String xid, TwoPhaseBusinessAction businessAction,
+    public Object proceed(Method method, Object[] arguments, String xid, TwoPhaseBusinessAction businessAction,
                                        Callback<Object> targetCallback) throws Throwable {
-        Map<String, Object> ret = new HashMap<>(4);
-
         //TCC name
         String actionName = businessAction.name();
         BusinessActionContext actionContext = new BusinessActionContext();
@@ -87,20 +82,17 @@ public class ActionInterceptorHandler {
             argIndex++;
         }
         //share actionContext implicitly
-        ActionInterceptorHandler.setUpContext(actionContext);
+        BusinessActionContextUtil.setContext(actionContext);
         try {
-            //the final parameters of the try method
-            ret.put(Constants.TCC_METHOD_ARGUMENTS, arguments);
-            //the final result
-            ret.put(Constants.TCC_METHOD_RESULT, targetCallback.execute());
+            //Execute business, and return business result
+            return targetCallback.execute();
         } finally {
-            ActionInterceptorHandler.cleanUp();
+            BusinessActionContextUtil.clear();
             //to report business action context finally.
             if (businessAction.isDelayReport() && Boolean.TRUE.equals(actionContext.getUpdated())) {
                 BusinessActionContextUtil.reportContext(actionContext);
             }
         }
-        return ret;
     }
 
     /**
@@ -110,7 +102,7 @@ public class ActionInterceptorHandler {
      * @param arguments      the arguments
      * @param businessAction the business action
      * @param actionContext  the action context
-     * @return the string
+     * @return the branchId
      */
     protected String doTccActionLogStore(Method method, Object[] arguments, TwoPhaseBusinessAction businessAction,
                                          BusinessActionContext actionContext) {
@@ -120,7 +112,7 @@ public class ActionInterceptorHandler {
         Map<String, Object> context = fetchActionRequestContext(method, arguments);
         context.put(Constants.ACTION_START_TIME, System.currentTimeMillis());
 
-        //init business context
+        //Init business context
         initBusinessContext(context, method, businessAction);
         //Init running environment context
         initFrameworkContext(context);
@@ -183,7 +175,7 @@ public class ActionInterceptorHandler {
      *
      * @param method    the method
      * @param arguments the arguments
-     * @return map map
+     * @return the context
      */
     protected Map<String, Object> fetchActionRequestContext(Method method, Object[] arguments) {
         Map<String, Object> context = new HashMap<>(8);
@@ -192,43 +184,23 @@ public class ActionInterceptorHandler {
         for (int i = 0; i < parameterAnnotations.length; i++) {
             for (int j = 0; j < parameterAnnotations[i].length; j++) {
                 if (parameterAnnotations[i][j] instanceof BusinessActionContextParameter) {
-                    BusinessActionContextParameter param = (BusinessActionContextParameter) parameterAnnotations[i][j];
+                    // get annotation
+                    BusinessActionContextParameter annotation = (BusinessActionContextParameter)parameterAnnotations[i][j];
                     if (arguments[i] == null) {
                         throw new IllegalArgumentException("@BusinessActionContextParameter 's params can not null");
                     }
+
+                    // get param
                     Object paramObject = arguments[i];
-                    int index = param.index();
-                    //List, get by index
-                    if (index >= 0) {
-                        @SuppressWarnings("unchecked")
-                        Object targetParam = ((List<Object>) paramObject).get(index);
-                        if (param.isParamInProperty()) {
-                            context.putAll(ActionContextUtil.fetchContextFromObject(targetParam));
-                        } else {
-                            context.put(param.paramName(), targetParam);
-                        }
-                    } else {
-                        if (param.isParamInProperty()) {
-                            context.putAll(ActionContextUtil.fetchContextFromObject(paramObject));
-                        } else {
-                            context.put(param.paramName(), paramObject);
-                        }
+                    if (paramObject == null) {
+                        continue;
                     }
+
+                    // load param by the config of annotation, and then put to the context
+                    ActionContextUtil.loadParamByAnnotationAndPutToContext("param", "", paramObject, annotation, context);
                 }
             }
         }
         return context;
-    }
-
-    public static BusinessActionContext getContext() {
-        return CONTEXT_HOLDER.get();
-    }
-
-    private static void cleanUp() {
-        CONTEXT_HOLDER.remove();
-    }
-
-    private static void setUpContext(BusinessActionContext context) {
-        CONTEXT_HOLDER.set(context);
     }
 }

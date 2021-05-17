@@ -17,6 +17,10 @@ package io.seata.rm.tcc.api;
 
 import java.io.Serializable;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import io.seata.rm.tcc.interceptor.ActionContextUtil;
 
 /**
  * The type Business action context.
@@ -46,6 +50,9 @@ public class BusinessActionContext implements Serializable {
      */
     private Boolean isUpdated;
 
+    /**
+     * action context
+     */
     private Map<String, Object> actionContext;
 
     /**
@@ -64,18 +71,32 @@ public class BusinessActionContext implements Serializable {
     public BusinessActionContext(String xid, String branchId, Map<String, Object> actionContext) {
         this.xid = xid;
         this.branchId = branchId;
-        this.setActionContext(actionContext);
+        this.actionContext = actionContext;
     }
 
     /**
      * Gets action context.
-     * if you get actionContext in tcc phase-2 , it would be a map object.
      *
      * @param key the key
      * @return the action context
      */
+    @Nullable
     public Object getActionContext(String key) {
         return actionContext.get(key);
+    }
+
+    /**
+     * Gets action context.
+     *
+     * @param key         the key
+     * @param targetClazz the target class
+     * @param <T>         the target type
+     * @return the action context of the target type
+     */
+    @Nullable
+    public <T> T getActionContext(String key, @Nonnull Class<T> targetClazz) {
+        Object value = actionContext.get(key);
+        return ActionContextUtil.convertActionContext(key, value, targetClazz);
     }
 
     /**
@@ -97,6 +118,15 @@ public class BusinessActionContext implements Serializable {
     }
 
     /**
+     * Sets branch id.
+     *
+     * @param branchId the branch id
+     */
+    public void setBranchId(String branchId) {
+        this.branchId = branchId;
+    }
+
+    /**
      * Gets action context.
      *
      * @return the action context
@@ -115,6 +145,40 @@ public class BusinessActionContext implements Serializable {
     }
 
     /**
+     * Put data to actionContext
+     *
+     * @param key   the action context's key
+     * @param value biz value
+     * @deprecated use the {@link BusinessActionContextUtil#addContext(String, Object)}
+     */
+    @Deprecated
+    public void putData(String key, Object value) {
+        BusinessActionContextUtil.addContext(key, value);
+    }
+
+    /**
+     * Put dataMap to actionContext
+     *
+     * @param dataMap the dataMap
+     * @deprecated use the {@link BusinessActionContextUtil#addContext(Map)}
+     */
+    @Deprecated
+    public void putData(Map<String, Object> dataMap) {
+        BusinessActionContextUtil.addContext(dataMap);
+    }
+
+    /**
+     * Get data from actionContext
+     *
+     * @param key the actionContext's key
+     * @deprecated use the {@link #getActionContext(String, Class)}
+     */
+    @Deprecated
+    public <T> T getData(String key) {
+        return (T)this.getActionContext(key);
+    }
+
+    /**
      * Gets xid.
      *
      * @return the xid
@@ -130,15 +194,6 @@ public class BusinessActionContext implements Serializable {
      */
     public void setXid(String xid) {
         this.xid = xid;
-    }
-
-    /**
-     * Sets branch id.
-     *
-     * @param branchId the branch id
-     */
-    public void setBranchId(String branchId) {
-        this.branchId = branchId;
     }
 
     /**
@@ -164,9 +219,18 @@ public class BusinessActionContext implements Serializable {
      *
      * @param key   the action context's key
      * @param value biz value
+     * @return the action context is changed
+     * @see BusinessActionContextUtil // the TCC API utils
+     * @deprecated Don't use this method in the `Try` method. Please use {@link BusinessActionContextUtil#addContext}
      */
-    public void addActionContext(String key, Object value) {
-        this.actionContext.put(key, value);
+    @Deprecated
+    public boolean addActionContext(String key, Object value) {
+        if (value == null) {
+            return false;
+        }
+
+        Object previousValue = this.actionContext.put(key, value);
+        return !value.equals(previousValue);
     }
 
     public Boolean getDelayReport() {
