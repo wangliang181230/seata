@@ -15,13 +15,16 @@
  */
 package io.seata.rm.tcc.interceptor;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
 import io.seata.common.exception.FrameworkException;
@@ -30,6 +33,7 @@ import io.seata.rm.tcc.api.BusinessActionContext;
 import io.seata.rm.tcc.api.BusinessActionContextParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 
 /**
  * Extracting TCC Context from Method
@@ -43,6 +47,19 @@ public final class ActionContextUtil {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionContextUtil.class);
+
+    public static final DefaultParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
+
+    /**
+     * Get parameter names of the method
+     *
+     * @param method the method
+     * @return the parameter names
+     */
+    @Nullable
+    public static String[] getParameterNames(Method method) {
+        return PARAMETER_NAME_DISCOVERER.getParameterNames(method);
+    }
 
     /**
      * Extracting context data from parameters
@@ -92,7 +109,7 @@ public final class ActionContextUtil {
             return;
         }
 
-        // If is `List`, get by index
+        // If is `List` or `Array`, get by index
         int index = annotation.index();
         if (index >= 0) {
             if (objValue instanceof List) {
@@ -109,6 +126,21 @@ public final class ActionContextUtil {
                     return;
                 }
                 objValue = list.get(index);
+            } else if (objValue.getClass().isArray()) {
+                // The `index` field supports `Array`
+                // @since above 1.4.2
+                int length = Array.getLength(objValue);
+                if (length == 0) {
+                    return;
+                }
+                if (length <= index) {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("The index '{}' is out of bounds for the array {} named '{}'," +
+                                " whose size is '{}', so pass this {}", index, objType, objName, length, objType);
+                    }
+                    return;
+                }
+                objValue = Array.get(objValue, index);
             } else {
                 LOGGER.warn("the {} named '{}' is not a `List`, so the 'index' field of '@{}' cannot be used on it",
                         objType, objName, BusinessActionContextParameter.class.getSimpleName());
@@ -121,7 +153,15 @@ public final class ActionContextUtil {
 
         if (annotation.isParamInProperty()) {
             Map<String, Object> paramContext = fetchContextFromObject(objValue);
-            context.putAll(paramContext);
+            if (StringUtils.isNotBlank(annotation.paramName())) {
+                // If the `paramName` of "@BusinessActionContextParameter" is not blank, put the param context in it
+                // @since: above 1.4.2
+                context.put(annotation.paramName(), paramContext);
+            } else {
+                // Merge the param context into context
+                // Warn: This may cause values with the same name to be overridden
+                context.putAll(paramContext);
+            }
         } else {
             if (StringUtils.isNotBlank(annotation.paramName())) {
                 objName = annotation.paramName();

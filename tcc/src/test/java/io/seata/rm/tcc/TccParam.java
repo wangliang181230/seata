@@ -27,23 +27,45 @@ public class TccParam {
     /**
      * The Num.
      */
+    @BusinessActionContextParameter
     protected int num;
+
+    /**
+     * The Name, this field has no annotation
+     */
+    protected String name;
 
     /**
      * The Email.
      */
-    @BusinessActionContextParameter(paramName = "email")
+    @BusinessActionContextParameter(paramName = "email0")
     protected String email;
+
+    /**
+     * The Remark.
+     */
+    @BusinessActionContextParameter(paramName = "remark")
+    protected String remark;
+
+    /**
+     * Instantiates a new Tcc param.
+     */
+    public TccParam() {
+    }
 
     /**
      * Instantiates a new Tcc param.
      *
-     * @param num   the num
-     * @param email the email
+     * @param num    the num
+     * @param name   the name
+     * @param email  the email
+     * @param remark the remark
      */
-    public TccParam(int num, String email) {
+    public TccParam(int num, String name, String email, String remark) {
         this.num = num;
+        this.name = name;
         this.email = email;
+        this.remark = remark;
     }
 
     /**

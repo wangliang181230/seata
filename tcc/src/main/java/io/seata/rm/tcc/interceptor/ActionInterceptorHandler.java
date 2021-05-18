@@ -17,6 +17,7 @@ package io.seata.rm.tcc.interceptor;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import io.seata.common.Constants;
 import io.seata.common.exception.FrameworkException;
 import io.seata.common.executor.Callback;
 import io.seata.common.util.NetUtil;
+import io.seata.common.util.StringUtils;
 import io.seata.core.context.RootContext;
 import io.seata.core.model.BranchType;
 import io.seata.core.model.CommitType;
@@ -58,11 +60,13 @@ public class ActionInterceptorHandler {
      */
     public Object proceed(Method method, Object[] arguments, String xid, TwoPhaseBusinessAction businessAction,
                                        Callback<Object> targetCallback) throws Throwable {
-        //TCC name
-        String actionName = businessAction.name();
-        BusinessActionContext actionContext = new BusinessActionContext();
+        //Get action context from arguments, or create a new one and then reset to arguments
+        BusinessActionContext actionContext = getOrCreateActionContextAndResetToArguments(method.getParameterTypes(), arguments);
+
+        //Set the xid
         actionContext.setXid(xid);
-        //set action name
+        //Set the action name
+        String actionName = businessAction.name();
         actionContext.setActionName(actionName);
 
         //Creating Branch Record
@@ -71,16 +75,6 @@ public class ActionInterceptorHandler {
         //MDC put branchId
         MDC.put(RootContext.MDC_KEY_BRANCH_ID, branchId);
 
-        //set the parameter whose type is BusinessActionContext
-        Class<?>[] types = method.getParameterTypes();
-        int argIndex = 0;
-        for (Class<?> cls : types) {
-            if (cls.isAssignableFrom(BusinessActionContext.class)) {
-                arguments[argIndex] = actionContext;
-                break;
-            }
-            argIndex++;
-        }
         //share actionContext implicitly
         BusinessActionContextUtil.setContext(actionContext);
         try {
@@ -93,6 +87,38 @@ public class ActionInterceptorHandler {
                 BusinessActionContextUtil.reportContext(actionContext);
             }
         }
+    }
+
+    /**
+     * Get or create action context, and reset to arguments
+     *
+     * @param arguments the arguments
+     * @return the action context
+     * @since above 1.4.2
+     */
+    protected BusinessActionContext getOrCreateActionContextAndResetToArguments(Class<?>[] parameterTypes, Object[] arguments) {
+        BusinessActionContext actionContext = null;
+
+        // get the action context from arguments
+        int argIndex = 0;
+        for (Class<?> parameterType : parameterTypes) {
+            if (BusinessActionContext.class.isAssignableFrom(parameterType)) {
+                actionContext = (BusinessActionContext)arguments[argIndex];
+                //If the action context exists in arguments but is null, create a new one and reset the action context to the arguments
+                if (actionContext == null) {
+                    actionContext = new BusinessActionContext();
+                    arguments[argIndex] = actionContext;
+                }
+                break;
+            }
+            argIndex++;
+        }
+
+        // if null, create a new one
+        if (actionContext == null) {
+            actionContext = new BusinessActionContext();
+        }
+        return actionContext;
     }
 
     /**
@@ -117,7 +143,14 @@ public class ActionInterceptorHandler {
         //Init running environment context
         initFrameworkContext(context);
         actionContext.setDelayReport(businessAction.isDelayReport());
-        actionContext.setActionContext(context);
+        //Merge context and origin context if it exists.  @since above 1.4.2
+        Map<String, Object> originContext = actionContext.getActionContext();
+        if (originContext == null) {
+            actionContext.setActionContext(context);
+        } else {
+            originContext.putAll(context);
+            context = originContext;
+        }
 
         //init applicationData
         Map<String, Object> applicationContext = new HashMap<>(4);
@@ -180,6 +213,13 @@ public class ActionInterceptorHandler {
     protected Map<String, Object> fetchActionRequestContext(Method method, Object[] arguments) {
         Map<String, Object> context = new HashMap<>(8);
 
+        // get the parameter names
+        String[] parameterNames = ActionContextUtil.getParameterNames(method);
+        Parameter[] parameters = null;
+        if (parameterNames == null) {
+            parameters = method.getParameters();
+        }
+
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         for (int i = 0; i < parameterAnnotations.length; i++) {
             for (int j = 0; j < parameterAnnotations[i].length; j++) {
@@ -196,8 +236,18 @@ public class ActionInterceptorHandler {
                         continue;
                     }
 
+                    // if the parameter names is null, print log
+                    if (parameterNames == null && StringUtils.isBlank(annotation.paramName()) && !annotation.isParamInProperty()) {
+                        String errorMsg = String.format("Unable to get parameter names from the method `%s.%s(...)`." +
+                                        " Please execute 'javac -parameters' to re-compile of the method code," +
+                                        " or set the field `paramName` of the `@%s` by yourself",
+                                method.getDeclaringClass().getSimpleName(), method.getName(), BusinessActionContextParameter.class.getSimpleName());
+                        throw new FrameworkException(errorMsg);
+                    }
+
                     // load param by the config of annotation, and then put to the context
-                    ActionContextUtil.loadParamByAnnotationAndPutToContext("param", "", paramObject, annotation, context);
+                    String paramName = parameterNames != null ? parameterNames[i] : parameters[i].getName();
+                    ActionContextUtil.loadParamByAnnotationAndPutToContext("param", paramName, paramObject, annotation, context);
                 }
             }
         }
