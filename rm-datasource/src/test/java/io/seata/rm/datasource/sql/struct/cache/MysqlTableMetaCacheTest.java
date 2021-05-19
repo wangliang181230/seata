@@ -15,8 +15,11 @@
  */
 package io.seata.rm.datasource.sql.struct.cache;
 
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collections;
+
 import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.util.JdbcConstants;
 import io.seata.common.exception.ShouldNeverHappenException;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.rm.datasource.mock.MockDriver;
@@ -26,12 +29,9 @@ import io.seata.rm.datasource.sql.struct.IndexType;
 import io.seata.rm.datasource.sql.struct.TableMeta;
 import io.seata.rm.datasource.sql.struct.TableMetaCache;
 import io.seata.rm.datasource.sql.struct.TableMetaCacheFactory;
+import io.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collections;
 
 /**
  * The table meta fetch test.
