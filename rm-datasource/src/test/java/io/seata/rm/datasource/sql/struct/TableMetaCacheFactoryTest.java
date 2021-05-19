@@ -15,10 +15,10 @@
  */
 package io.seata.rm.datasource.sql.struct;
 
-import com.alibaba.druid.util.JdbcConstants;
 import io.seata.common.loader.EnhancedServiceNotFoundException;
 import io.seata.rm.datasource.sql.struct.cache.MysqlTableMetaCache;
 import io.seata.rm.datasource.sql.struct.cache.OracleTableMetaCache;
+import io.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

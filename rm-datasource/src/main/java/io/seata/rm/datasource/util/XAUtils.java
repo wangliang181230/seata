@@ -15,19 +15,20 @@
  */
 package io.seata.rm.datasource.util;
 
-import com.alibaba.druid.util.JdbcUtils;
-import com.alibaba.druid.util.MySqlUtils;
-import com.alibaba.druid.util.PGUtils;
-import io.seata.rm.BaseDataSourceResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.sql.XAConnection;
-import javax.transaction.xa.XAException;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
+import javax.sql.XAConnection;
+import javax.transaction.xa.XAException;
+
+import com.alibaba.druid.util.JdbcUtils;
+import com.alibaba.druid.util.MySqlUtils;
+import com.alibaba.druid.util.PGUtils;
+import io.seata.rm.BaseDataSourceResource;
+import io.seata.sqlparser.util.JdbcConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XAUtils {
 
@@ -42,7 +43,7 @@ public class XAUtils {
     }
 
     public static XAConnection createXAConnection(Connection physicalConn, Driver driver, String dbType) throws SQLException {
-        if (JdbcUtils.ORACLE.equals(dbType)) {
+        if (JdbcConstants.ORACLE.equals(dbType)) {
             try {
                 // https://github.com/alibaba/druid/issues/3707
                 // before Druid issue fixed, just make ORACLE XA connection in my way.
@@ -58,11 +59,11 @@ public class XAUtils {
             }
         }
 
-        if (JdbcUtils.MYSQL.equals(dbType) || JdbcUtils.MARIADB.equals(dbType)) {
+        if (JdbcConstants.MYSQL.equals(dbType) || JdbcConstants.MARIADB.equals(dbType)) {
             return MySqlUtils.createXAConnection(driver, physicalConn);
         }
 
-        if (JdbcUtils.POSTGRESQL.equals(dbType)) {
+        if (JdbcConstants.POSTGRESQL.equals(dbType)) {
             return PGUtils.createXAConnection(physicalConn);
         }
 
