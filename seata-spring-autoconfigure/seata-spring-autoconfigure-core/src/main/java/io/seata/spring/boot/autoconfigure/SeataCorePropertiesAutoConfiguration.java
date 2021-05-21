@@ -74,7 +74,7 @@ import static io.seata.spring.boot.autoconfigure.StarterConstants.LOG_PREFIX;
  */
 @ConditionalOnProperty(prefix = SEATA_PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @ComponentScan(basePackages = "io.seata.spring.boot.autoconfigure.properties")
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class SeataCorePropertiesAutoConfiguration {
     static {
 
