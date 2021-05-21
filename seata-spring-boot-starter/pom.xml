@@ -28,7 +28,7 @@
     <name>seata-spring-boot-starter ${project.version}</name>
 
     <properties>
-        <spring-boot.version>2.3.10.RELEASE</spring-boot.version>
+        <spring-boot.version>2.3.11.RELEASE</spring-boot.version>
     </properties>
 
     <dependencyManagement>
@@ -44,6 +44,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>seata-spring-autoconfigure-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--seata-->
         <dependency>
             <groupId>${project.groupId}</groupId>
