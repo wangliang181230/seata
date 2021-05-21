@@ -26,6 +26,7 @@ import io.seata.spring.boot.autoconfigure.properties.server.store.StoreRedisProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import static io.seata.spring.boot.autoconfigure.StarterConstants.PROPERTY_BEAN_MAP;
 import static io.seata.spring.boot.autoconfigure.StarterConstants.SEATA_PREFIX;
@@ -46,9 +47,10 @@ import static io.seata.spring.boot.autoconfigure.StarterConstants.STORE_REDIS_SE
 /**
  * @author xingfudeshi@gmail.com
  */
+@Lazy
 @ConditionalOnProperty(prefix = SEATA_PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @ComponentScan(basePackages = "io.seata.spring.boot.autoconfigure.properties")
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class SeataServerPropertiesAutoConfiguration {
     static {
 

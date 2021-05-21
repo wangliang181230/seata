@@ -26,6 +26,7 @@ import io.seata.spring.boot.autoconfigure.properties.client.LoadBalancePropertie
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import static io.seata.spring.boot.autoconfigure.StarterConstants.PROPERTY_BEAN_MAP;
 import static io.seata.spring.boot.autoconfigure.StarterConstants.CLIENT_RM_PREFIX;
@@ -41,9 +42,10 @@ import static io.seata.spring.boot.autoconfigure.StarterConstants.LOAD_BALANCE_P
 /**
  * @author xingfudeshi@gmail.com
  */
+@Lazy
 @ConditionalOnProperty(prefix = SEATA_PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @ComponentScan(basePackages = "io.seata.spring.boot.autoconfigure.properties")
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class SeataClientPropertiesAutoConfiguration {
     static {
         PROPERTY_BEAN_MAP.put(SEATA_PREFIX, SeataProperties.class);
