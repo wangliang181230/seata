@@ -18,8 +18,7 @@ package io.seata.rm.tcc.interceptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,8 @@ import javax.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
 import io.seata.common.exception.FrameworkException;
+import io.seata.common.util.CollectionUtils;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.common.util.StringUtils;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import io.seata.rm.tcc.api.BusinessActionContextParameter;
@@ -67,12 +68,20 @@ public final class ActionContextUtil {
      * @param targetParam the target param
      * @return map map
      */
-    public static Map<String, Object> fetchContextFromObject(Object targetParam) {
+    public static Map<String, Object> fetchContextFromObject(@Nonnull Object targetParam) {
         try {
-            Map<String, Object> context = new HashMap<>(8);
-            List<Field> fields = new ArrayList<>();
-            getAllField(targetParam.getClass(), fields);
+            // get the fields from target param
+            Field[] fields = ReflectionUtil.getAllFields(targetParam.getClass());
+            if (CollectionUtils.isEmpty(fields)) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn("The param of type `{}` has no field, please don't use `@{}(isParamInProperty = true)` on it",
+                            targetParam.getClass().getName(), BusinessActionContextParameter.class.getSimpleName());
+                }
+                return Collections.emptyMap();
+            }
 
+            // fetch context from the fields
+            Map<String, Object> context = new HashMap<>(8);
             for (Field f : fields) {
                 // get annotation
                 BusinessActionContextParameter annotation = f.getAnnotation(BusinessActionContextParameter.class);
@@ -103,86 +112,91 @@ public final class ActionContextUtil {
      * @param annotation the annotation on the param or field
      * @param context    the action context
      */
-    public static void loadParamByAnnotationAndPutToContext(@Nonnull String objType, String objName, Object objValue,
-                                                            BusinessActionContextParameter annotation, Map<String, Object> context) {
+    public static void loadParamByAnnotationAndPutToContext(@Nonnull final String objType, @Nonnull String objName, Object objValue,
+            @Nonnull final BusinessActionContextParameter annotation, @Nonnull final Map<String, Object> context) {
         if (objValue == null) {
             return;
         }
 
-        // If is `List` or `Array`, get by index
+        // If {@code index >= 0}, get by index from the list/array param or field
         int index = annotation.index();
         if (index >= 0) {
-            if (objValue instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<Object> list = (List<Object>)objValue;
-                if (list.isEmpty()) {
-                    return;
-                }
-                if (list.size() <= index) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("The index '{}' is out of bounds for the list {} named '{}'," +
-                                " whose size is '{}', so pass this {}", index, objType, objName, list.size(), objType);
-                    }
-                    return;
-                }
-                objValue = list.get(index);
-            } else if (objValue.getClass().isArray()) {
-                // The `index` field supports `Array`
-                // @since above 1.4.2
-                int length = Array.getLength(objValue);
-                if (length == 0) {
-                    return;
-                }
-                if (length <= index) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("The index '{}' is out of bounds for the array {} named '{}'," +
-                                " whose size is '{}', so pass this {}", index, objType, objName, length, objType);
-                    }
-                    return;
-                }
-                objValue = Array.get(objValue, index);
-            } else {
-                LOGGER.warn("the {} named '{}' is not a `List`, so the 'index' field of '@{}' cannot be used on it",
-                        objType, objName, BusinessActionContextParameter.class.getSimpleName());
-            }
-
+            objValue = getByIndex(objType, objName, objValue, index);
             if (objValue == null) {
                 return;
             }
         }
 
+        // if {@code isParamInProperty == true}, fetch context from objValue
         if (annotation.isParamInProperty()) {
             Map<String, Object> paramContext = fetchContextFromObject(objValue);
-            if (StringUtils.isNotBlank(annotation.paramName())) {
+            if (CollectionUtils.isEmpty(paramContext)) {
+                return;
+            }
+            String paramName = getParamName(annotation);
+            if (StringUtils.isNotBlank(paramName)) {
                 // If the `paramName` of "@BusinessActionContextParameter" is not blank, put the param context in it
                 // @since: above 1.4.2
-                context.put(annotation.paramName(), paramContext);
+                context.put(paramName, paramContext);
             } else {
                 // Merge the param context into context
                 // Warn: This may cause values with the same name to be overridden
                 context.putAll(paramContext);
             }
         } else {
-            if (StringUtils.isNotBlank(annotation.paramName())) {
-                objName = annotation.paramName();
+            String paramName = getParamName(annotation);
+            if (StringUtils.isNotBlank(paramName)) {
+                objName = paramName;
             }
             context.put(objName, objValue);
         }
     }
 
-    /**
-     * Gets all field.
-     *
-     * @param interFace the inter face
-     * @param fields    the fields
-     */
-    public static void getAllField(Class<?> interFace, List<Field> fields) {
-        if (interFace == Object.class || interFace.isInterface()) {
-            return;
+    private static String getParamName(@Nonnull BusinessActionContextParameter annotation) {
+        String paramName = annotation.paramName();
+        if (StringUtils.isBlank(paramName)) {
+            paramName = annotation.value();
         }
-        Field[] field = interFace.getDeclaredFields();
-        fields.addAll(Arrays.asList(field));
-        getAllField(interFace.getSuperclass(), fields);
+        return paramName;
+    }
+
+    @Nullable
+    private static Object getByIndex(String objType, String objName, Object objValue, int index) {
+        if (objValue instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List<Object>)objValue;
+            if (list.isEmpty()) {
+                return null;
+            }
+            if (list.size() <= index) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("The index '{}' is out of bounds for the list {} named '{}'," +
+                            " whose size is '{}', so pass this {}", index, objType, objName, list.size(), objType);
+                }
+                return null;
+            }
+            objValue = list.get(index);
+        } else if (objValue.getClass().isArray()) {
+            // The `index` field supports `Array`
+            // @since above 1.4.2
+            int length = Array.getLength(objValue);
+            if (length == 0) {
+                return null;
+            }
+            if (length <= index) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("The index '{}' is out of bounds for the array {} named '{}'," +
+                            " whose size is '{}', so pass this {}", index, objType, objName, length, objType);
+                }
+                return null;
+            }
+            objValue = Array.get(objValue, index);
+        } else {
+            LOGGER.warn("the {} named '{}' is not a `List` or `Array`, so the 'index' field of '@{}' cannot be used on it",
+                    objType, objName, BusinessActionContextParameter.class.getSimpleName());
+        }
+
+        return objValue;
     }
 
     /**
@@ -263,15 +277,19 @@ public final class ActionContextUtil {
         }
 
         try {
+            return (T)value;
+        } catch (ClassCastException ignore) {
             try {
-                return (T)value;
-            } catch (ClassCastException ignore) {
-                return JSON.parseObject(value.toString(), targetClazz);
+                if (value instanceof CharSequence) {
+                    return JSON.parseObject(value.toString(), targetClazz);
+                } else {
+                    return JSON.parseObject(JSON.toJSONString(value), targetClazz);
+                }
+            } catch (RuntimeException e) {
+                String errorMsg = String.format("Failed to convert the action context with key '%s' from '%s' to '%s'.",
+                        key, value.getClass().getName(), targetClazz.getName());
+                throw new FrameworkException(e, errorMsg);
             }
-        } catch (RuntimeException e) {
-            String errorMsg = String.format("Failed to convert the action context with key '%s' from '%s' to '%s'.",
-                    key, value.getClass().getName(), targetClazz.getName());
-            throw new FrameworkException(e, errorMsg);
         }
     }
 }
