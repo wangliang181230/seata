@@ -25,4 +25,12 @@ seata:
     type: file
   store:
     # support: file 、 db 、 redis
-    mode: file
+    mode: db
+    session:
+      mode: db
+    lock:
+      mode: db
+    db:
+      url: jdbc:mysql://10.1.50.112:3306/seata-server?rewriteBatchedStatements=true
+      user: root
+      password: 123456
