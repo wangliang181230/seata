@@ -18,6 +18,7 @@ package io.seata.rm.tcc.interceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import io.seata.core.context.RootContext;
 import io.seata.core.model.BranchType;
 import io.seata.core.model.CommitType;
 import io.seata.rm.DefaultResourceManager;
+import io.seata.rm.tcc.TCCFenceHandler;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import io.seata.rm.tcc.api.BusinessActionContextParameter;
 import io.seata.rm.tcc.api.BusinessActionContextUtil;
@@ -78,14 +80,23 @@ public class ActionInterceptorHandler {
         //share actionContext implicitly
         BusinessActionContextUtil.setContext(actionContext);
         try {
-            //Execute business, and return business result
-            return targetCallback.execute();
+            if (businessAction.useTCCFence()) {
+                try {
+                    // Use TCC Fence, and return business result
+                    return TCCFenceHandler.prepareFence(xid, Long.valueOf(branchId), targetCallback);
+                } catch (FrameworkException | UndeclaredThrowableException e) {
+                    String msg = String.format("prepare TCC resource error, xid: %s.", xid);
+                    LOGGER.error(msg, e.getCause());
+                    throw e.getCause();
+                }
+            } else {
+                //Execute business, and return business result
+                return targetCallback.execute();
+            }
         } finally {
             BusinessActionContextUtil.clear();
             //to report business action context finally.
-            if (businessAction.isDelayReport() || Boolean.TRUE.equals(actionContext.getUpdated())) {
-                BusinessActionContextUtil.reportContext(actionContext);
-            }
+            BusinessActionContextUtil.reportContext(actionContext);
         }
     }
 
@@ -200,6 +211,7 @@ public class ActionInterceptorHandler {
             context.put(Constants.COMMIT_METHOD, businessAction.commitMethod());
             context.put(Constants.ROLLBACK_METHOD, businessAction.rollbackMethod());
             context.put(Constants.ACTION_NAME, businessAction.name());
+            context.put(Constants.USE_TCC_FENCE, businessAction.useTCCFence());
         }
     }
 
