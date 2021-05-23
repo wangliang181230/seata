@@ -25,6 +25,7 @@ import java.util.Map;
 import com.alibaba.fastjson.JSON;
 import io.seata.common.Constants;
 import io.seata.common.exception.FrameworkException;
+import io.seata.common.exception.SkipCallbackWrapperException;
 import io.seata.common.executor.Callback;
 import io.seata.common.util.NetUtil;
 import io.seata.common.util.StringUtils;
@@ -82,20 +83,20 @@ public class ActionInterceptorHandler {
         try {
             if (businessAction.useTCCFence()) {
                 try {
-                    // Use TCC Fence, and return business result
+                    // Use TCC Fence, and return the business result
                     return TCCFenceHandler.prepareFence(xid, Long.valueOf(branchId), targetCallback);
-                } catch (FrameworkException | UndeclaredThrowableException e) {
-                    String msg = String.format("prepare TCC resource error, xid: %s.", xid);
-                    LOGGER.error(msg, e.getCause());
-                    throw e.getCause();
+                } catch (SkipCallbackWrapperException | UndeclaredThrowableException e) {
+                    Throwable originException = e.getCause();
+                    LOGGER.error("[{}] prepare TCC resource error: {}", xid, originException.getMessage());
+                    throw originException;
                 }
             } else {
-                //Execute business, and return business result
+                //Execute business, and return the business result
                 return targetCallback.execute();
             }
         } finally {
             BusinessActionContextUtil.clear();
-            //to report business action context finally.
+            //to report business action context finally if the actionContext.getUpdated() is true
             BusinessActionContextUtil.reportContext(actionContext);
         }
     }
