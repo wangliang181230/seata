@@ -25,9 +25,9 @@ import io.seata.spring.boot.autoconfigure.properties.client.ServiceProperties;
 import io.seata.spring.boot.autoconfigure.properties.client.TmProperties;
 import io.seata.spring.boot.autoconfigure.properties.client.UndoCompressProperties;
 import io.seata.spring.boot.autoconfigure.properties.client.UndoProperties;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 import static io.seata.spring.boot.autoconfigure.StarterConstants.CLIENT_RM_PREFIX;
 import static io.seata.spring.boot.autoconfigure.StarterConstants.CLIENT_TM_PREFIX;
@@ -41,14 +41,15 @@ import static io.seata.spring.boot.autoconfigure.StarterConstants.SEATA_PREFIX;
 import static io.seata.spring.boot.autoconfigure.StarterConstants.SERVICE_PREFIX;
 import static io.seata.spring.boot.autoconfigure.StarterConstants.UNDO_PREFIX;
 
+
 /**
  * @author xingfudeshi@gmail.com
+ * @author wang.liang
  */
-@ConditionalOnProperty(prefix = SEATA_PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
-@ComponentScan(basePackages = "io.seata.spring.boot.autoconfigure.properties")
-@Configuration(proxyBeanMethods = false)
-public class SeataClientPropertiesAutoConfiguration {
-    static {
+public class SeataClientEnvironmentPostProcessor implements EnvironmentPostProcessor {
+
+    @Override
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         PROPERTY_BEAN_MAP.put(SEATA_PREFIX, SeataProperties.class);
 
         PROPERTY_BEAN_MAP.put(CLIENT_RM_PREFIX, RmProperties.class);
