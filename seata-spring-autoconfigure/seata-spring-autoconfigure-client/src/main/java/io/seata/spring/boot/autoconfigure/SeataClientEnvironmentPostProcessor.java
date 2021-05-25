@@ -41,7 +41,6 @@ import static io.seata.spring.boot.autoconfigure.StarterConstants.SEATA_PREFIX;
 import static io.seata.spring.boot.autoconfigure.StarterConstants.SERVICE_PREFIX;
 import static io.seata.spring.boot.autoconfigure.StarterConstants.UNDO_PREFIX;
 
-
 /**
  * @author xingfudeshi@gmail.com
  * @author wang.liang
