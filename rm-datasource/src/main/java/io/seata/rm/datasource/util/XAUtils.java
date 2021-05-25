@@ -23,6 +23,7 @@ import javax.sql.XAConnection;
 import javax.transaction.xa.XAException;
 
 import com.alibaba.druid.util.JdbcUtils;
+import com.alibaba.druid.util.MySqlUtils;
 import com.alibaba.druid.util.PGUtils;
 import io.seata.rm.BaseDataSourceResource;
 import io.seata.sqlparser.util.JdbcConstants;

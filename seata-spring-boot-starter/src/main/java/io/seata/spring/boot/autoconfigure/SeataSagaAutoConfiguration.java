@@ -48,7 +48,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty({StarterConstants.SEATA_PREFIX + ".enabled", StarterConstants.SAGA_PREFIX + ".enabled"})
-@AutoConfigureAfter({DataSourceAutoConfiguration.class, SeataAutoConfiguration.class})
+@AutoConfigureAfter({SeataCoreAutoConfiguration.class, DataSourceAutoConfiguration.class, SeataAutoConfiguration.class})
 public class SeataSagaAutoConfiguration {
 
     public static final String SAGA_DATA_SOURCE_BEAN_NAME = "seataSagaDataSource";
