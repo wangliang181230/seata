@@ -40,7 +40,7 @@
         <module>rm-datasource</module>
         <module>spring</module>
         <module>tcc</module>
-        <module>test</module>
+        <!--<module>test</module>-->
         <module>tm</module>
         <module>metrics</module>
         <module>serializer</module>
