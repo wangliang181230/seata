@@ -37,7 +37,7 @@ public final class StackTraceLogger {
 
     public static void info(Logger logger, Throwable cause, String format, Object[] args) {
         if (logger.isInfoEnabled()) {
-            if (needToPrintStackTrace()) {
+            if (cause != null && needToPrintStackTrace()) {
                 logger.info(STACK_TRACE_LOGGER_PREFIX + format, buildNewArgs(args, cause));
             } else {
                 logger.info(format, args);
@@ -47,7 +47,7 @@ public final class StackTraceLogger {
 
     public static void warn(Logger logger, Throwable cause, String format, Object[] args) {
         if (logger.isWarnEnabled()) {
-            if (needToPrintStackTrace()) {
+            if (cause != null && needToPrintStackTrace()) {
                 logger.warn(STACK_TRACE_LOGGER_PREFIX + format, buildNewArgs(args, cause));
             } else {
                 logger.warn(format, args);
@@ -57,7 +57,7 @@ public final class StackTraceLogger {
 
     public static void error(Logger logger, Throwable cause, String format, Object[] args) {
         if (logger.isErrorEnabled()) {
-            if (needToPrintStackTrace()) {
+            if (cause != null && needToPrintStackTrace()) {
                 logger.error(STACK_TRACE_LOGGER_PREFIX + format, buildNewArgs(args, cause));
             } else {
                 logger.error(format, args);
