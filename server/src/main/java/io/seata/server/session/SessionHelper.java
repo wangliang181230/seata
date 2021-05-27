@@ -161,7 +161,7 @@ public class SessionHelper {
      *
      * @param sessions the global sessions
      * @param handler  the handler
-     * @since 1.5.0
+     * @since 1.4.2
      */
     public static void forEach(Collection<GlobalSession> sessions, GlobalSessionHandler handler) {
         for (GlobalSession globalSession : sessions) {
@@ -181,7 +181,7 @@ public class SessionHelper {
      *
      * @param sessions the branch session
      * @param handler  the handler
-     * @since 1.5.0
+     * @since 1.4.2
      */
     public static Boolean forEach(Collection<BranchSession> sessions, BranchSessionHandler handler) throws TransactionException {
         Boolean result;

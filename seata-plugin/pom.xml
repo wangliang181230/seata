@@ -32,7 +32,7 @@
 
     <properties>
         <!-- seata plugin version -->
-        <revision>1.5.0-SNAPSHOT</revision>
+        <revision>1.5.0-CUSTOM-SNAPSHOT</revision>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -43,7 +43,7 @@
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 
         <ojdbc.version>19.3.0.0</ojdbc.version>
-        <seata.version>1.5.0-SNAPSHOT</seata.version>
+        <seata.version>1.5.0-CUSTOM-SNAPSHOT</seata.version>
 
         <junit-jupiter.version>5.4.2</junit-jupiter.version>
         <mockito.version>2.23.4</mockito.version>
