@@ -117,19 +117,12 @@ if $cygwin; then
   [ -n "$REPO" ] && REPO=`cygpath --path --windows "$REPO"`
 fi
 
-JAVA_OPT="${JAVA_OPT} -server -Xmx2048m -Xms2048m -Xmn1024m -Xss512k -XX:SurvivorRatio=10 -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:MaxDirectMemorySize=1024m -XX:-OmitStackTraceInFastThrow -XX:-UseAdaptiveSizePolicy"
-JAVA_OPT="${JAVA_OPT} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BASEDIR}/logs/java_heapdump.hprof -XX:+DisableExplicitGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=75 -Xloggc:${BASEDIR}/logs/seata_gc.log -verbose:gc"
-JAVA_OPT="${JAVA_OPT} -Dio.netty.leakDetectionLevel=advanced"
-JAVA_OPT="${JAVA_OPT} -Dapp.name=seata-server -Dapp.pid=${$} -Dapp.home=${BASEDIR} -Dbasedir=${BASEDIR}"
-JAVA_OPT="${JAVA_OPT} -Dspring.config.location=${BASEDIR}/conf/application.yml -Dlogging.config=${BASEDIR}/conf/logback-spring.xml"
-JAVA_OPT="${JAVA_OPT} -jar ${BASEDIR}/target/seata-server.jar"
-
-
-if [ ! -x "$BASEDIR"/logs ]; then
-  mkdir "$BASEDIR"/logs
-fi
-
-# start
-echo "$JAVACMD ${JAVA_OPT}" > ${BASEDIR}/logs/start.out 2>&1 &
-nohup $JAVACMD ${JAVA_OPT} >> ${BASEDIR}/logs/start.out 2>&1 &
-echo "seata-server is starting, you can check the ${BASEDIR}/logs/start.out"
+exec "$JAVACMD" $JAVA_OPTS -server -Xmx2048m -Xms2048m -Xmn1024m -Xss512k -XX:SurvivorRatio=10 -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:MaxDirectMemorySize=1024m -XX:-OmitStackTraceInFastThrow -XX:-UseAdaptiveSizePolicy \
+  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="$BASEDIR"/logs/java_heapdump.hprof -XX:+DisableExplicitGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=75 -Xloggc:"$BASEDIR"/logs/seata_gc.log -verbose:gc \
+  -Dio.netty.leakDetectionLevel=advanced \
+  -Dapp.name="seata-server" -Dapp.pid="$$" -Dapp.home="$BASEDIR" -Dbasedir="$BASEDIR" \
+  -Dspring.config.location="$BASEDIR"/conf/application.yml -Dlogging.config="$BASEDIR"/conf/logback-spring.xml \
+  -Dapp.repo="$REPO" \
+  -Dseata.host="10.10.10.185" \
+  -jar "$BASEDIR"/target/seata-server.jar \
+  "$@"
