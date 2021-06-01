@@ -13,24 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package io.seata.common.exception;
+package io.seata.rm.tcc.api;
+
+import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
- * Skip Callback Wrapper Exception.
- * This exception class will make the semantics clearer.
+ * The interface ParameterFetcher.
+ * Warn: The implementation class must contain a no-parameter constructor.
  *
  * @author wang.liang
  * @since above 1.4.2
  */
-public class SkipCallbackWrapperException extends RuntimeException {
+public interface ParameterFetcher {
 
-    public SkipCallbackWrapperException(Throwable cause) {
-        super(cause);
-    }
-
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        // do nothing
-        return null;
-    }
+    /**
+     * fetch context from the param or field
+     *
+     * @param objValue      the value of the param or field
+     * @param annotation    the annotation
+     * @param actionContext the action context
+     */
+    void fetchContext(@Nonnull Object objValue, @Nonnull BusinessActionContextParameter annotation, @Nonnull Map<String, Object> actionContext);
 }
