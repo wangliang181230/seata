@@ -15,7 +15,7 @@
   ~  limitations under the License.
   -->
 <assembly>
-    <id>server-${project.version}</id>
+    <id>${project.version}</id>
     <includeBaseDirectory>true</includeBaseDirectory>
     <formats>
         <format>dir</format>
@@ -56,6 +56,10 @@
         <file>
             <source>LICENSE-BIN</source>
             <destName>LICENSE</destName>
+        </file>
+        <file>
+            <source>Dockerfile</source>
+            <destName>Dockerfile</destName>
         </file>
 
         <file>
