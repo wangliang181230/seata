@@ -54,17 +54,18 @@
 
     <files>
         <file>
-            <source>LICENSE-BIN</source>
-            <destName>LICENSE</destName>
-        </file>
-        <file>
             <source>Dockerfile</source>
             <destName>Dockerfile</destName>
         </file>
 
         <file>
+            <source>LICENSE-BIN</source>
+            <destName>LICENSE</destName>
+        </file>
+
+        <file>
             <source>../server/target/seata-server.jar</source>
-            <outputDirectory>target/</outputDirectory>
+            <outputDirectory>lib/</outputDirectory>
         </file>
 
         <file>

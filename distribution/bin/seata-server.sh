@@ -123,6 +123,6 @@ exec "$JAVACMD" $JAVA_OPTS -server -Xmx2048m -Xms2048m -Xmn1024m -Xss512k -XX:Su
   -Dapp.name="seata-server" -Dapp.pid="$$" -Dapp.home="$BASEDIR" -Dbasedir="$BASEDIR" \
   -Dspring.config.location="$BASEDIR"/conf/application.yml -Dlogging.config="$BASEDIR"/conf/logback-spring.xml \
   -Dapp.repo="$REPO" \
-  -Dseata.host="10.1.50.114" \
-  -jar "$BASEDIR"/target/seata-server.jar \
+  -Dseata.host="10.1.50.114" -Dseata.port="8091" \
+  -jar "$BASEDIR"/lib/seata-server.jar \
   "$@"
