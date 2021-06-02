@@ -22,6 +22,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 import com.alibaba.fastjson.JSON;
 import io.seata.common.Constants;
@@ -39,6 +40,7 @@ import io.seata.rm.tcc.TCCFenceHandler;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import io.seata.rm.tcc.api.BusinessActionContextParameter;
 import io.seata.rm.tcc.api.BusinessActionContextUtil;
+import io.seata.rm.tcc.api.ParamType;
 import io.seata.rm.tcc.api.TwoPhaseBusinessAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +75,8 @@ public class ActionInterceptorHandler {
         //Set the action name
         String actionName = businessAction.name();
         actionContext.setActionName(actionName);
+        //Set the delay report
+        actionContext.setDelayReport(businessAction.isDelayReport());
 
         //Creating Branch Record
         String branchId = doTccActionLogStore(method, arguments, businessAction, actionContext);
@@ -124,6 +128,7 @@ public class ActionInterceptorHandler {
      * @return the action context
      * @since above 1.4.2
      */
+    @Nonnull
     protected BusinessActionContext getOrCreateActionContextAndResetToArguments(Class<?>[] parameterTypes, Object[] arguments) {
         BusinessActionContext actionContext = null;
 
@@ -166,6 +171,8 @@ public class ActionInterceptorHandler {
         String actionName = actionContext.getActionName();
         String xid = actionContext.getXid();
 
+        //region fetch context and init action context
+
         Map<String, Object> context = fetchActionRequestContext(method, arguments);
         context.put(Constants.ACTION_START_TIME, System.currentTimeMillis());
 
@@ -173,16 +180,18 @@ public class ActionInterceptorHandler {
         initBusinessContext(context, method, businessAction);
         //Init running environment context
         initFrameworkContext(context);
-        actionContext.setDelayReport(businessAction.isDelayReport());
-        //Merge context and origin context if it exists.
-        //@since: above 1.4.2
+
         Map<String, Object> originContext = actionContext.getActionContext();
         if (CollectionUtils.isNotEmpty(originContext)) {
+            //Merge context and origin context if it exists.
+            //@since: above 1.4.2
             originContext.putAll(context);
             context = originContext;
         } else {
             actionContext.setActionContext(context);
         }
+
+        //endregion
 
         //Init applicationData
         Map<String, Object> applicationContext = Collections.singletonMap(Constants.TCC_ACTION_CONTEXT, context);
@@ -269,7 +278,7 @@ public class ActionInterceptorHandler {
                     }
 
                     // if the parameter names is null, print log and throw exception
-                    String paramName = ActionContextUtil.getParamName(annotation);
+                    String paramName = ActionContextUtil.getParamNameFromAnnotation(annotation);
                     if (parameterNames == null && StringUtils.isBlank(paramName) && !annotation.isParamInProperty()) {
                         String errorMsg = String.format("Unable to get parameter names from the method `%s.%s(...)`." +
                                         " Please execute 'javac -parameters' to re-compile of the method code," +
@@ -278,9 +287,9 @@ public class ActionInterceptorHandler {
                         throw new FrameworkException(errorMsg);
                     }
 
-                    // load param by the config of annotation, and then put in the context
+                    // load param by the config of annotation, and then put into the context
                     paramName = parameterNames != null ? parameterNames[i] : parameters[i].getName();
-                    ActionContextUtil.loadParamByAnnotationAndPutToContext("param", paramName, paramObject, annotation, context);
+                    ActionContextUtil.loadParamByAnnotationAndPutToContext(ParamType.PARAM, paramName, paramObject, annotation, context);
                 }
             }
         }

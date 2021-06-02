@@ -15,9 +15,9 @@
  */
 package io.seata.rm.tcc;
 
-import io.seata.rm.tcc.api.BusinessActionContext;
-
 import java.util.List;
+
+import io.seata.rm.tcc.api.BusinessActionContext;
 
 /**
  * The type Tcc action.
@@ -32,7 +32,10 @@ public class TccActionImpl implements TccAction {
                            List b,
                            long[] c,
                            TccParam d,
-                           TccParam e) {
+                           TccParam e,
+                           TccParam f,
+                           boolean g,
+                           boolean h) {
         return true;
     }
 

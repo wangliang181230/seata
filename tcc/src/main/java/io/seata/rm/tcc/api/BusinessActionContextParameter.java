@@ -36,7 +36,7 @@ public @interface BusinessActionContextParameter {
      * parameter's name. Synonym for {@link #paramName()}.
      *
      * @return the name of the param or field
-     * @see io.seata.rm.tcc.interceptor.ActionContextUtil#getParamName
+     * @see io.seata.rm.tcc.interceptor.ActionContextUtil#getParamNameFromAnnotation
      */
     String value() default "";
 
@@ -44,7 +44,7 @@ public @interface BusinessActionContextParameter {
      * parameter's name. Synonym for {@link #value()}.
      *
      * @return the name of the param or field
-     * @see io.seata.rm.tcc.interceptor.ActionContextUtil#getParamName
+     * @see io.seata.rm.tcc.interceptor.ActionContextUtil#getParamNameFromAnnotation
      */
     String paramName() default "";
 
@@ -72,6 +72,7 @@ public @interface BusinessActionContextParameter {
      *
      * @return the boolean
      * @see io.seata.rm.tcc.interceptor.ActionContextUtil#loadParamByAnnotationAndPutToContext
+     * @see io.seata.rm.tcc.interceptor.ActionContextUtil#fetchContextFromObject
      */
     boolean isParamInProperty() default false;
 
