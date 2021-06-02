@@ -90,9 +90,11 @@ public class ParameterParser {
             }
             if (StringUtils.isBlank(this.host) && StringUtils.isNotBlank(System.getProperty("seata.host"))) {
                 this.host = System.getProperty("seata.host");
+                System.out.println("读取到 -Dseata.host: " + this.host);
             }
             if (this.port == SERVER_DEFAULT_PORT && StringUtils.isNotBlank(System.getProperty("seata.port"))) {
                 this.port = NumberUtils.toInt(System.getProperty("seata.port"), SERVER_DEFAULT_PORT);
+                System.out.println("读取到 -Dseata.port: " + this.port);
             }
             if (StringUtils.isNotBlank(seataEnv)) {
                 System.setProperty(ENV_PROPERTY_KEY, seataEnv);
