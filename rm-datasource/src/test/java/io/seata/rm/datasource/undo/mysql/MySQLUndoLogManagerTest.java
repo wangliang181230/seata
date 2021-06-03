@@ -15,6 +15,7 @@
  */
 package io.seata.rm.datasource.undo.mysql;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -141,7 +142,7 @@ public class MySQLUndoLogManagerTest {
     }
 
     @Test
-    public void testFlushUndoLogs() throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+    public void testFlushUndoLogs() throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
         connectionProxy.bind("xid");
         ConnectionContext context = connectionProxy.getContext();
         ReflectionUtil.invokeMethod(context, "setBranchId", Long.class, 1L);
@@ -154,7 +155,7 @@ public class MySQLUndoLogManagerTest {
     }
 
     @Test
-    public void testNeedCompress() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
+    public void testNeedCompress() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         SQLUndoLog smallUndoItem = getUndoLogItem(1);
         BranchUndoLog smallBranchUndoLog = new BranchUndoLog();
         smallBranchUndoLog.setBranchId(1L);
@@ -162,7 +163,8 @@ public class MySQLUndoLogManagerTest {
         smallBranchUndoLog.setSqlUndoLogs(Collections.singletonList(smallUndoItem));
         UndoLogParser parser = UndoLogParserFactory.getInstance();
         byte[] smallUndoLogContent = parser.encode(smallBranchUndoLog);
-        Assertions.assertFalse((boolean)ReflectionUtil.invokeMethod(undoLogManager, "needCompress", byte[].class, smallUndoLogContent));
+        Assertions.assertFalse((boolean)ReflectionUtil.invokeMethod(undoLogManager, "needCompress",
+                byte[].class, smallUndoLogContent));
 
         SQLUndoLog hugeUndoItem = getUndoLogItem(10000);
         BranchUndoLog hugeBranchUndoLog = new BranchUndoLog();
@@ -170,7 +172,8 @@ public class MySQLUndoLogManagerTest {
         hugeBranchUndoLog.setXid("test_xid1");
         hugeBranchUndoLog.setSqlUndoLogs(Collections.singletonList(hugeUndoItem));
         byte[] hugeUndoLogContent = parser.encode(hugeBranchUndoLog);
-        Assertions.assertTrue((boolean)ReflectionUtil.invokeMethod(undoLogManager, "needCompress", byte[].class, hugeUndoLogContent));
+        Assertions.assertTrue((boolean)ReflectionUtil.invokeMethod(undoLogManager, "needCompress",
+                byte[].class, hugeUndoLogContent));
     }
 
     @Test

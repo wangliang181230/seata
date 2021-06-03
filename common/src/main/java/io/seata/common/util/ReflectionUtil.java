@@ -257,10 +257,10 @@ public final class ReflectionUtil {
                 ex = e;
             }
         }
-        if (ex instanceof IllegalAccessException) {
-            throw (IllegalAccessException)ex;
-        } else {
+        if (ex instanceof InvocationTargetException) {
             throw (InvocationTargetException)ex;
+        } else {
+            throw (IllegalAccessException)ex;
         }
     }
 
@@ -287,12 +287,13 @@ public final class ReflectionUtil {
      * @param method the method
      * @param args   the args
      * @return object
-     * @throws IllegalAccessException   the illegal access exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws SecurityException        the security exception
+     * @throws InvocationTargetException the invocation target exception
+     * @throws IllegalAccessException    the illegal access exception
+     * @throws IllegalArgumentException  the illegal argument exception
+     * @throws SecurityException         the security exception
      */
     public static Object invokeMethod(Object target, Method method, Object... args)
-            throws IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException {
+            throws InvocationTargetException, IllegalAccessException, IllegalArgumentException, SecurityException {
         Exception ex = null;
         int i = 0;
         while (i < MAX_RETRY_COUNT) {
@@ -307,10 +308,10 @@ public final class ReflectionUtil {
                 ex = e;
             }
         }
-        if (ex instanceof IllegalAccessException) {
-            throw (IllegalAccessException)ex;
-        } else {
+        if (ex instanceof InvocationTargetException) {
             throw (InvocationTargetException)ex;
+        } else {
+            throw (IllegalAccessException)ex;
         }
     }
 
@@ -322,28 +323,19 @@ public final class ReflectionUtil {
      * @param parameterTypes the parameter types
      * @param args           the args
      * @return object
-     * @throws NoSuchMethodException    the no such method exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws SecurityException        the security exception
+     * @throws NoSuchMethodException     the no such method exception
+     * @throws InvocationTargetException the invocation target exception
+     * @throws IllegalArgumentException  the illegal argument exception
+     * @throws SecurityException         the security exception
      */
     public static Object invokeMethod(Object target, String methodName, Class<?>[] parameterTypes, Object... args)
-            throws NoSuchMethodException, IllegalArgumentException, SecurityException {
-        Class<?> cl = target.getClass();
-        int i = 0;
-        while ((i++) < MAX_NEST_DEPTH && cl != null) {
-            try {
-                Method m = cl.getDeclaredMethod(methodName, parameterTypes);
-                m.setAccessible(true);
-                return m.invoke(target, args);
-            } catch (Exception e) {
-                cl = cl.getSuperclass();
-            }
-        }
-        throw new NoSuchMethodException("class:" + target.getClass() + ", methodName:" + methodName);
+            throws NoSuchMethodException, InvocationTargetException, IllegalArgumentException, SecurityException, IllegalAccessException {
+        Method method = getMethod(target.getClass(), methodName, parameterTypes);
+        return invokeMethod(target, method, args);
     }
 
     public static Object invokeMethod(Object target, String methodName, Class<?> parameterType, Object arg)
-            throws NoSuchMethodException, IllegalArgumentException, SecurityException {
+            throws InvocationTargetException, NoSuchMethodException, IllegalArgumentException, SecurityException, IllegalAccessException {
         return invokeMethod(target, methodName, new Class<?>[]{parameterType}, arg);
     }
 

@@ -15,6 +15,8 @@
  */
 package io.seata.rm.tcc.remoting.parser;
 
+import java.lang.reflect.InvocationTargetException;
+
 import io.seata.common.util.ReflectionUtil;
 
 /**
@@ -43,7 +45,7 @@ public class DubboUtil {
      * @throws NoSuchMethodException    the no such method exception
      */
     public static Class<?> getAssistInterface(Object proxyBean) throws NoSuchFieldException, SecurityException,
-            IllegalArgumentException, IllegalAccessException, NoSuchMethodException {
+            IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         if (proxyBean == null) {
             return null;
         }

@@ -46,24 +46,23 @@ public class ReflectionUtilTest {
     }
 
     @Test
-    public void testInvokeMethod() throws NoSuchMethodException {
+    public void testInvokeMethod() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Assertions.assertEquals(0, ReflectionUtil.invokeMethod("", "length"));
-        Assertions.assertEquals(3,
-                ReflectionUtil.invokeMethod("foo", "length"));
+        Assertions.assertEquals(3, ReflectionUtil.invokeMethod("foo", "length"));
 
         Assertions.assertThrows(NoSuchMethodException.class,
                 () -> ReflectionUtil.invokeMethod("", "size"));
     }
 
     @Test
-    public void testInvokeMethod2() throws NoSuchMethodException {
+    public void testInvokeMethod2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Assertions.assertEquals(0, ReflectionUtil
-                .invokeMethod("", "length", null, null));
+                .invokeMethod("", "length"));
         Assertions.assertEquals(3, ReflectionUtil
-                .invokeMethod("foo", "length", null, null));
+                .invokeMethod("foo", "length"));
 
         Assertions.assertThrows(NoSuchMethodException.class, () -> ReflectionUtil
-                .invokeMethod("", "size", null, null));
+                .invokeMethod("", "size"));
     }
 
     @Test

@@ -108,7 +108,7 @@ public class MockResultSetMetaData implements ResultSetMetaData {
         try {
             Object tableName = ReflectionUtil.getFieldValue(columnMeta, "tableName");
             return tableName.toString();
-        } catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
             return null;
         }
