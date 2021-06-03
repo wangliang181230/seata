@@ -28,6 +28,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.util.JdbcConstants;
 
 import com.google.common.collect.Lists;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.rm.datasource.StatementProxy;
@@ -69,9 +70,7 @@ public class UpdateExecutorTest {
 
         DataSourceProxy dataSourceProxy = new DataSourceProxy(dataSource);
         try {
-            Field field = dataSourceProxy.getClass().getDeclaredField("dbType");
-            field.setAccessible(true);
-            field.set(dataSourceProxy, "mysql");
+            ReflectionUtil.setFieldValue(dataSourceProxy, "dbType", JdbcConstants.MYSQL);
             ConnectionProxy connectionProxy = new ConnectionProxy(dataSourceProxy, dataSource.getConnection().getConnection());
             MockStatementBase mockStatement = new MockStatement(dataSource.getConnection().getConnection());
             statementProxy = new StatementProxy(connectionProxy, mockStatement);

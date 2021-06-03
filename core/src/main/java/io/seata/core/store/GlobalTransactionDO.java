@@ -15,8 +15,10 @@
  */
 package io.seata.core.store;
 
+import io.seata.common.util.ReflectionUtil;
 import io.seata.common.util.StringUtils;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 
 /**
@@ -25,6 +27,33 @@ import java.util.Date;
  * @author zhangsen
  */
 public class GlobalTransactionDO {
+
+    public static void main(String[] args) throws NoSuchFieldException {
+        Field[] fields = GlobalTransactionDO.class.getDeclaredFields();
+        Field field = GlobalTransactionDO.class.getDeclaredField("xid");
+
+        GlobalTransactionDO model = new GlobalTransactionDO();
+        model.setXid("aaa");
+
+        new Thread(() -> {
+            try {
+                System.out.println("get field value");
+                System.out.println(ReflectionUtil.getFieldValue(model, field));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            field.setAccessible(false);
+            System.out.println("to false");
+        }).start();
+    }
 
     private String xid;
 

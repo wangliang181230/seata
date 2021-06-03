@@ -23,6 +23,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import com.google.common.collect.Lists;
 import io.seata.common.exception.NotSupportYetException;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.rm.datasource.StatementProxy;
@@ -76,17 +77,13 @@ public class MultiExecutorTest {
 
         DataSourceProxy dataSourceProxy = new DataSourceProxy(dataSource);
         try {
-            Field field = dataSourceProxy.getClass().getDeclaredField("dbType");
-            field.setAccessible(true);
-            field.set(dataSourceProxy, "mysql");
+            ReflectionUtil.setFieldValue(dataSourceProxy, "dbType", JdbcConstants.MYSQL);
             connectionProxy = new ConnectionProxy(dataSourceProxy, dataSource.getConnection().getConnection());
             MockStatementBase mockStatement = new MockStatement(dataSource.getConnection().getConnection());
             statementProxy = new StatementProxy(connectionProxy, mockStatement);
         } catch (Exception e) {
             throw new RuntimeException("init failed");
         }
-
-
     }
 
     @Test
@@ -95,9 +92,7 @@ public class MultiExecutorTest {
         String sql = "update table_update_executor_test set name = 'WILL' where id = 1;" +
                 "update table_update_executor_test set name = 'WILL2' where id = 2";
         List<SQLRecognizer> multi = SQLVisitorFactory.get(sql, JdbcConstants.MYSQL);
-        executor = new MultiExecutor(statementProxy, (statement, args) -> {
-            return null;
-        }, multi);
+        executor = new MultiExecutor(statementProxy, (statement, args) -> null, multi);
         TableRecords beforeImage = executor.beforeImage();
         Map multiSqlGroup = executor.getMultiSqlGroup();
         Map beforeImagesMap = executor.getBeforeImagesMap();

@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import io.seata.common.exception.ShouldNeverHappenException;
 import io.seata.common.holder.ObjectHolder;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.config.Configuration;
 import io.seata.config.ExtConfigurationProvider;
 import org.apache.commons.lang.StringUtils;
@@ -127,8 +128,7 @@ public class SpringBootConfigurationProvider implements ExtConfigurationProvider
             f -> f.getName().equalsIgnoreCase(fieldName)).findAny();
         if (fieldOptional.isPresent()) {
             Field field = fieldOptional.get();
-            field.setAccessible(true);
-            value = field.get(object);
+            value = ReflectionUtil.getFieldValue(object, field);
             if (value instanceof Map) {
                 String key = StringUtils.substringAfterLast(dataId, String.valueOf(DOT));
                 value = ((Map) value).get(key);

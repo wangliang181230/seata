@@ -15,6 +15,7 @@
  */
 package io.seata.spring.tcc;
 
+import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.tcc.api.TwoPhaseBusinessAction;
 import io.seata.rm.tcc.remoting.RemotingDesc;
 import io.seata.spring.util.TCCBeanParserUtils;
@@ -105,8 +106,7 @@ public class TccAnnotationProcessor implements BeanPostProcessor {
 
                 TccActionInterceptor actionInterceptor = new TccActionInterceptor(remotingDesc);
                 Object proxyBean = TCCBeanParserUtils.createProxy(interfaceClass, fieldValue, actionInterceptor);
-                field.setAccessible(true);
-                field.set(bean, proxyBean);
+                ReflectionUtil.setFieldValue(bean, field, proxyBean);
                 LOGGER.info("Bean[" + bean.getClass().getName() + "] with name [" + field.getName() + "] would use proxy [" + actionInterceptor.getClass().getName() + "]");
             }
         }

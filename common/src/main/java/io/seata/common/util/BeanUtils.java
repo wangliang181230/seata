@@ -34,36 +34,44 @@ public class BeanUtils {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(BeanUtils.class);
 
+    /**
+     * object to string
+     *
+     * @param o the object
+     * @return the string
+     * @deprecated please use {@link StringUtils#toString(Object)}
+     */
+    @Deprecated
     public static String beanToString(Object o) {
         if (o == null) {
             return null;
         }
 
-        Field[] fields = o.getClass().getDeclaredFields();
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("[");
+        Field[] fields = ReflectionUtil.getAllFields(o.getClass());
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
         for (Field field : fields) {
             Object val = null;
             try {
                 val = ReflectionUtil.getFieldValue(o, field.getName());
-            } catch (NoSuchFieldException e) {
-                LOGGER.warn(e.getMessage(), e);
+            } catch (IllegalAccessException | RuntimeException | NoSuchFieldException e) {
+                LOGGER.warn("get field value failed, class: {}, field: {}", o.getClass(), field.getName(), e);
             }
             if (val != null) {
-                buffer.append(field.getName()).append("=").append(val).append(", ");
+                sb.append(field.getName()).append("=").append(val).append(", ");
             }
         }
-        if (buffer.length() > 2) {
-            buffer.delete(buffer.length() - 2, buffer.length());
+        if (sb.length() > 2) {
+            sb.delete(sb.length() - 2, sb.length());
         }
-        buffer.append("]");
-        return buffer.toString();
+        sb.append("]");
+        return sb.toString();
     }
 
     /**
      * map to object
      *
-     * @param map the map
+     * @param map   the map
      * @param clazz the Object class
      * @return the object
      */
@@ -81,35 +89,35 @@ public class BeanUtils {
                 }
                 boolean accessible = field.isAccessible();
                 field.setAccessible(true);
-                Class<?> type = field.getType();
-                if (type == Date.class) {
-                    if (!StringUtils.isEmpty(map.get(field.getName()))) {
-                        field.set(instance, new Date(Long.valueOf(map.get(field.getName()))));
+                try {
+                    Class<?> type = field.getType();
+                    if (type == Date.class) {
+                        if (!StringUtils.isEmpty(map.get(field.getName()))) {
+                            field.set(instance, new Date(Long.parseLong(map.get(field.getName()))));
+                        }
+                    } else if (type == Long.class) {
+                        if (!StringUtils.isEmpty(map.get(field.getName()))) {
+                            field.set(instance, Long.valueOf(map.get(field.getName())));
+                        }
+                    } else if (type == Integer.class) {
+                        if (!StringUtils.isEmpty(map.get(field.getName()))) {
+                            field.set(instance, Integer.valueOf(map.get(field.getName())));
+                        }
+                    } else if (type == Double.class) {
+                        if (!StringUtils.isEmpty(map.get(field.getName()))) {
+                            field.set(instance, Double.valueOf(map.get(field.getName())));
+                        }
+                    } else if (type == String.class) {
+                        if (!StringUtils.isEmpty(map.get(field.getName()))) {
+                            field.set(instance, map.get(field.getName()));
+                        }
                     }
-                } else if (type == Long.class) {
-                    if (!StringUtils.isEmpty(map.get(field.getName()))) {
-                        field.set(instance, Long.valueOf(map.get(field.getName())));
-                    }
-                } else if (type == Integer.class) {
-                    if (!StringUtils.isEmpty(map.get(field.getName()))) {
-                        field.set(instance, Integer.valueOf(map.get(field.getName())));
-                    }
-                } else if (type == Double.class) {
-                    if (!StringUtils.isEmpty(map.get(field.getName()))) {
-                        field.set(instance, Double.valueOf(map.get(field.getName())));
-                    }
-                } else if (type == String.class) {
-                    if (!StringUtils.isEmpty(map.get(field.getName()))) {
-                        field.set(instance, map.get(field.getName()));
-                    }
+                } finally {
+                    field.setAccessible(accessible);
                 }
-                field.setAccessible(accessible);
             }
             return instance;
-        } catch (IllegalAccessException e) {
-            throw new NotSupportYetException(
-                    "map to " + clazz.toString() + " failed:" + e.getMessage(), e);
-        } catch (InstantiationException e) {
+        } catch (IllegalAccessException | InstantiationException e) {
             throw new NotSupportYetException(
                     "map to " + clazz.toString() + " failed:" + e.getMessage(), e);
         }
@@ -132,16 +140,20 @@ public class BeanUtils {
             for (Field field : fields) {
                 boolean accessible = field.isAccessible();
                 field.setAccessible(true);
-                if (field.getType() == Date.class) {
-                    Date date = (Date) field.get(object);
-                    if (date != null) {
-                        map.put(field.getName(), String.valueOf(date.getTime()));
+                try {
+                    if (field.getType() == Date.class) {
+                        Date date = (Date)field.get(object);
+                        if (date != null) {
+                            map.put(field.getName(), String.valueOf(date.getTime()));
+                        }
+                    } else {
+                        Object fieldValue = ReflectionUtil.getFieldValue(object, field);
+                        map.put(field.getName(),
+                                fieldValue == null ? "" : fieldValue.toString());
                     }
-                } else {
-                    map.put(field.getName(),
-                            field.get(object) == null ? "" : field.get(object).toString());
+                } finally {
+                    field.setAccessible(accessible);
                 }
-                field.setAccessible(accessible);
             }
         } catch (IllegalAccessException e) {
             throw new NotSupportYetException(

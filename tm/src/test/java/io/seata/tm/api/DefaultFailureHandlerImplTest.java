@@ -17,6 +17,7 @@ package io.seata.tm.api;
 
 
 import io.netty.util.HashedWheelTimer;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
 import io.seata.core.model.GlobalStatus;
@@ -90,9 +91,7 @@ class DefaultFailureHandlerImplTest {
 
         // get timer
         Class<?> c = Class.forName("io.seata.tm.api.DefaultFailureHandlerImpl");
-        Field field = c.getDeclaredField("timer");
-        field.setAccessible(true);
-        HashedWheelTimer timer = (HashedWheelTimer) field.get(failureHandler);
+        HashedWheelTimer timer = (HashedWheelTimer)ReflectionUtil.getFieldValue(failureHandler, "timer");
         // assert timer pendingCount: first time is 1
         Long pendingTimeout = timer.pendingTimeouts();
         Assertions.assertEquals(pendingTimeout,1L);
@@ -116,9 +115,7 @@ class DefaultFailureHandlerImplTest {
 
         // get timer
         Class<?> c = Class.forName("io.seata.tm.api.DefaultFailureHandlerImpl");
-        Field field = c.getDeclaredField("timer");
-        field.setAccessible(true);
-        HashedWheelTimer timer = (HashedWheelTimer) field.get(failureHandler);
+        HashedWheelTimer timer = (HashedWheelTimer)ReflectionUtil.getFieldValue(failureHandler, "timer");
         // assert timer pendingCount: first time is 1
         Long pendingTimeout = timer.pendingTimeouts();
         Assertions.assertEquals(pendingTimeout,1L);

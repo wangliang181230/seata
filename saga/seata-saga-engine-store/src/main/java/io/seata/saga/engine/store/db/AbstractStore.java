@@ -27,6 +27,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import io.seata.common.exception.StoreException;
+import io.seata.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +138,7 @@ public class AbstractStore {
             stmt = connection.prepareStatement(sql);
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("setting params to PreparedStatement: {}", BeanUtils.beanToString(o));
+                LOGGER.debug("setting params to PreparedStatement: {}", StringUtils.toString(o));
             }
 
             objectToStatement.toStatement(o, stmt);

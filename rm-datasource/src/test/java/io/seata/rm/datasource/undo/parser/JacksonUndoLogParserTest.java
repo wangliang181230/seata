@@ -26,6 +26,7 @@ import javax.sql.rowset.serial.SerialClob;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.seata.common.loader.EnhancedServiceLoader;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.datasource.DataCompareUtils;
 import io.seata.rm.datasource.sql.struct.Field;
 import io.seata.rm.datasource.undo.BaseUndoLogParserTest;
@@ -43,9 +44,7 @@ public class JacksonUndoLogParserTest extends BaseUndoLogParserTest {
     @Test
     public void encode() throws NoSuchFieldException, IllegalAccessException, IOException, SQLException {
         //get the jackson mapper
-        java.lang.reflect.Field reflectField = parser.getClass().getDeclaredField("mapper");
-        reflectField.setAccessible(true);
-        ObjectMapper mapper = (ObjectMapper)reflectField.get(parser);
+        ObjectMapper mapper = (ObjectMapper)ReflectionUtil.getFieldValue(parser, "mapper");
 
         //bigint type
         Field field = new Field("bigint_type", JDBCType.BIGINT.getVendorTypeNumber(), 9223372036854775807L);

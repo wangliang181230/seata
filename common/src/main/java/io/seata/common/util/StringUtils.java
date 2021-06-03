@@ -164,9 +164,6 @@ public class StringUtils {
         if (obj == null) {
             return "null";
         }
-        if (obj.getClass().isPrimitive()) {
-            return String.valueOf(obj);
-        }
         if (obj instanceof String) {
             return (String)obj;
         }
@@ -177,48 +174,29 @@ public class StringUtils {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(obj);
         }
         if (obj instanceof Collection) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("[");
-            if (!((Collection)obj).isEmpty()) {
-                for (Object o : (Collection)obj) {
-                    sb.append(toString(o)).append(",");
-                }
-                sb.deleteCharAt(sb.length() - 1);
-            }
-            sb.append("]");
-            return sb.toString();
+            return CollectionUtils.toString((Collection<?>)obj);
         }
         if (obj instanceof Map) {
-            Map<Object, Object> map = (Map)obj;
-            StringBuilder sb = new StringBuilder();
-            sb.append("{");
-            if (!map.isEmpty()) {
-                map.forEach((key, value) -> {
-                    sb.append(toString(key)).append("->")
-                        .append(toString(value)).append(",");
-                });
-                sb.deleteCharAt(sb.length() - 1);
-            }
-            sb.append("}");
-            return sb.toString();
+            return CollectionUtils.toString((Map<?, ?>)obj);
         }
+
         StringBuilder sb = new StringBuilder();
-        Field[] fields = obj.getClass().getDeclaredFields();
+        sb.append("{");
+        Field[] fields = ReflectionUtil.getAllFields(obj.getClass());
         for (Field field : fields) {
-            field.setAccessible(true);
             sb.append(field.getName());
             sb.append("=");
             try {
-                Object f = field.get(obj);
-                if (f.getClass() == obj.getClass()) {
-                    sb.append(f.toString());
-                } else {
-                    sb.append(toString(f));
-                }
+                Object fieldValue = ReflectionUtil.getFieldValue(obj, field);
+                sb.append(toString(fieldValue));
             } catch (Exception e) {
             }
-            sb.append(";");
+            sb.append(",");
         }
+        if (sb.length() > 1) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        sb.append("}");
         return sb.toString();
     }
 

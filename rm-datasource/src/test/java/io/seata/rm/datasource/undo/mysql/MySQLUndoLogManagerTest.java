@@ -15,9 +15,6 @@
  */
 package io.seata.rm.datasource.undo.mysql;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -26,10 +23,10 @@ import java.util.Date;
 import java.util.List;
 
 import com.alibaba.druid.pool.DruidDataSource;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.seata.common.loader.EnhancedServiceLoader;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.datasource.ConnectionContext;
 import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
@@ -37,7 +34,6 @@ import io.seata.rm.datasource.mock.MockDriver;
 import io.seata.rm.datasource.sql.struct.Row;
 import io.seata.rm.datasource.sql.struct.TableMeta;
 import io.seata.rm.datasource.sql.struct.TableRecords;
-import io.seata.rm.datasource.undo.AbstractUndoLogManager;
 import io.seata.rm.datasource.undo.BranchUndoLog;
 import io.seata.rm.datasource.undo.SQLUndoLog;
 import io.seata.rm.datasource.undo.UndoLogParser;
@@ -145,24 +141,20 @@ public class MySQLUndoLogManagerTest {
     }
 
     @Test
-    public void testFlushUndoLogs() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    public void testFlushUndoLogs() throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
         connectionProxy.bind("xid");
         ConnectionContext context = connectionProxy.getContext();
-        Method method = context.getClass().getDeclaredMethod("setBranchId", Long.class);
-        method.setAccessible(true);
-        method.invoke(context, 1L);
+        ReflectionUtil.invokeMethod(context, "setBranchId", Long.class, 1L);
 
         SQLUndoLog undoLogItem = getUndoLogItem(1);
         undoLogItem.setTableName("test");
-        Method appendUndoItemMethod = context.getClass().getDeclaredMethod("appendUndoItem", SQLUndoLog.class);
-        appendUndoItemMethod.setAccessible(true);
-        appendUndoItemMethod.invoke(context, undoLogItem);
+        ReflectionUtil.invokeMethod(context, "appendUndoItem", SQLUndoLog.class, undoLogItem);
 
         Assertions.assertDoesNotThrow(() -> undoLogManager.flushUndoLogs(connectionProxy));
     }
 
     @Test
-    public void testNeedCompress() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void testNeedCompress() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
         SQLUndoLog smallUndoItem = getUndoLogItem(1);
         BranchUndoLog smallBranchUndoLog = new BranchUndoLog();
         smallBranchUndoLog.setBranchId(1L);
@@ -170,10 +162,7 @@ public class MySQLUndoLogManagerTest {
         smallBranchUndoLog.setSqlUndoLogs(Collections.singletonList(smallUndoItem));
         UndoLogParser parser = UndoLogParserFactory.getInstance();
         byte[] smallUndoLogContent = parser.encode(smallBranchUndoLog);
-
-        Method method = AbstractUndoLogManager.class.getDeclaredMethod("needCompress", byte[].class);
-        method.setAccessible(true);
-        Assertions.assertFalse((Boolean) method.invoke(undoLogManager, smallUndoLogContent));
+        Assertions.assertFalse((boolean)ReflectionUtil.invokeMethod(undoLogManager, "needCompress", byte[].class, smallUndoLogContent));
 
         SQLUndoLog hugeUndoItem = getUndoLogItem(10000);
         BranchUndoLog hugeBranchUndoLog = new BranchUndoLog();
@@ -181,11 +170,11 @@ public class MySQLUndoLogManagerTest {
         hugeBranchUndoLog.setXid("test_xid1");
         hugeBranchUndoLog.setSqlUndoLogs(Collections.singletonList(hugeUndoItem));
         byte[] hugeUndoLogContent = parser.encode(hugeBranchUndoLog);
-        Assertions.assertTrue((Boolean) method.invoke(undoLogManager, hugeUndoLogContent));
+        Assertions.assertTrue((boolean)ReflectionUtil.invokeMethod(undoLogManager, "needCompress", byte[].class, hugeUndoLogContent));
     }
 
     @Test
-    public void testUndo() throws SQLException {
+    public void testUndo() {
         Assertions.assertDoesNotThrow(() -> undoLogManager.undo(dataSourceProxy, "xid", 1L));
     }
 
@@ -194,9 +183,6 @@ public class MySQLUndoLogManagerTest {
         sqlUndoLog.setTableName("table_plain_executor_test");
         sqlUndoLog.setSqlType(SQLType.INSERT);
         sqlUndoLog.setTableMeta(tableMeta);
-
-        Field rowsField = TableRecords.class.getDeclaredField("rows");
-        rowsField.setAccessible(true);
 
         List<Row> rows = new ArrayList<>(size);
         for (int i = 0; i < size; i ++) {
@@ -208,7 +194,7 @@ public class MySQLUndoLogManagerTest {
 
         sqlUndoLog.setAfterImage(TableRecords.empty(tableMeta));
         TableRecords afterImage = new TableRecords(tableMeta);
-        rowsField.set(afterImage, rows);
+        ReflectionUtil.setFieldValue(afterImage, "rows", rows);
         sqlUndoLog.setAfterImage(afterImage);
 
         return sqlUndoLog;

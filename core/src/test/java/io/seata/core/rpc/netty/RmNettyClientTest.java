@@ -15,6 +15,7 @@
  */
 package io.seata.core.rpc.netty;
 
+import io.seata.common.util.ReflectionUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -50,9 +51,7 @@ class RmNettyClientTest {
     
     private AtomicBoolean getInitializeStatus(final RmNettyRemotingClient rmNettyRemotingClient) {
         try {
-            Field field = rmNettyRemotingClient.getClass().getDeclaredField("initialized");
-            field.setAccessible(true);
-            return (AtomicBoolean) field.get(rmNettyRemotingClient);
+            return (AtomicBoolean)ReflectionUtil.getFieldValue(rmNettyRemotingClient, "initialized");
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }

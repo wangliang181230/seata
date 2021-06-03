@@ -100,9 +100,13 @@ public class CollectionUtils {
      * @return the string
      */
     public static String toString(Collection<?> col) {
-        if (isEmpty(col)) {
-            return "";
+        if (col == null) {
+            return "null";
         }
+        if (col.isEmpty()) {
+            return "[]";
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (Object obj : col) {
@@ -111,6 +115,25 @@ public class CollectionUtils {
         }
         sb.deleteCharAt(sb.length() - 1);
         sb.append("]");
+        return sb.toString();
+    }
+
+    public static String toString(Map<?, ?> map) {
+        if (map == null) {
+            return "null";
+        }
+        if (map.isEmpty()) {
+            return "{}";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        map.forEach((key, value) -> {
+            sb.append(StringUtils.toString(key)).append("->")
+                    .append(StringUtils.toString(value)).append(",");
+        });
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append("}");
         return sb.toString();
     }
 

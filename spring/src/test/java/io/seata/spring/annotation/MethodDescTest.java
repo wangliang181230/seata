@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import io.seata.common.exception.FrameworkException;
 import io.seata.common.DefaultValues;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.core.context.RootContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -123,11 +124,9 @@ public class MethodDescTest {
 
     private MethodDesc getMethodDesc() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //call the private method
-        Method m = GlobalTransactionScanner.class.getDeclaredMethod("makeMethodDesc", GlobalTransactional.class,
-            Method.class);
-        m.setAccessible(true);
-        return (MethodDesc)m.invoke(GLOBAL_TRANSACTION_SCANNER, transactional, method);
-
+        return (MethodDesc)ReflectionUtil.invokeMethod(GLOBAL_TRANSACTION_SCANNER, "makeMethodDesc",
+                new Class<?>[]{GlobalTransactional.class, Method.class},
+                transactional, method);
     }
 
     /**

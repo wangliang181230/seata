@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.seata.common.util.CollectionUtils;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.tcc.remoting.parser.DubboUtil;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.Advised;
@@ -91,11 +92,8 @@ public class SpringProxyUtils {
         } else {
             h = proxy.getClass().getDeclaredField("CGLIB$CALLBACK_0");
         }
-        h.setAccessible(true);
-        Object dynamicAdvisedInterceptor = h.get(proxy);
-        Field advised = dynamicAdvisedInterceptor.getClass().getDeclaredField("advised");
-        advised.setAccessible(true);
-        return (AdvisedSupport)advised.get(dynamicAdvisedInterceptor);
+        Object dynamicAdvisedInterceptor = ReflectionUtil.getFieldValue(proxy, h);
+        return (AdvisedSupport)ReflectionUtil.getFieldValue(dynamicAdvisedInterceptor, "advised");
     }
 
     /**

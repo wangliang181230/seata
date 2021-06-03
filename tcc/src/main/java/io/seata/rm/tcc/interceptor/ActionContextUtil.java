@@ -74,8 +74,7 @@ public final class ActionContextUtil {
                 }
 
                 // get the field value
-                f.setAccessible(true);
-                Object fieldValue = f.get(targetParam);
+                Object fieldValue = ReflectionUtil.getFieldValue(targetParam, f);
 
                 // load param by the config of annotation, and then put to the context
                 String fieldName = f.getName();

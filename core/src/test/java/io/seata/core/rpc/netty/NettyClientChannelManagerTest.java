@@ -15,7 +15,12 @@
  */
 package io.seata.core.rpc.netty;
 
+import java.lang.reflect.Field;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
+
 import io.netty.channel.Channel;
+import io.seata.common.util.ReflectionUtil;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -24,10 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.lang.reflect.Field;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -148,31 +149,19 @@ class NettyClientChannelManagerTest {
     }
     
     @SuppressWarnings("unchecked")
-    private void setUpReleaseChannel() {
+    private void setUpReleaseChannel() throws NoSuchFieldException, IllegalAccessException {
         ConcurrentMap<String, Object> channelLocks =
-            (ConcurrentMap<String, Object>) getFieldValue("channelLocks", channelManager);
+            (ConcurrentMap<String, Object>)ReflectionUtil.getFieldValue(channelManager, "channelLocks");
         channelLocks.putIfAbsent("127.0.0.1:8091", new Object());
         ConcurrentMap<String, NettyPoolKey> poolKeyMap =
-            (ConcurrentMap<String, NettyPoolKey>) getFieldValue("poolKeyMap", channelManager);
+            (ConcurrentMap<String, NettyPoolKey>) ReflectionUtil.getFieldValue(channelManager, "poolKeyMap");
         poolKeyMap.putIfAbsent("127.0.0.1:8091", nettyPoolKey);
-    }
-    
-    private Object getFieldValue(final String fieldName, final Object targetObject) {
-        try {
-            Field field = targetObject.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return field.get(targetObject);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
     }
     
     @SuppressWarnings("unchecked")
     private void setNettyClientKeyPool() {
         try {
-            Field field = channelManager.getClass().getDeclaredField("nettyClientKeyPool");
-            field.setAccessible(true);
-            field.set(channelManager, keyedObjectPool);
+            ReflectionUtil.setFieldValue(channelManager, "nettyClientKeyPool", keyedObjectPool);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

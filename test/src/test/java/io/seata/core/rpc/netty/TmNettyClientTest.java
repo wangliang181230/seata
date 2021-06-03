@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import io.netty.channel.Channel;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.core.protocol.ResultCode;
 import io.seata.core.protocol.transaction.BranchRegisterRequest;
 import io.seata.core.protocol.transaction.BranchRegisterResponse;
@@ -68,10 +69,9 @@ public class TmNettyClientTest {
 
         tmNettyRemotingClient.init();
 
-        Method doConnectMethod = TmNettyRemotingClient.class.getDeclaredMethod("doConnect", String.class);
-        doConnectMethod.setAccessible(true);
         String serverAddress = "0.0.0.0:8091";
-        Channel channel = (Channel) doConnectMethod.invoke(tmNettyRemotingClient, serverAddress);
+        Channel channel = (Channel)ReflectionUtil.invokeMethod(tmNettyRemotingClient, "doConnect",
+                String.class, serverAddress);
         Assertions.assertNotNull(channel);
     }
 
@@ -103,21 +103,16 @@ public class TmNettyClientTest {
 
         tmNettyRemotingClient.init();
 
-        Method doConnectMethod = TmNettyRemotingClient.class.getDeclaredMethod("reconnect");
-        doConnectMethod.setAccessible(true);
-        doConnectMethod.invoke(tmNettyRemotingClient);
+        ReflectionUtil.invokeMethod(tmNettyRemotingClient, "reconnect");
     }
 
     @Test
     public void testSendMsgWithResponse() throws Exception {
-        workingThreads.submit(new Runnable() {
-            @Override
-            public void run() {
-                NettyRemotingServer nettyRemotingServer = new NettyRemotingServer(workingThreads);
-                nettyRemotingServer.setHandler(new DefaultCoordinator(nettyRemotingServer));
-                UUIDGenerator.init(1L);
-                nettyRemotingServer.init();
-            }
+        workingThreads.submit(() -> {
+            NettyRemotingServer nettyRemotingServer = new NettyRemotingServer(workingThreads);
+            nettyRemotingServer.setHandler(new DefaultCoordinator(nettyRemotingServer));
+            UUIDGenerator.init(1L);
+            nettyRemotingServer.init();
         });
         Thread.sleep(3000);
 
@@ -126,10 +121,9 @@ public class TmNettyClientTest {
         TmNettyRemotingClient tmNettyRemotingClient = TmNettyRemotingClient.getInstance(applicationId, transactionServiceGroup);
         tmNettyRemotingClient.init();
 
-        Method doConnectMethod = TmNettyRemotingClient.class.getDeclaredMethod("doConnect", String.class);
-        doConnectMethod.setAccessible(true);
         String serverAddress = "0.0.0.0:8091";
-        Channel channel = (Channel) doConnectMethod.invoke(tmNettyRemotingClient, serverAddress);
+        Channel channel = (Channel)ReflectionUtil.invokeMethod(tmNettyRemotingClient, "doConnect",
+                String.class, serverAddress);
         Assertions.assertNotNull(channel);
 
         BranchRegisterRequest request = new BranchRegisterRequest();

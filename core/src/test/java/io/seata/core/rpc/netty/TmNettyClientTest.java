@@ -15,20 +15,21 @@
  */
 package io.seata.core.rpc.netty;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFactory;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFactory;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.seata.common.util.ReflectionUtil;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Tm rpc client test.
@@ -51,9 +52,7 @@ public class TmNettyClientTest {
         String applicationId = "app 1";
         String transactionServiceGroup = "group A";
         TmNettyRemotingClient tmNettyRemotingClient = TmNettyRemotingClient.getInstance(applicationId, transactionServiceGroup);
-        Field nettyClientKeyPoolField = getDeclaredField(tmNettyRemotingClient.getClientChannelManager(), "nettyClientKeyPool");
-        nettyClientKeyPoolField.setAccessible(true);
-        GenericKeyedObjectPool nettyClientKeyPool = (GenericKeyedObjectPool) nettyClientKeyPoolField.get(tmNettyRemotingClient.getClientChannelManager());
+        GenericKeyedObjectPool nettyClientKeyPool = (GenericKeyedObjectPool)ReflectionUtil.getFieldValue(tmNettyRemotingClient, "nettyClientKeyPool");
         NettyClientConfig defaultNettyClientConfig = new NettyClientConfig();
         Assertions.assertEquals(defaultNettyClientConfig.getMaxPoolActive(), nettyClientKeyPool.getMaxActive());
         Assertions.assertEquals(defaultNettyClientConfig.getMinPoolIdle(), nettyClientKeyPool.getMinIdle());
@@ -77,30 +76,20 @@ public class TmNettyClientTest {
         tmNettyRemotingClient.init();
 
         //check if attr of tmNettyClient object has been set success
-        Field clientBootstrapField = getDeclaredField(tmNettyRemotingClient, "clientBootstrap");
-        clientBootstrapField.setAccessible(true);
-        NettyClientBootstrap clientBootstrap = (NettyClientBootstrap)clientBootstrapField.get(tmNettyRemotingClient);
-        Field bootstrapField = getDeclaredField(clientBootstrap, "bootstrap");
-        bootstrapField.setAccessible(true);
-        Bootstrap bootstrap = (Bootstrap) bootstrapField.get(clientBootstrap);
+        NettyClientBootstrap clientBootstrap = (NettyClientBootstrap)ReflectionUtil.getFieldValue(tmNettyRemotingClient, "clientBootstrap");
+        Bootstrap bootstrap = (Bootstrap)ReflectionUtil.getFieldValue(clientBootstrap, "bootstrap");
 
         Assertions.assertNotNull(bootstrap);
-        Field optionsField = getDeclaredField(bootstrap, "options");
-        optionsField.setAccessible(true);
-        Map<ChannelOption<?>, Object> options = (Map<ChannelOption<?>, Object>)optionsField.get(bootstrap);
-        Assertions.assertTrue(Boolean.TRUE.equals(options.get(ChannelOption.TCP_NODELAY)));
-        Assertions.assertTrue(Boolean.TRUE.equals(options.get(ChannelOption.SO_KEEPALIVE)));
+        Map<ChannelOption<?>, Object> options = (Map<ChannelOption<?>, Object>)ReflectionUtil.getFieldValue(bootstrap, "options");
+        Assertions.assertEquals(Boolean.TRUE, options.get(ChannelOption.TCP_NODELAY));
+        Assertions.assertEquals(Boolean.TRUE, options.get(ChannelOption.SO_KEEPALIVE));
         Assertions.assertEquals(10000, options.get(ChannelOption.CONNECT_TIMEOUT_MILLIS));
-        Assertions.assertTrue(Boolean.TRUE.equals(options.get(ChannelOption.SO_KEEPALIVE)));
+        Assertions.assertEquals(Boolean.TRUE, options.get(ChannelOption.SO_KEEPALIVE));
         Assertions.assertEquals(153600, options.get(ChannelOption.SO_RCVBUF));
 
-        Field channelFactoryField = getDeclaredField(bootstrap, "channelFactory");
-        channelFactoryField.setAccessible(true);
-        ChannelFactory<? extends Channel>
-            channelFactory = (ChannelFactory<? extends Channel>)channelFactoryField.get(bootstrap);
+        ChannelFactory<? extends Channel> channelFactory = (ChannelFactory<? extends Channel>)ReflectionUtil.getFieldValue(bootstrap, "channelFactory");
         Assertions.assertNotNull(channelFactory);
         Assertions.assertTrue(channelFactory.newChannel() instanceof NioSocketChannel);
-
     }
 
     /**
@@ -121,27 +110,5 @@ public class TmNettyClientTest {
     @Test
     public void setApplicationId() throws Exception {
 
-    }
-
-    /**
-     * get private field in parent class
-     *
-     * @param object    the object
-     * @param fieldName the field name
-     * @return declared field
-     */
-    public static Field getDeclaredField(Object object, String fieldName) {
-        Field field = null;
-        Class<?> clazz = object.getClass();
-        for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
-            try {
-                field = clazz.getDeclaredField(fieldName);
-                return field;
-            } catch (Exception e) {
-
-            }
-        }
-
-        return null;
     }
 }

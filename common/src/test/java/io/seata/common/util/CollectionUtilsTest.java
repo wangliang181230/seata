@@ -194,7 +194,7 @@ public class CollectionUtilsTest {
         filledCollection.add("Foo");
         filledCollection.add("Bar");
 
-        Assertions.assertEquals("", CollectionUtils.toString(emptyCollection));
+        Assertions.assertEquals("[]", CollectionUtils.toString(emptyCollection));
         Assertions.assertEquals("[Foo,Bar]", CollectionUtils.toString(filledCollection));
     }
 

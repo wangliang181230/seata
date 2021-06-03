@@ -17,6 +17,11 @@ package io.seata.common.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.seata.common.Constants;
 import org.junit.jupiter.api.Assertions;
@@ -38,7 +43,6 @@ public class StringUtilsTest {
      */
     @Test
     public void testIsNullOrEmpty() {
-
         assertThat(StringUtils.isNullOrEmpty(null)).isTrue();
         assertThat(StringUtils.isNullOrEmpty("abc")).isFalse();
         assertThat(StringUtils.isNullOrEmpty("")).isTrue();
@@ -89,7 +93,39 @@ public class StringUtilsTest {
     }
 
     @Test
-    void testCycleDependency() throws StackOverflowError{
+    void testToString() throws StackOverflowError {
+        //null
+        Assertions.assertEquals("null", StringUtils.toString(null));
+        //string
+        Assertions.assertEquals("aa", StringUtils.toString("aa"));
+        //number
+        Assertions.assertEquals("11", StringUtils.toString(11));
+        //char
+        Assertions.assertEquals("c", StringUtils.toString('c'));
+        //boolean
+        Assertions.assertEquals("true", StringUtils.toString(true));
+        Assertions.assertEquals("false", StringUtils.toString(false));
+        //date
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        Assertions.assertEquals(sdf.format(date), StringUtils.toString(date));
+        //list
+        ArrayList<Integer> list = new ArrayList<>();
+        list.add(1);
+        list.add(2);
+        Assertions.assertEquals("[1,2]", StringUtils.toString(list));
+        //map
+        Map<String, Object> map = new HashMap<>();
+        map.put("aaa", 111);
+        map.put("bbb", CycleDependency.A);
+        Assertions.assertEquals("{aaa->111,bbb->{s=a}}", StringUtils.toString(map));
+        //object
+        String str = StringUtils.toString(CycleDependency.B);
+        Assertions.assertEquals("{s=b}", str);
+    }
+
+    @Test
+    void testCycleDependency() throws StackOverflowError {
         StringUtils.toString(CycleDependency.A);
     }
 
@@ -98,6 +134,7 @@ public class StringUtilsTest {
         public static final CycleDependency B = new CycleDependency("b");
 
         private String s;
+
         private CycleDependency(String s) {
             this.s = s;
         }

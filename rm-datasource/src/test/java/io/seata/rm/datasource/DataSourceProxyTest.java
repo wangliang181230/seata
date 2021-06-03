@@ -15,13 +15,15 @@
  */
 package io.seata.rm.datasource;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.datasource.mock.MockDataSource;
 import io.seata.rm.datasource.mock.MockDriver;
+import io.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -54,20 +56,16 @@ public class DataSourceProxyTest {
 
         DataSourceProxy proxy = new DataSourceProxy(dataSource);
 
-        Field dbTypeField = proxy.getClass().getDeclaredField("dbType");
-        dbTypeField.setAccessible(true);
-        dbTypeField.set(proxy, io.seata.sqlparser.util.JdbcConstants.ORACLE);
+        ReflectionUtil.setFieldValue(proxy, "dbType", JdbcConstants.ORACLE);
 
         String userName = dataSource.getConnection().getMetaData().getUserName();
         Assertions.assertEquals(userName, username);
 
-        Field userNameField = proxy.getClass().getDeclaredField("userName");
-        userNameField.setAccessible(true);
-        userNameField.set(proxy, username);
+        ReflectionUtil.setFieldValue(proxy, "userName", username);
 
         Assertions.assertEquals(proxy.getResourceId(), "jdbc:mock:xxx/username");
 
-        dbTypeField.set(proxy, io.seata.sqlparser.util.JdbcConstants.MYSQL);
+        ReflectionUtil.setFieldValue(proxy, "dbType", JdbcConstants.MYSQL);
         Assertions.assertEquals(proxy.getResourceId(), "jdbc:mock:xxx");
     }
 }

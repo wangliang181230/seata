@@ -15,7 +15,9 @@
  */
 package io.seata.common.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -42,6 +44,11 @@ public final class ReflectionUtil {
     public static final int MAX_NEST_DEPTH = 20;
 
     /**
+     * The constant MAX_RETRY_COUNT.
+     */
+    public static final int MAX_RETRY_COUNT = 10;
+
+    /**
      * The EMPTY_FIELD_ARRAY
      */
     public static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
@@ -63,29 +70,198 @@ public final class ReflectionUtil {
     }
 
     /**
-     * get Field Value
+     * get Field
+     *
+     * @param clazz     the class
+     * @param fieldName the field name
+     * @return the field
+     * @throws NoSuchFieldException the no such field exception
+     * @throws SecurityException    the security exception
+     */
+    public static Field getField(Class<?> clazz, String fieldName) throws NoSuchFieldException, SecurityException {
+        Class<?> cl = clazz;
+        int i = 0;
+        while (cl != null && cl != Object.class && !cl.isInterface() && i < MAX_NEST_DEPTH) {
+            try {
+                return cl.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                i++;
+                cl = cl.getSuperclass();
+            }
+        }
+        throw new NoSuchFieldException("field not found. class: " + clazz + ", field: " + fieldName);
+    }
+
+    /**
+     * get field value
+     *
+     * @param target the target
+     * @param field  the field of the target
+     * @return field value
+     * @throws IllegalAccessException   the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws SecurityException        the security exception
+     */
+    public static Object getFieldValue(Object target, Field field)
+            throws IllegalAccessException, IllegalArgumentException, SecurityException {
+        IllegalAccessException ex = null;
+        int i = 0;
+        while (i < MAX_RETRY_COUNT) {
+            try {
+                if (!field.isAccessible()) {
+                    field.setAccessible(true);
+                }
+                return field.get(target);
+            } catch (IllegalAccessException e) {
+                // Avoid other threads executing `field.setAccessible(false)`
+                i++;
+                ex = e;
+            }
+        }
+        throw ex;
+    }
+
+    /**
+     * get field value
      *
      * @param target    the target
      * @param fieldName the field name
      * @return field value
-     * @throws NoSuchFieldException the no such field exception
-     * @throws SecurityException the security exception
+     * @throws NoSuchFieldException     the no such field exception
+     * @throws IllegalAccessException   the illegal access exception
      * @throws IllegalArgumentException the illegal argument exception
+     * @throws SecurityException        the security exception
      */
     public static Object getFieldValue(Object target, String fieldName)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException {
-        Class<?> cl = target.getClass();
+            throws NoSuchFieldException, IllegalAccessException, IllegalArgumentException, SecurityException {
+        Field field = getField(target.getClass(), fieldName);
+        return getFieldValue(target, field);
+    }
+
+    /**
+     * set field value
+     *
+     * @param target     the target
+     * @param field      the field of the target
+     * @param fieldValue the field value
+     * @throws IllegalAccessException   the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws SecurityException        the security exception
+     */
+    public static void setFieldValue(Object target, Field field, Object fieldValue)
+            throws IllegalAccessException, IllegalArgumentException, SecurityException {
+        IllegalAccessException ex = null;
         int i = 0;
-        while ((i++) < MAX_NEST_DEPTH && cl != null) {
+        while (i < MAX_RETRY_COUNT) {
             try {
-                Field field = cl.getDeclaredField(fieldName);
-                field.setAccessible(true);
-                return field.get(target);
-            } catch (Exception e) {
+                if (!field.isAccessible()) {
+                    field.setAccessible(true);
+                }
+                field.set(target, fieldValue);
+            } catch (IllegalAccessException e) {
+                // Avoid other threads executing `field.setAccessible(false)`
+                i++;
+                ex = e;
+            }
+        }
+        throw ex;
+    }
+
+    /**
+     * get field value
+     *
+     * @param target     the target
+     * @param fieldName  the field name
+     * @param fieldValue the field value
+     * @throws NoSuchFieldException     the no such field exception
+     * @throws IllegalAccessException   the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws SecurityException        the security exception
+     */
+    public static void setFieldValue(Object target, String fieldName, Object fieldValue)
+            throws NoSuchFieldException, IllegalAccessException, IllegalArgumentException, SecurityException {
+        Field field = getField(target.getClass(), fieldName);
+        setFieldValue(target, field, fieldValue);
+    }
+
+    /**
+     * get method
+     *
+     * @param clazz      the class
+     * @param methodName the method name
+     * @return the method
+     * @throws NoSuchMethodException the no such method exception
+     * @throws SecurityException     the security exception
+     */
+    public static Method getMethod(Class<?> clazz, String methodName) throws NoSuchMethodException, SecurityException {
+        Class<?> cl = clazz;
+        int i = 0;
+        while (cl != null && i < MAX_NEST_DEPTH) {
+            try {
+                return cl.getDeclaredMethod(methodName);
+            } catch (NoSuchMethodException e) {
+                i++;
                 cl = cl.getSuperclass();
             }
         }
-        throw new NoSuchFieldException("class:" + target.getClass() + ", field:" + fieldName);
+        throw new NoSuchMethodException("method not found. class: " + clazz + ", method: " + methodName);
+    }
+
+    /**
+     * get method
+     *
+     * @param clazz          the class
+     * @param methodName     the method name
+     * @param parameterTypes the parameter types
+     * @return the method
+     * @throws NoSuchMethodException the no such method exception
+     * @throws SecurityException     the security exception
+     */
+    public static Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException, SecurityException {
+        Class<?> cl = clazz;
+        int i = 0;
+        while (cl != null && i < MAX_NEST_DEPTH) {
+            try {
+                return cl.getDeclaredMethod(methodName, parameterTypes);
+            } catch (NoSuchMethodException e) {
+                i++;
+                cl = cl.getSuperclass();
+            }
+        }
+        throw new NoSuchMethodException("method not found. class: " + clazz + ", method: " + methodName);
+    }
+
+    /**
+     * invoke Method
+     *
+     * @param target the target
+     * @param method the method
+     * @return object
+     * @throws IllegalAccessException   the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws SecurityException        the security exception
+     */
+    public static Object invokeMethod(Object target, Method method)
+            throws IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException {
+        Exception ex = null;
+        int i = 0;
+        while (i < MAX_RETRY_COUNT) {
+            try {
+                if (!method.isAccessible()) {
+                    method.setAccessible(true);
+                }
+                return method.invoke(target);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                // Avoid other threads executing `field.setAccessible(false)`
+                i++;
+                ex = e;
+            }
+        }
+        if (ex instanceof IllegalAccessException) {
+            throw (IllegalAccessException)ex;
+        } else {
+            throw (InvocationTargetException)ex;
+        }
     }
 
     /**
@@ -94,24 +270,48 @@ public final class ReflectionUtil {
      * @param target     the target
      * @param methodName the method name
      * @return object
-     * @throws NoSuchMethodException the no such method exception
-     * @throws SecurityException the security exception
+     * @throws NoSuchMethodException    the no such method exception
      * @throws IllegalArgumentException the illegal argument exception
+     * @throws SecurityException        the security exception
      */
     public static Object invokeMethod(Object target, String methodName)
-            throws NoSuchMethodException, SecurityException, IllegalArgumentException {
-        Class<?> cl = target.getClass();
+            throws NoSuchMethodException, InvocationTargetException, IllegalArgumentException, SecurityException, IllegalAccessException {
+        Method method = getMethod(target.getClass(), methodName);
+        return invokeMethod(target,method);
+    }
+
+    /**
+     * invoke Method
+     *
+     * @param target the target
+     * @param method the method
+     * @param args   the args
+     * @return object
+     * @throws IllegalAccessException   the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws SecurityException        the security exception
+     */
+    public static Object invokeMethod(Object target, Method method, Object... args)
+            throws IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException {
+        Exception ex = null;
         int i = 0;
-        while ((i++) < MAX_NEST_DEPTH && cl != null) {
+        while (i < MAX_RETRY_COUNT) {
             try {
-                Method m = cl.getDeclaredMethod(methodName);
-                m.setAccessible(true);
-                return m.invoke(target);
-            } catch (Exception e) {
-                cl = cl.getSuperclass();
+                if (!method.isAccessible()) {
+                    method.setAccessible(true);
+                }
+                return method.invoke(target, args);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                // Avoid other threads executing `field.setAccessible(false)`
+                i++;
+                ex = e;
             }
         }
-        throw new NoSuchMethodException("class:" + target.getClass() + ", methodName:" + methodName);
+        if (ex instanceof IllegalAccessException) {
+            throw (IllegalAccessException)ex;
+        } else {
+            throw (InvocationTargetException)ex;
+        }
     }
 
     /**
@@ -122,12 +322,12 @@ public final class ReflectionUtil {
      * @param parameterTypes the parameter types
      * @param args           the args
      * @return object
-     * @throws NoSuchMethodException the no such method exception
-     * @throws SecurityException the security exception
+     * @throws NoSuchMethodException    the no such method exception
      * @throws IllegalArgumentException the illegal argument exception
+     * @throws SecurityException        the security exception
      */
-    public static Object invokeMethod(Object target, String methodName, Class<?>[] parameterTypes, Object[] args)
-            throws NoSuchMethodException, SecurityException, IllegalArgumentException {
+    public static Object invokeMethod(Object target, String methodName, Class<?>[] parameterTypes, Object... args)
+            throws NoSuchMethodException, IllegalArgumentException, SecurityException {
         Class<?> cl = target.getClass();
         int i = 0;
         while ((i++) < MAX_NEST_DEPTH && cl != null) {
@@ -142,26 +342,31 @@ public final class ReflectionUtil {
         throw new NoSuchMethodException("class:" + target.getClass() + ", methodName:" + methodName);
     }
 
+    public static Object invokeMethod(Object target, String methodName, Class<?> parameterType, Object arg)
+            throws NoSuchMethodException, IllegalArgumentException, SecurityException {
+        return invokeMethod(target, methodName, new Class<?>[]{parameterType}, arg);
+    }
+
     /**
      * invoke static Method
      *
-     * @param targetClass     the target class
-     * @param methodName      the method name
-     * @param parameterTypes  the parameter types
-     * @param parameterValues the parameter values
+     * @param targetClass    the target class
+     * @param methodName     the method name
+     * @param parameterTypes the parameter types
+     * @param args           the args
      * @return object
-     * @throws NoSuchMethodException the no such method exception
-     * @throws SecurityException the security exception
+     * @throws NoSuchMethodException    the no such method exception
+     * @throws SecurityException        the security exception
      * @throws IllegalArgumentException the illegal argument exception
      */
     public static Object invokeStaticMethod(Class<?> targetClass, String methodName, Class<?>[] parameterTypes,
-                                            Object[] parameterValues)
+                                            Object... args)
             throws NoSuchMethodException, SecurityException, IllegalArgumentException {
         int i = 0;
         while ((i++) < MAX_NEST_DEPTH && targetClass != null) {
             try {
                 Method m = targetClass.getMethod(methodName, parameterTypes);
-                return m.invoke(null, parameterValues);
+                return m.invoke(null, args);
             } catch (Exception e) {
                 targetClass = targetClass.getSuperclass();
             }
@@ -191,7 +396,7 @@ public final class ReflectionUtil {
     }
 
     public static void modifyStaticFinalField(Class<?> cla, String modifyFieldName, Object newValue)
-        throws NoSuchFieldException, IllegalAccessException {
+            throws NoSuchFieldException, IllegalAccessException {
         Field field = cla.getDeclaredField(modifyFieldName);
         field.setAccessible(true);
         Field modifiers = field.getClass().getDeclaredField("modifiers");
@@ -220,8 +425,8 @@ public final class ReflectionUtil {
         fields = targetClazz.getDeclaredFields();
         LinkedList<Field> fieldList = new LinkedList<>(Arrays.asList(fields));
 
-        // remove un_used fields
-        fieldList.removeIf(field -> field.getName().contains("$"));
+        // remove the static or synthetic fields
+        fieldList.removeIf(f -> Modifier.isStatic(f.getModifiers()) || f.isSynthetic());
 
         // load super class all fields, and add to the field list
         Field[] superFields = getAllFields(targetClazz.getSuperclass());

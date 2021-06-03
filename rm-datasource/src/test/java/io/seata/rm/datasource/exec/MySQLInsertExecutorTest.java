@@ -583,14 +583,13 @@ public class MySQLInsertExecutorTest {
 
     @Test
     public void test_autoGeneratePks() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = MySQLInsertExecutor.class.getDeclaredMethod("autoGeneratePks", new Class[]{BigDecimal.class, String.class, Integer.class});
-        method.setAccessible(true);
-        Object resp = method.invoke(insertExecutor, BigDecimal.ONE, "ID", 3);
+        Object resp = ReflectionUtil.invokeMethod(insertExecutor, "autoGeneratePks", new Class[]{BigDecimal.class, String.class, Integer.class},
+                BigDecimal.ONE, "ID", 3);
 
         Assertions.assertNotNull(resp);
         Assertions.assertTrue(resp instanceof Map);
 
-        Map<String, List> map = (Map<String, List>) resp;
+        Map<String, List<Object>> map = (Map<String, List<Object>>) resp;
         Assertions.assertEquals(map.size(), 1);
         Assertions.assertEquals(map.get("ID").size(), 3);
     }

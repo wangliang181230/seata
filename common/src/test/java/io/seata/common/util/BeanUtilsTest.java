@@ -30,11 +30,14 @@ import org.junit.jupiter.api.Test;
 public class BeanUtilsTest {
 
     @Test
+    @SuppressWarnings("all")
     public void testBeanToStringNotNull() {
         BranchDO branchDO = new BranchDO("xid123123", 123L, 1, 2.2, new Date());
         Assertions.assertNotNull(BeanUtils.beanToString(branchDO));
     }
+
     @Test
+    @SuppressWarnings("all")
     public void testBeanToStringNull() {
         BranchDO branchDO = null;
         Assertions.assertNull(BeanUtils.beanToString(branchDO));
