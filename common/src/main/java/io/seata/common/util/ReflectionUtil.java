@@ -20,7 +20,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -80,6 +82,28 @@ public final class ReflectionUtil {
      */
     public static Class<?> getClassByName(String className) throws ClassNotFoundException {
         return Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
+     * class name set to class set
+     *
+     * @param classNameColl the class name collection
+     * @return the class set
+     */
+    public static Set<Class<?>> classNameCollToClassSet(Collection<String> classNameColl) {
+        Set<Class<?>> classSet = new HashSet<>();
+        if (classNameColl != null) {
+            Class<?> clazz;
+            for (String className : classNameColl) {
+                try {
+                    clazz = getClassByName(className);
+                    classSet.add(clazz);
+                } catch (ClassNotFoundException ignore) {
+                    // do nothing
+                }
+            }
+        }
+        return classSet;
     }
 
     /**

@@ -79,7 +79,7 @@ public class ReflectionUtilTest {
                 new Class<?>[]{int.class}, 0));
         Assertions.assertEquals("123", ReflectionUtil.invokeStaticMethod(
                 String.class, "valueOf",
-                new Class<?>[]{int.class}, 123));
+                new Class<?>[]{int.class}, new Object[]{123}));
 
         Assertions.assertThrows(NoSuchMethodException.class, () -> ReflectionUtil
                 .invokeStaticMethod(String.class, "size", null, ReflectionUtil.EMPTY_ARGS));
