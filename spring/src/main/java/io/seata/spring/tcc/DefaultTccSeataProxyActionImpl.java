@@ -15,6 +15,8 @@
  */
 package io.seata.spring.tcc;
 
+import java.lang.reflect.InvocationTargetException;
+
 import io.seata.common.Constants;
 import io.seata.common.util.CollectionUtils;
 import io.seata.common.util.ReflectionUtil;
@@ -89,14 +91,9 @@ public class DefaultTccSeataProxyActionImpl implements TccSeataProxyAction, Appl
         // invoke the method of the target bean
         try {
             ReflectionUtil.invokeMethod(targetBean, methodName, parameterTypes, args);
-        }
-        // TODO: 等 PR #3803 (解决ReflectionUtil的BUG的PR) 合并后，替换这里的代码。
-        catch (NoSuchMethodException e) {
-            throw e;
-        }
-        /* catch (InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             throw e.getCause();
-        }*/
+        }
 
         return true;
     }
