@@ -267,6 +267,18 @@
       "defaultValue": 1
     },
     {
+      "name": "seata.proxy.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.seata.spring.proxy.SeataProxyConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "seata.proxy.proxy-interceptor-order",
+      "type": "java.lang.Integer",
+      "sourceType": "io.seata.spring.proxy.SeataProxyConfig",
+      "defaultValue": -2147482648
+    },
+    {
       "name": "seata.saga.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether enable saga auto configuration.",
