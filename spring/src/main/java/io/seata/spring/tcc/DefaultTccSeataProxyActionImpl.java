@@ -16,12 +16,15 @@
 package io.seata.spring.tcc;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import io.seata.common.Constants;
 import io.seata.common.util.CollectionUtils;
 import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import io.seata.rm.tcc.interceptor.ActionContextUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -32,6 +35,8 @@ import org.springframework.context.ApplicationContextAware;
  * @author wang.liang
  */
 public class DefaultTccSeataProxyActionImpl implements TccSeataProxyAction, ApplicationContextAware {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTccSeataProxyActionImpl.class);
 
     private ApplicationContext applicationContext;
 
@@ -87,15 +92,20 @@ public class DefaultTccSeataProxyActionImpl implements TccSeataProxyAction, Appl
         Object targetBean = applicationContext.getBean(targetBeanName);
         // get the method of the target bean
         String methodName = actionContext.getActionContext(Constants.TCC_PROXY_METHOD_NAME, String.class);
+        Method method = ReflectionUtil.getMethod(targetBean.getClass(), methodName, parameterTypes);
 
         // invoke the method of the target bean
         try {
-            ReflectionUtil.invokeMethod(targetBean, methodName, parameterTypes, args);
+            ReflectionUtil.invokeMethod(targetBean, method, args);
+            LOGGER.info("commit the proxy operation '{}' success", ReflectionUtil.methodToString(method));
+            return true;
         } catch (InvocationTargetException e) {
-            throw e.getCause();
+            LOGGER.error("commit the proxy operation '{}' failed", ReflectionUtil.methodToString(method), e.getCause());
+            return false;
+        } catch (Exception e) {
+            LOGGER.error("commit the proxy operation '{}' failed", ReflectionUtil.methodToString(method), e);
+            return false;
         }
-
-        return true;
     }
 
     /**
