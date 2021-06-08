@@ -96,8 +96,11 @@ public class DefaultTccSeataProxyActionImpl implements TccSeataProxyAction, Appl
 
         // invoke the method of the target bean
         try {
-            ReflectionUtil.invokeMethod(targetBean, method, args);
-            LOGGER.info("commit the proxy operation '{}' success", ReflectionUtil.methodToString(method));
+            Object result = ReflectionUtil.invokeMethod(targetBean, method, args);
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("commit the proxy operation '{}' success, the result is: {}",
+                        ReflectionUtil.methodToString(method), result);
+            }
             return true;
         } catch (InvocationTargetException e) {
             LOGGER.error("commit the proxy operation '{}' failed", ReflectionUtil.methodToString(method), e.getCause());
