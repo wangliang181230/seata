@@ -47,7 +47,6 @@ public class DefaultSeataProxyHandler implements SeataProxyHandler {
         Class<?>[] parameterTypes = method.getParameterTypes();
         Object[] args = invocation.getArguments();
 
-        // TODO: 待 PR #3797 合并后，才可以如下编写（try方法，支持方法外自己实例化BusinessActionContext）
         // create actionContext
         BusinessActionContext actionContext = new BusinessActionContext();
         Map<String, Object> context = new HashMap<>();
