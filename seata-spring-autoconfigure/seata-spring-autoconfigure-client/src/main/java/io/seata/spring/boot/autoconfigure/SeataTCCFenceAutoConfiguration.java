@@ -15,44 +15,35 @@
  */
 package io.seata.spring.boot.autoconfigure;
 
-import javax.sql.DataSource;
-
 import io.seata.rm.tcc.config.TCCFenceConfig;
-import io.seata.spring.proxy.SeataProxyHandler;
-import io.seata.spring.tcc.DefaultTccSeataProxyActionImpl;
-import io.seata.spring.tcc.TccSeataProxyAction;
-import io.seata.spring.tcc.TccSeataProxyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.sql.DataSource;
+
 /**
- * TCC auto configuration.
+ * TCC fence auto configuration.
  *
  * @author kaka2code
- * @author wang.liang
  */
-@Configuration
-@ConditionalOnProperty(prefix = StarterConstants.SEATA_PREFIX, name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter({SeataCoreAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
-public class SeataTCCAutoConfiguration {
+@ConditionalOnExpression("${seata.enabled:true} && ${seata.tcc.fence.enabled:true}")
+@AutoConfigureAfter({DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
+public class SeataTCCFenceAutoConfiguration {
 
     public static final String TCC_FENCE_DATA_SOURCE_BEAN_NAME = "seataTCCFenceDataSource";
     public static final String TCC_FENCE_TRANSACTION_MANAGER_BEAN_NAME = "seataTCCFenceTransactionManager";
 
     @Bean
     @ConditionalOnMissingBean(TCCFenceConfig.class)
-    @ConditionalOnProperty(prefix = StarterConstants.TCC_FENCE_PREFIX, name = "enabled", matchIfMissing = true)
     @ConditionalOnBean({DataSource.class, PlatformTransactionManager.class})
     @ConfigurationProperties(StarterConstants.TCC_FENCE_PREFIX)
     public TCCFenceConfig tccFenceConfig(
@@ -64,34 +55,4 @@ public class SeataTCCAutoConfiguration {
                 tccFenceTransactionManager != null ? tccFenceTransactionManager : transactionManager);
     }
 
-    /**
-     * The configuration for the implementation of the {@link SeataProxyHandler}
-     *
-     * @see io.seata.spring.proxy.SeataProxy
-     * @see SeataProxyHandler
-     * @see io.seata.spring.proxy.SeataProxyAutoProxyCreator
-     */
-    @Configuration
-    @ConditionalOnMissingBean(SeataProxyHandler.class)
-    @ConditionalOnProperty(prefix = StarterConstants.PROXY_PREFIX, name = "enabled")
-    static class TccSeataProxyConfiguration {
-
-        @Bean
-        @Lazy(false)
-        @ConditionalOnMissingBean
-        public TccSeataProxyAction defaultTccSeataProxyAction() {
-            return new DefaultTccSeataProxyActionImpl();
-        }
-
-        /**
-         * The {@link io.seata.spring.proxy.SeataProxyAutoProxyCreator} will use the handler.
-         *
-         * @return the seata proxy handler
-         */
-        @Bean
-        public SeataProxyHandler tccSeataProxyHandler() {
-            return new TccSeataProxyHandler();
-        }
-
-    }
 }

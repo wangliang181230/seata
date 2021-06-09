@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.seata.common.util.CollectionUtils;
 import io.seata.common.util.ReflectionUtil;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ public class SeataProxyAutoProxyCreator extends AbstractAutoProxyCreator {
     private MethodInterceptor interceptor;
 
     public SeataProxyAutoProxyCreator(SeataProxyConfig config, SeataProxyHandler seataProxyHandler) {
-        addProxyBeanClasses(ReflectionUtil.classNameCollToClassSet(config.getTargetBeanClasses()));
+        addProxyBeanClasses(ReflectionUtil.classNamesToClassSet(config.getTargetBeanClasses()));
         addProxyBeanNames(config.getTargetBeanNames());
 
         this.seataProxyHandler = seataProxyHandler;
@@ -68,32 +69,45 @@ public class SeataProxyAutoProxyCreator extends AbstractAutoProxyCreator {
     }
 
     @Override
+    protected boolean shouldSkip(Class<?> beanClass, String beanName) {
+        // if has `@SeataProxy` on the bean class, and the `skip == false`, need to proxy
+        SeataProxy seataProxyAnno = beanClass.getAnnotation(SeataProxy.class);
+        if (seataProxyAnno != null && !seataProxyAnno.skip()) {
+            return false;
+        }
+
+        return !PROXY_BEAN_CLASSES.contains(beanClass) && !PROXY_BEAN_NAMES.contains(beanName);
+    }
+
+    @Override
     protected Object[] getAdvicesAndAdvisorsForBean(Class<?> beanClass, String beanName, TargetSource customTargetSource) {
         return new Object[]{interceptor};
     }
 
-    @Override
-    protected boolean shouldSkip(Class<?> beanClass, String beanName) {
-        return !PROXY_BEAN_CLASSES.contains(beanClass) && !PROXY_BEAN_NAMES.contains(beanName);
-    }
+
+    //region static methods
 
     public static void addProxyBeanClasses(Collection<Class<?>> beanClasses) {
-        PROXY_BEAN_CLASSES.addAll(beanClasses);
+        CollectionUtils.addAll(PROXY_BEAN_CLASSES, beanClasses);
     }
 
     public static void addProxyBeanClasses(Class<?>... beanClasses) {
-        addProxyBeanClasses(Arrays.asList(beanClasses));
+        CollectionUtils.addAll(PROXY_BEAN_CLASSES, beanClasses);
     }
 
     public static void addProxyBeanClasses(String... beanClassNames) {
-        addProxyBeanClasses(ReflectionUtil.classNameCollToClassSet(Arrays.asList(beanClassNames)));
+        if (CollectionUtils.isNotEmpty(beanClassNames)) {
+            addProxyBeanClasses(ReflectionUtil.classNamesToClassSet(Arrays.asList(beanClassNames)));
+        }
     }
 
     public static void addProxyBeanNames(Collection<String> beanNames) {
-        PROXY_BEAN_NAMES.addAll(beanNames);
+        CollectionUtils.addAll(PROXY_BEAN_NAMES, beanNames);
     }
 
     public static void addProxyBeanNames(String... beanNames) {
-        addProxyBeanNames(Arrays.asList(beanNames));
+        CollectionUtils.addAll(PROXY_BEAN_NAMES, beanNames);
     }
+
+    //endregion
 }
