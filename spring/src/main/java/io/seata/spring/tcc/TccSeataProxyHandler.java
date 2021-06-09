@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package io.seata.spring.proxy;
+package io.seata.spring.tcc;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -23,18 +23,21 @@ import com.alibaba.fastjson.JSON;
 import io.seata.common.Constants;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import io.seata.rm.tcc.interceptor.ActionContextUtil;
-import io.seata.spring.tcc.TccSeataProxyAction;
+import io.seata.spring.proxy.SeataProxyHandler;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * The Default Seata Proxy Handler
+ * Tcc Seata Proxy Handler
  *
  * @author wang.liang
+ * @see io.seata.spring.proxy.SeataProxyInterceptor
+ * @see TccSeataProxyAction
+ * @see DefaultTccSeataProxyActionImpl
  */
-public class DefaultSeataProxyHandler implements SeataProxyHandler, ApplicationContextAware {
+public class TccSeataProxyHandler implements SeataProxyHandler, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
@@ -73,7 +76,7 @@ public class DefaultSeataProxyHandler implements SeataProxyHandler, ApplicationC
 
     private TccSeataProxyAction getTccSeataProxyAction() {
         if (tccSeataProxyAction == null) {
-            synchronized (DefaultSeataProxyHandler.class) {
+            synchronized (TccSeataProxyHandler.class) {
                 if (tccSeataProxyAction == null) {
                     tccSeataProxyAction = applicationContext.getBean(TccSeataProxyAction.class);
                 }
