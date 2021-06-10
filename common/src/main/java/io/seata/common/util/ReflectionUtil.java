@@ -798,30 +798,4 @@ public final class ReflectionUtil {
     }
 
     //endregion
-
-    /**
-     * get singleton for the class
-     *
-     * @param clazz the clazz
-     * @param <T>   the type
-     * @return the singleton
-     * @throws IllegalArgumentException
-     */
-    public static <T> T getSingleton(Class<T> clazz) {
-        if (clazz == null) {
-            throw new IllegalArgumentException("clazz must be not null");
-        }
-
-        if (clazz.isInterface()) {
-            throw new IllegalArgumentException("clazz must be not an interface: " + clazz);
-        }
-
-        return (T)CollectionUtils.computeIfAbsent(SINGLETON_CACHE, clazz, key -> {
-            try {
-                return clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new IllegalArgumentException("new instance failed, the class is: " + clazz, e);
-            }
-        });
-    }
 }
