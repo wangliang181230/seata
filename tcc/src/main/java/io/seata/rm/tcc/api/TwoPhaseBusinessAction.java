@@ -79,5 +79,5 @@ public @interface TwoPhaseBusinessAction {
      *
      * @return the boolean
      */
-    boolean useTCCFence() default true;
+    boolean useTCCFence() default false;
 }
