@@ -15,12 +15,12 @@
  */
 package io.seata.spring.proxy;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
 
-import io.seata.common.util.CollectionUtils;
-import io.seata.common.util.ReflectionUtil;
+import io.seata.spring.proxy.desc.SeataProxyBeanDesc;
 import org.springframework.context.annotation.Lazy;
 
 /**
@@ -32,28 +32,56 @@ import org.springframework.context.annotation.Lazy;
 @Lazy(false)
 public class SeataProxyBeanRegister {
 
-    private Set<Class<?>> beanClasses = new HashSet<>();
-    private Set<String> beanNames = new HashSet<>();
+	private Map<Class<?>, SeataProxyBeanDesc> beanClassBeanDescMap = new HashMap<>();
+	private Map<String, SeataProxyBeanDesc> beanNameBeanDescMap = new HashMap<>();
 
-    public void addBeanClasses(Class<?>... beanClasses) {
-        CollectionUtils.addAll(this.beanClasses, beanClasses);
-    }
 
-    public void addBeanClassNames(String... beanClassNames) {
-        if (CollectionUtils.isNotEmpty(beanClassNames)) {
-            CollectionUtils.addAll(this.beanClasses, ReflectionUtil.classNamesToClassSet(Arrays.asList(beanClassNames)));
-        }
-    }
+	//region the methods for register proxy bean
 
-    public void addBeanNames(String... beanNames) {
-        CollectionUtils.addAll(this.beanNames, beanNames);
-    }
+	public void registerProxyBean(Class<?> targetBeanClass, SeataProxyBeanDesc proxyBeanDesc) {
+		if (proxyBeanDesc == null) {
+			throw new IllegalArgumentException("the proxyBeanDesc must be not null");
+		}
+		beanClassBeanDescMap.put(targetBeanClass, proxyBeanDesc);
+	}
 
-    public Set<Class<?>> getBeanClasses() {
-        return beanClasses;
-    }
+	public void registerProxyBean(String targetBeanName, SeataProxyBeanDesc proxyBeanDesc) {
+		if (proxyBeanDesc == null) {
+			throw new IllegalArgumentException("the proxyBeanDesc must be not null");
+		}
+		beanNameBeanDescMap.put(targetBeanName, proxyBeanDesc);
+	}
 
-    public Set<String> getBeanNames() {
-        return beanNames;
-    }
+	public void registerProxyBean(String targetBeanName, Class<?> targetBeanClass, Predicate<Method> methodMatcher) {
+		SeataProxyBeanDesc proxyBeanDesc = new SeataProxyBeanDesc(targetBeanName, targetBeanClass, methodMatcher);
+		registerProxyBean(targetBeanName, proxyBeanDesc);
+		registerProxyBean(targetBeanClass, proxyBeanDesc);
+	}
+
+	public void registerProxyBean(String targetBeanName, Class<?> targetBeanClass) {
+		registerProxyBean(targetBeanName, targetBeanClass, null);
+	}
+
+	/**
+	 * merge the other register
+	 *
+	 * @param otherRegister the other register
+	 */
+	public void merge(SeataProxyBeanRegister otherRegister) {
+		if (otherRegister != null) {
+			beanClassBeanDescMap.putAll(otherRegister.getBeanClassBeanDescMap());
+			beanNameBeanDescMap.putAll(otherRegister.getBeanNameBeanDescMap());
+		}
+	}
+
+	//endregion
+
+
+	public Map<Class<?>, SeataProxyBeanDesc> getBeanClassBeanDescMap() {
+		return beanClassBeanDescMap;
+	}
+
+	public Map<String, SeataProxyBeanDesc> getBeanNameBeanDescMap() {
+		return beanNameBeanDescMap;
+	}
 }
