@@ -31,7 +31,7 @@
             <artifactId>seata-serializer-seata</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-serializer-protobuf</artifactId>
             <version>${project.version}</version>
@@ -45,7 +45,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-serializer-hessian</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-serializer-fst</artifactId>

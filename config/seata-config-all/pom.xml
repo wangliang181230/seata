@@ -26,7 +26,7 @@
     <name>seata-config-all ${project.version}</name>
 
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-config-apollo</artifactId>
             <version>${project.version}</version>
@@ -35,13 +35,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-config-zk</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-config-nacos</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-config-etcd3</artifactId>
             <version>${project.version}</version>
@@ -50,7 +50,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-config-consul</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
 </project>

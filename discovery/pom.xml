@@ -28,15 +28,15 @@
     <artifactId>seata-discovery</artifactId>
     <name>seata-discovery ${project.version}</name>
     <modules>
-        <module>seata-discovery-consul</module>
+        <!--<module>seata-discovery-consul</module>-->
         <module>seata-discovery-core</module>
-        <module>seata-discovery-custom</module>
+        <!--<module>seata-discovery-custom</module>-->
         <module>seata-discovery-all</module>
         <module>seata-discovery-eureka</module>
-        <module>seata-discovery-zk</module>
-        <module>seata-discovery-redis</module>
+        <!--<module>seata-discovery-zk</module>
+        <module>seata-discovery-redis</module>-->
         <module>seata-discovery-nacos</module>
-        <module>seata-discovery-etcd3</module>
-        <module>seata-discovery-sofa</module>
+        <!--<module>seata-discovery-etcd3</module>
+        <module>seata-discovery-sofa</module>-->
     </modules>
 </project>
