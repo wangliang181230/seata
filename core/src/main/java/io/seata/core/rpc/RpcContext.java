@@ -15,19 +15,16 @@
  */
 package io.seata.core.rpc;
 
-import io.netty.channel.Channel;
-import io.seata.common.util.CollectionUtils;
-import io.seata.common.util.StringUtils;
-import io.seata.core.rpc.netty.ChannelUtil;
-import io.seata.core.rpc.netty.NettyPoolKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.annotation.Nonnull;
+
+import io.netty.channel.Channel;
+import io.seata.common.util.CollectionUtils;
+import io.seata.core.rpc.netty.ChannelUtil;
+import io.seata.core.rpc.netty.NettyPoolKey;
 
 /**
  * The type rpc context.
@@ -35,8 +32,6 @@ import java.util.concurrent.ConcurrentMap;
  * @author slievrly
  */
 public class RpcContext {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RpcContext.class);
 
     private NettyPoolKey.TransactionRole clientRole;
 
@@ -50,17 +45,12 @@ public class RpcContext {
 
     private Channel channel;
 
-    private Set<String> resourceSets;
-
-    /**
-     * id
-     */
-    private ConcurrentMap<Channel, RpcContext> clientIDHolderMap;
-
-    /**
-     * tm
-     */
-    private ConcurrentMap<Integer, RpcContext> clientTMHolderMap;
+//    private Set<String> resourceSets;
+//
+//    /**
+//     * tm
+//     */
+//    private ConcurrentMap<Integer, RpcContext> clientTMHolderMap;
 
     /**
      * dbkeyRm
@@ -72,22 +62,20 @@ public class RpcContext {
      */
     public void release() {
         Integer clientPort = ChannelUtil.getClientPortFromChannel(channel);
-        if (clientIDHolderMap != null) {
-            clientIDHolderMap = null;
-        }
-        if (clientRole == NettyPoolKey.TransactionRole.TMROLE && clientTMHolderMap != null) {
-            clientTMHolderMap.remove(clientPort);
-            clientTMHolderMap = null;
-        }
+//        if (clientRole == NettyPoolKey.TransactionRole.TMROLE && clientTMHolderMap != null) {
+//            clientTMHolderMap.remove(clientPort);
+//            clientTMHolderMap = null;
+//        }
         if (clientRole == NettyPoolKey.TransactionRole.RMROLE && clientRMHolderMap != null) {
             for (Map<Integer, RpcContext> portMap : clientRMHolderMap.values()) {
                 portMap.remove(clientPort);
             }
             clientRMHolderMap = null;
         }
-        if (resourceSets != null) {
-            resourceSets.clear();
-        }
+//        if (resourceSets != null) {
+//            resourceSets.clear();
+//            resourceSets = null;
+//        }
     }
 
     /**
@@ -96,25 +84,12 @@ public class RpcContext {
      * @param clientTMHolderMap the client tm holder map
      */
     public void holdInClientChannels(ConcurrentMap<Integer, RpcContext> clientTMHolderMap) {
-        if (this.clientTMHolderMap != null) {
-            throw new IllegalStateException();
-        }
-        this.clientTMHolderMap = clientTMHolderMap;
-        Integer clientPort = ChannelUtil.getClientPortFromChannel(channel);
-        this.clientTMHolderMap.put(clientPort, this);
-    }
-
-    /**
-     * Hold in identified channels.
-     *
-     * @param clientIDHolderMap the client id holder map
-     */
-    public void holdInIdentifiedChannels(ConcurrentMap<Channel, RpcContext> clientIDHolderMap) {
-        if (this.clientIDHolderMap != null) {
-            throw new IllegalStateException();
-        }
-        this.clientIDHolderMap = clientIDHolderMap;
-        this.clientIDHolderMap.put(channel, this);
+//        if (this.clientTMHolderMap != null) {
+//            throw new IllegalStateException();
+//        }
+//        this.clientTMHolderMap = clientTMHolderMap;
+//        Integer clientPort = ChannelUtil.getClientPortFromChannel(channel);
+//        this.clientTMHolderMap.put(clientPort, this);
     }
 
     /**
@@ -124,12 +99,9 @@ public class RpcContext {
      * @param portMap    the client rm holder map
      */
     public void holdInResourceManagerChannels(String resourceId, ConcurrentMap<Integer, RpcContext> portMap) {
-        if (this.clientRMHolderMap == null) {
-            this.clientRMHolderMap = new ConcurrentHashMap<>();
-        }
         Integer clientPort = ChannelUtil.getClientPortFromChannel(channel);
         portMap.put(clientPort, this);
-        this.clientRMHolderMap.put(resourceId, portMap);
+        this.getClientRMHolderMap().put(resourceId, portMap);
     }
 
     /**
@@ -139,11 +111,8 @@ public class RpcContext {
      * @param clientPort the client port
      */
     public void holdInResourceManagerChannels(String resourceId, Integer clientPort) {
-        if (this.clientRMHolderMap == null) {
-            this.clientRMHolderMap = new ConcurrentHashMap<>();
-        }
-        ConcurrentMap<Integer, RpcContext> portMap = CollectionUtils.computeIfAbsent(clientRMHolderMap, resourceId,
-            key -> new ConcurrentHashMap<>());
+        ConcurrentMap<Integer, RpcContext> portMap = CollectionUtils.computeIfAbsent(getClientRMHolderMap(), resourceId,
+                key -> new ConcurrentHashMap<>());
         portMap.put(clientPort, this);
     }
 
@@ -152,19 +121,27 @@ public class RpcContext {
      *
      * @return the get client rm holder map
      */
+    @Nonnull
     public ConcurrentMap<String, ConcurrentMap<Integer, RpcContext>> getClientRMHolderMap() {
+        if (this.clientRMHolderMap == null) {
+            synchronized (this) {
+                if (this.clientRMHolderMap == null) {
+                    this.clientRMHolderMap = new ConcurrentHashMap<>();
+                }
+            }
+        }
         return clientRMHolderMap;
     }
 
-    /**
-     * Gets port map.
-     *
-     * @param resourceId the resource id
-     * @return the port map
-     */
-    public Map<Integer, RpcContext> getPortMap(String resourceId) {
-        return clientRMHolderMap.get(resourceId);
-    }
+//    /**
+//     * Gets port map.
+//     *
+//     * @param resourceId the resource id
+//     * @return the port map
+//     */
+//    public Map<Integer, RpcContext> getPortMap(String resourceId) {
+//        return clientRMHolderMap.get(resourceId);
+//    }
 
     /**
      * Gets get client id.
@@ -265,23 +242,23 @@ public class RpcContext {
         this.version = version;
     }
 
-    /**
-     * Gets get resource sets.
-     *
-     * @return the get resource sets
-     */
-    public Set<String> getResourceSets() {
-        return resourceSets;
-    }
-
-    /**
-     * Sets set resource sets.
-     *
-     * @param resourceSets the resource sets
-     */
-    public void setResourceSets(Set<String> resourceSets) {
-        this.resourceSets = resourceSets;
-    }
+//    /**
+//     * Gets get resource sets.
+//     *
+//     * @return the get resource sets
+//     */
+//    public Set<String> getResourceSets() {
+//        return resourceSets;
+//    }
+//
+//    /**
+//     * Sets set resource sets.
+//     *
+//     * @param resourceSets the resource sets
+//     */
+//    public void setResourceSets(Set<String> resourceSets) {
+//        this.resourceSets = resourceSets;
+//    }
 
     /**
      * Add resource.
@@ -289,13 +266,17 @@ public class RpcContext {
      * @param resource the resource
      */
     public void addResource(String resource) {
-        if (StringUtils.isBlank(resource)) {
-            return;
-        }
-        if (resourceSets == null) {
-            this.resourceSets = new HashSet<String>();
-        }
-        this.resourceSets.add(resource);
+//        if (StringUtils.isBlank(resource)) {
+//            return;
+//        }
+//        if (resourceSets == null) {
+//            synchronized (this) {
+//                if (resourceSets == null) {
+//                    this.resourceSets = new HashSet<>();
+//                }
+//            }
+//        }
+//        this.resourceSets.add(resource);
     }
 
     /**
@@ -304,11 +285,17 @@ public class RpcContext {
      * @param resources the resources
      */
     public void addResources(Set<String> resources) {
-        if (resources == null) { return; }
-        if (resourceSets == null) {
-            this.resourceSets = new HashSet<String>();
-        }
-        this.resourceSets.addAll(resources);
+//        if (CollectionUtils.isEmpty(resources)) {
+//            return;
+//        }
+//        if (resourceSets == null) {
+//            synchronized (this) {
+//                if (resourceSets == null) {
+//                    this.resourceSets = Collections.synchronizedSet(new HashSet<>());
+//                }
+//            }
+//        }
+//        this.resourceSets.addAll(resources);
     }
 
     /**
@@ -323,11 +310,11 @@ public class RpcContext {
     @Override
     public String toString() {
         return "RpcContext{" +
-            "applicationId='" + applicationId + '\'' +
-            ", transactionServiceGroup='" + transactionServiceGroup + '\'' +
-            ", clientId='" + clientId + '\'' +
-            ", channel=" + channel +
-            ", resourceSets=" + resourceSets +
-            '}';
+                "applicationId='" + applicationId + '\'' +
+                ", transactionServiceGroup='" + transactionServiceGroup + '\'' +
+                ", clientId='" + clientId + '\'' +
+                ", channel=" + channel +
+//                ", resourceSets=" + resourceSets +
+                '}';
     }
 }

@@ -18,7 +18,6 @@ package io.seata.core.rpc;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import java.util.HashSet;
 
 /**
  * RpcContext Test
@@ -107,63 +106,63 @@ public class RpcContextTest {
 		Assertions.assertNull(rpcContext.getClientRole());
 	}
 
-	/**
-	 * Test set ResourceSets to null Test get ResourceSets
-	 */
-	@Test
-	public void testResourceSetsNull() {
-		rpcContext.setResourceSets(null);
-		Assertions.assertNull(rpcContext.getResourceSets());
-	}
-
-	/**
-	 * Test add resourceSet = null with addResource Test get ResourceSets
-	 */
-	@Test
-	public void testAddResourceNull() {
-		HashSet<String> resourceSet = new HashSet<String>();
-		rpcContext.setResourceSets(resourceSet);
-		rpcContext.addResource(null);
-		Assertions.assertEquals(0, rpcContext.getResourceSets().size());
-	}
-
-	/**
-	 * Test add null parameter to ResourceSets with addResources Test get
-	 * ResourceSets
-	 */
-	@Test
-	public void testAddResourcesNull() {
-		rpcContext.addResources(null);
-		rpcContext.setResourceSets(null);
-		Assertions.assertNull(rpcContext.getResourceSets());
-	}
-
-	/**
-	 * Test add a short resourceSet(["abc"]) with addResources Test get ResourceSets
-	 */
-	@Test
-	public void testAddResourcesResourceValue() {
-		HashSet<String> resourceSet = new HashSet<String>();
-		resourceSet.add(RV);
-		rpcContext.addResources(resourceSet);
-		Assertions.assertEquals(resourceSet, rpcContext.getResourceSets());
-	}
-
-	/**
-	 * Test add resource and resource sets to ResourceSets with addResourceSets Test
-	 * getResourceSets
-	 */
-	@Test
-	public void testAddResourcesResourceSetValue() {
-		HashSet<String> resourceSets = new HashSet<String>();
-		resourceSets.add(RS);
-		HashSet<String> resourceSet = new HashSet<String>();
-		resourceSet.add(RV);
-		rpcContext.addResources(resourceSet);
-		rpcContext.setResourceSets(resourceSets);
-		rpcContext.addResources(resourceSet);
-		Assertions.assertEquals(resourceSets, rpcContext.getResourceSets());
-	}
+//	/**
+//	 * Test set ResourceSets to null Test get ResourceSets
+//	 */
+//	@Test
+//	public void testResourceSetsNull() {
+//		rpcContext.setResourceSets(null);
+//		Assertions.assertNull(rpcContext.getResourceSets());
+//	}
+//
+//	/**
+//	 * Test add resourceSet = null with addResource Test get ResourceSets
+//	 */
+//	@Test
+//	public void testAddResourceNull() {
+//		HashSet<String> resourceSet = new HashSet<String>();
+//		rpcContext.setResourceSets(resourceSet);
+//		rpcContext.addResource(null);
+//		Assertions.assertEquals(0, rpcContext.getResourceSets().size());
+//	}
+//
+//	/**
+//	 * Test add null parameter to ResourceSets with addResources Test get
+//	 * ResourceSets
+//	 */
+//	@Test
+//	public void testAddResourcesNull() {
+//		rpcContext.addResources(null);
+//		rpcContext.setResourceSets(null);
+//		Assertions.assertNull(rpcContext.getResourceSets());
+//	}
+//
+//	/**
+//	 * Test add a short resourceSet(["abc"]) with addResources Test get ResourceSets
+//	 */
+//	@Test
+//	public void testAddResourcesResourceValue() {
+//		HashSet<String> resourceSet = new HashSet<String>();
+//		resourceSet.add(RV);
+//		rpcContext.addResources(resourceSet);
+//		Assertions.assertEquals(resourceSet, rpcContext.getResourceSets());
+//	}
+//
+//	/**
+//	 * Test add resource and resource sets to ResourceSets with addResourceSets Test
+//	 * getResourceSets
+//	 */
+//	@Test
+//	public void testAddResourcesResourceSetValue() {
+//		HashSet<String> resourceSets = new HashSet<String>();
+//		resourceSets.add(RS);
+//		HashSet<String> resourceSet = new HashSet<String>();
+//		resourceSet.add(RV);
+//		rpcContext.addResources(resourceSet);
+//		rpcContext.setResourceSets(resourceSets);
+//		rpcContext.addResources(resourceSet);
+//		Assertions.assertEquals(resourceSets, rpcContext.getResourceSets());
+//	}
 
 	/**
 	 * Test toString having all the parameters initialized to null
@@ -174,11 +173,11 @@ public class RpcContextTest {
 		rpcContext.setTransactionServiceGroup(null);
 		rpcContext.setClientId(null);
 		rpcContext.setChannel(null);
-		rpcContext.setResourceSets(null);
+//		rpcContext.setResourceSets(null);
 		Assertions.assertEquals(
 				"RpcContext{" + "applicationId='" + rpcContext.getApplicationId() + '\'' + ", transactionServiceGroup='"
 						+ rpcContext.getTransactionServiceGroup() + '\'' + ", clientId='" + rpcContext.getClientId() + '\''
-						+ ", channel=" + rpcContext.getChannel() + ", resourceSets=" + rpcContext.getResourceSets() + '}',
+						+ ", channel=" + rpcContext.getChannel() + /*", resourceSets=" + rpcContext.getResourceSets() +*/ '}',
 						rpcContext.toString());
 	}
 

@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
 
+import io.seata.common.util.CollectionUtils;
+
 /**
  * The state statistics.
  *
@@ -41,7 +43,7 @@ public class RpcStatus {
      * @return RpcStatus
      */
     public static RpcStatus getStatus(String service) {
-        return SERVICE_STATUS_MAP.computeIfAbsent(service, key -> new RpcStatus());
+        return CollectionUtils.computeIfAbsent(SERVICE_STATUS_MAP, service, key -> new RpcStatus());
     }
 
     /**

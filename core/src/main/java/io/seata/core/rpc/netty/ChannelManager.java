@@ -15,6 +15,15 @@
  */
 package io.seata.core.rpc.netty;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.annotation.Nullable;
+
 import io.netty.channel.Channel;
 import io.seata.common.Constants;
 import io.seata.common.exception.FrameworkException;
@@ -28,14 +37,6 @@ import io.seata.core.rpc.RpcContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 /**
  * The type channel manager.
  *
@@ -44,6 +45,10 @@ import java.util.concurrent.ConcurrentMap;
 public class ChannelManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelManager.class);
+
+    /**
+     * channel -> RpcContext
+     */
     private static final ConcurrentMap<Channel, RpcContext> IDENTIFIED_CHANNELS = new ConcurrentHashMap<>();
 
     /**
@@ -53,7 +58,7 @@ public class ChannelManager {
         ConcurrentMap<Integer, RpcContext>>>> RM_CHANNELS = new ConcurrentHashMap<>();
 
     /**
-     * ip+appname,port
+     * applicationId:ip -> port -> RpcContext
      */
     private static final ConcurrentMap<String, ConcurrentMap<Integer, RpcContext>> TM_CHANNELS
         = new ConcurrentHashMap<>();
@@ -74,6 +79,7 @@ public class ChannelManager {
      * @param channel the channel
      * @return the get role from channel
      */
+    @Nullable
     public static NettyPoolKey.TransactionRole getRoleFromChannel(Channel channel) {
         RpcContext context = IDENTIFIED_CHANNELS.get(channel);
         if (context != null) {
@@ -113,6 +119,10 @@ public class ChannelManager {
         return holder;
     }
 
+    private static void holdInIdentifiedChannels(Channel channel, RpcContext rpcContext) {
+        IDENTIFIED_CHANNELS.put(channel, rpcContext);
+    }
+
     /**
      * Register tm channel.
      *
@@ -127,7 +137,7 @@ public class ChannelManager {
             request.getApplicationId(),
             request.getTransactionServiceGroup(),
             null, channel);
-        rpcContext.holdInIdentifiedChannels(IDENTIFIED_CHANNELS);
+        holdInIdentifiedChannels(channel, rpcContext);
         String clientIdentified = rpcContext.getApplicationId() + Constants.CLIENT_ID_SPLIT_CHAR
             + ChannelUtil.getClientIpFromChannel(channel);
         ConcurrentMap<Integer, RpcContext> clientIdentifiedMap = CollectionUtils.computeIfAbsent(TM_CHANNELS,
@@ -151,7 +161,7 @@ public class ChannelManager {
             rpcContext = buildChannelHolder(NettyPoolKey.TransactionRole.RMROLE, resourceManagerRequest.getVersion(),
                 resourceManagerRequest.getApplicationId(), resourceManagerRequest.getTransactionServiceGroup(),
                 resourceManagerRequest.getResourceIds(), channel);
-            rpcContext.holdInIdentifiedChannels(IDENTIFIED_CHANNELS);
+            holdInIdentifiedChannels(channel, rpcContext);
         } else {
             rpcContext = IDENTIFIED_CHANNELS.get(channel);
             rpcContext.addResources(dbkeySet);
@@ -159,9 +169,13 @@ public class ChannelManager {
         if (dbkeySet == null || dbkeySet.isEmpty()) { return; }
         for (String resourceId : dbkeySet) {
             String clientIp;
-            ConcurrentMap<Integer, RpcContext> portMap = CollectionUtils.computeIfAbsent(RM_CHANNELS, resourceId, key -> new ConcurrentHashMap<>())
-                    .computeIfAbsent(resourceManagerRequest.getApplicationId(), key -> new ConcurrentHashMap<>())
-                    .computeIfAbsent(clientIp = ChannelUtil.getClientIpFromChannel(channel), key -> new ConcurrentHashMap<>());
+
+            ConcurrentMap<String, ConcurrentMap<String, ConcurrentMap<Integer, RpcContext>>> applicationIdMap =
+                    CollectionUtils.computeIfAbsent(RM_CHANNELS, resourceId, key -> new ConcurrentHashMap<>());
+            ConcurrentMap<String, ConcurrentMap<Integer, RpcContext>> ipMap =
+                    CollectionUtils.computeIfAbsent(applicationIdMap, resourceManagerRequest.getApplicationId(), key -> new ConcurrentHashMap<>());
+            ConcurrentMap<Integer, RpcContext> portMap =
+                    CollectionUtils.computeIfAbsent(ipMap, clientIp = ChannelUtil.getClientIpFromChannel(channel), key -> new ConcurrentHashMap<>());
 
             rpcContext.holdInResourceManagerChannels(resourceId, portMap);
             updateChannelsResource(resourceId, clientIp, resourceManagerRequest.getApplicationId());
@@ -195,7 +209,7 @@ public class ChannelManager {
         if (StringUtils.isNullOrEmpty(dbkey)) {
             return null;
         }
-        return new HashSet<String>(Arrays.asList(dbkey.split(Constants.DBKEYS_SPLIT_CHAR)));
+        return new HashSet<>(Arrays.asList(dbkey.split(Constants.DBKEYS_SPLIT_CHAR)));
     }
 
     /**
@@ -216,6 +230,7 @@ public class ChannelManager {
      * @param channel the channel
      * @return the get same income client channel
      */
+    @Nullable
     public static Channel getSameClientChannel(Channel channel) {
         if (channel.isActive()) {
             return channel;
@@ -240,15 +255,17 @@ public class ChannelManager {
             ConcurrentMap<Integer, RpcContext> clientRpcMap = TM_CHANNELS.get(clientIdentified);
             return getChannelFromSameClientMap(clientRpcMap, clientPort);
         } else if (clientRole == NettyPoolKey.TransactionRole.RMROLE) {
-            for (Map<Integer, RpcContext> clientRmMap : rpcContext.getClientRMHolderMap().values()) {
-                Channel sameClientChannel = getChannelFromSameClientMap(clientRmMap, clientPort);
-                if (sameClientChannel != null) {
-                    return sameClientChannel;
+            ConcurrentMap<String, ConcurrentMap<Integer, RpcContext>> clientRMHolderMap = rpcContext.getClientRMHolderMap();
+            if (CollectionUtils.isNotEmpty(clientRMHolderMap)) {
+                for (Map<Integer, RpcContext> clientRmMap : clientRMHolderMap.values()){
+                    Channel sameClientChannel = getChannelFromSameClientMap(clientRmMap, clientPort);
+                    if (sameClientChannel != null) {
+                        return sameClientChannel;
+                    }
                 }
             }
         }
         return null;
-
     }
 
     private static Channel getChannelFromSameClientMap(Map<Integer, RpcContext> clientChannelMap, int exclusivePort) {
