@@ -89,11 +89,17 @@ public final class SeataProxyParser {
      * Parser method desc map of the target bean class
      *
      * @param targetBeanClass the target bean class
-     * @param methodMatcher   the method matcher
+     * @param methodFilter    the method filter
      * @return the method desc map
      */
-    public static Map<Method, SeataProxyMethodDesc> parserMethodDescMap(Class<?> targetBeanClass, Predicate<Method> methodMatcher) {
+    public static Map<Method, SeataProxyMethodDesc> parserMethodDescMap(Class<?> targetBeanClass, Predicate<Method> methodFilter) {
         Map<Method, SeataProxyMethodDesc> methodDescMap = new HashMap<>();
+
+        boolean onlyScanAnnotatedMethods = false;
+        SeataProxy seataProxyAnnoOnClass = targetBeanClass.getAnnotation(SeataProxy.class);
+        if (seataProxyAnnoOnClass != null) {
+            onlyScanAnnotatedMethods = seataProxyAnnoOnClass.onlyScanAnnotatedMethods();
+        }
 
         SeataProxyMethodDesc methodDesc;
         Method[] methods = targetBeanClass.getMethods();
@@ -119,19 +125,19 @@ public final class SeataProxyParser {
             }
 
             // ignore the method is not matched
-            if (methodMatcher != null && !methodMatcher.test(method)) {
+            if (methodFilter != null && !methodFilter.test(method)) {
                 continue;
             }
 
             // create the methodDesc and put to the map
             methodDesc = new SeataProxyMethodDesc(method);
+            if (onlyScanAnnotatedMethods && methodDesc.getImplDesc() == null) {
+                continue;
+            }
+
             methodDescMap.put(method, methodDesc);
         }
 
         return methodDescMap;
-    }
-
-    public static String methodToString(Method method) {
-        return method.getName() + ReflectionUtil.parameterTypesToString(method.getParameterTypes());
     }
 }
