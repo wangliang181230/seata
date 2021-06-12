@@ -18,11 +18,12 @@ package io.seata.rm.datasource.exec;
 import java.lang.reflect.Field;
 import java.sql.Types;
 import java.util.List;
-
 import com.alibaba.druid.mock.MockStatement;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.util.JdbcConstants;
+
 import com.google.common.collect.Lists;
 import io.seata.core.context.RootContext;
 import io.seata.rm.datasource.ConnectionProxy;
@@ -32,7 +33,6 @@ import io.seata.rm.datasource.mock.MockConnectionProxy;
 import io.seata.rm.datasource.mock.MockDriver;
 import io.seata.rm.datasource.mock.MockLockConflictConnectionProxy;
 import io.seata.sqlparser.druid.mysql.MySQLSelectForUpdateRecognizer;
-import io.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
