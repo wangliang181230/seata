@@ -21,7 +21,6 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAException;
-
 import com.alibaba.druid.util.JdbcUtils;
 import com.alibaba.druid.util.MySqlUtils;
 import com.alibaba.druid.util.PGUtils;
