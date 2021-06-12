@@ -17,6 +17,7 @@ package io.seata.sqlparser.druid.oracle;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
