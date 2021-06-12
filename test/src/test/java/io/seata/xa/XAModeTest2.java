@@ -29,6 +29,7 @@ import javax.transaction.xa.Xid;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.xa.DruidXADataSource;
+import com.alibaba.druid.util.JdbcUtils;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
@@ -63,22 +64,22 @@ public class XAModeTest2 {
     private static final String pg_jdbcUrl = "jdbc:postgresql://127.0.0.1:5432/postgres";
     private static final String pg_username = "postgres";
     private static final String pg_password = "postgres";
-    private static final String pg_driverClassName = JdbcConstants.POSTGRESQL_DRIVER;
+    private static final String pg_driverClassName = JdbcUtils.POSTGRESQL_DRIVER;
 
     private static final String mysql_jdbcUrl = "jdbc:mysql://127.0.0.1:3306/demo";
     private static final String mysql_username = "demo";
     private static final String mysql_password = "demo";
-    private static final String mysql_driverClassName = JdbcConstants.MYSQL_DRIVER;
+    private static final String mysql_driverClassName = JdbcUtils.MYSQL_DRIVER;
 
     private static final String mysql8_jdbcUrl = "jdbc:mysql://0.0.0.0:3306/demo?useUnicode=true&characterEncoding=utf-8&useSSL=false";
     private static final String mysql8_username = "demo";
     private static final String mysql8_password = "demo";
-    private static final String mysql8_driverClassName = JdbcConstants.MYSQL_DRIVER_6;
+    private static final String mysql8_driverClassName = JdbcUtils.MYSQL_DRIVER_6;
 
     private static final String oracle_jdbcUrl = "jdbc:oracle:thin:@localhost:1521:xe";
     private static final String oracle_username = "demo";
     private static final String oracle_password = "demo";
-    private static final String oracle_driverClassName = JdbcConstants.ORACLE_DRIVER;
+    private static final String oracle_driverClassName = JdbcUtils.ORACLE_DRIVER;
 
     // Test on different DB, including: MySQL(5.7, 8.0), PostgreSQL(11), Oracle(11)
     private static final String dbType = JdbcConstants.MYSQL;
