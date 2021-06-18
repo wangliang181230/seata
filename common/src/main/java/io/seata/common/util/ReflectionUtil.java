@@ -17,9 +17,11 @@ package io.seata.common.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,6 +86,11 @@ public final class ReflectionUtil {
     public static Class<?> getClassByName(String className) throws ClassNotFoundException {
         return Class.forName(className, true, Thread.currentThread().getContextClassLoader());
     }
+
+    //endregion
+
+
+    //region Interface
 
     /**
      * class name set to class set
@@ -725,32 +732,32 @@ public final class ReflectionUtil {
     //endregion
 
 
+    //region Annotation
+
+    /**
+     * get annotation values
+     *
+     * @param annotation the annotation
+     * @throws NoSuchFieldException the no such field exception
+     */
+    public static Map<String, Object> getAnnotationValues(Annotation annotation) throws NoSuchFieldException {
+        InvocationHandler h = Proxy.getInvocationHandler(annotation);
+        return (Map<String, Object>)getFieldValue(h, "memberValues");
+    }
+
+    //endregion
+
+
     //region toString
 
     /**
-     * method to string
+     * class to string
      *
-     * @param clazz          the clazz
-     * @param methodName     the method name
-     * @param parameterTypes the parameter types
+     * @param clazz the class
      * @return the string
      */
-    public static String methodToString(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
-        return clazz.getName() + "." + methodName + parameterTypesToString(parameterTypes);
-    }
-
-    /**
-     * method to string
-     *
-     * @param method the method
-     * @return the string
-     */
-    public static String methodToString(Method method) {
-        String methodStr = methodToString(method.getDeclaringClass(), method.getName(), method.getParameterTypes());
-        if (Modifier.isStatic(method.getModifiers())) {
-            methodStr = "static " + methodStr;
-        }
-        return methodStr;
+    public static String classToString(Class<?> clazz) {
+        return "Class<" + clazz.getSimpleName() + ">";
     }
 
     /**
@@ -762,7 +769,7 @@ public final class ReflectionUtil {
      * @return the string
      */
     public static String fieldToString(Class<?> clazz, String fieldName, Class<?> fieldType) {
-        return fieldType.getName() + " field " + clazz.getName() + "." + fieldName;
+        return "Field<" + clazz.getSimpleName() + ".(" + fieldType.getSimpleName() + ")" + fieldName + ">";
     }
 
     /**
@@ -773,6 +780,49 @@ public final class ReflectionUtil {
      */
     public static String fieldToString(Field field) {
         return fieldToString(field.getDeclaringClass(), field.getName(), field.getType());
+    }
+
+    /**
+     * method to string
+     *
+     * @param clazz          the clazz
+     * @param methodName     the method name
+     * @param parameterTypes the parameter types
+     * @return the string
+     */
+    public static String methodToString(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+        return "Method<" + clazz.getSimpleName() + "." + methodName + parameterTypesToString(parameterTypes) + ">";
+    }
+
+    /**
+     * method to string
+     *
+     * @param method the method
+     * @return the string
+     */
+    public static String methodToString(Method method) {
+        String methodStr = method.getDeclaringClass().getSimpleName() + "." + method.getName()
+                + parameterTypesToString(method.getParameterTypes());
+        if (Modifier.isStatic(method.getModifiers())) {
+            methodStr = "static " + methodStr;
+        }
+        return "Method<" + methodStr + ">";
+    }
+
+    /**
+     * annotatio to string
+     *
+     * @param annotation the annotation
+     * @return the string
+     */
+    public static String annotationToString(Annotation annotation) {
+        if (annotation == null) {
+            return "null";
+        }
+
+        String annoStr = annotation.toString();
+        String annoValueStr = annoStr.substring(annoStr.indexOf('('));
+        return "@" + annotation.annotationType().getSimpleName() + annoValueStr;
     }
 
     /**
@@ -790,7 +840,7 @@ public final class ReflectionUtil {
                     sb.append(", ");
                 }
                 Class<?> c = parameterTypes[i];
-                sb.append((c == null) ? "null" : c.getName());
+                sb.append((c == null) ? "null" : c.getSimpleName());
             }
         }
         sb.append(")");
