@@ -101,7 +101,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    void testToStringAndCycleDependency() throws StackOverflowError {
+    void testToStringAndCycleDependency() throws Exception {
         //case: String
         Assertions.assertEquals("aaa", StringUtils.toString("aaa"));
 
@@ -181,14 +181,14 @@ public class StringUtilsTest {
         //case: Object, and cycle dependency
         TestClass a = new TestClass();
         a.setObj(a);
-        Assertions.assertEquals("TestClass(obj=(this TestClass))", StringUtils.toString(a));
+        Assertions.assertEquals("TestClass(obj=(this TestClass), s=null)", StringUtils.toString(a));
         //case: Object, and cycle dependency（deep case）
         TestClass b = new TestClass();
         TestClass c = new TestClass();
         b.setObj(c);
         c.setObj(a);
         a.setObj(b);
-        Assertions.assertEquals("TestClass(obj=TestClass(obj=TestClass(obj=(ref TestClass))))", StringUtils.toString(a));
+        Assertions.assertEquals("TestClass(obj=TestClass(obj=TestClass(obj=(ref TestClass), s=null), s=null), s=null)", StringUtils.toString(a));
     }
 
     @Retention(RetentionPolicy.RUNTIME)

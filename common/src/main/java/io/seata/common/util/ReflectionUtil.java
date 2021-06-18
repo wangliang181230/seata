@@ -87,11 +87,6 @@ public final class ReflectionUtil {
         return Class.forName(className, true, Thread.currentThread().getContextClassLoader());
     }
 
-    //endregion
-
-
-    //region Interface
-
     /**
      * class name set to class set
      *
@@ -113,6 +108,11 @@ public final class ReflectionUtil {
         }
         return classSet;
     }
+
+    //endregion
+
+
+    //region Interface
 
     /**
      * get all interface of the clazz
