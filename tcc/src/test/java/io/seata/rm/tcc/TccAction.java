@@ -21,8 +21,6 @@ import io.seata.rm.tcc.api.LocalTCC;
 import io.seata.rm.tcc.api.TwoPhaseBusinessAction;
 import io.seata.rm.tcc.parameterfetcher.MockBooleanParameterFetcher;
 import io.seata.rm.tcc.parameterfetcher.MockObjectParameterFetcher;
-import org.checkerframework.checker.units.qual.A;
-import org.junit.jupiter.params.ParameterizedTest;
 
 import java.util.List;
 /**
@@ -50,7 +48,7 @@ public interface TccAction {
     @TwoPhaseBusinessAction(name = "tccActionForTest", commitMethod = "commit", rollbackMethod = "rollback")
     boolean prepare(BusinessActionContext actionContext,
                     @BusinessActionContextParameter("a") int a,
-                    @BusinessActionContextParameter(paramName = "b", index = 0) List b,
+                    @BusinessActionContextParameter(paramName = "b", index = 0) List<?> b,
                     @BusinessActionContextParameter(value = "c", index = 1) long[] c,
                     @BusinessActionContextParameter(isParamInProperty = true) TccParam d,
                     @BusinessActionContextParameter(paramName = "e", isParamInProperty = true) TccParam e,
