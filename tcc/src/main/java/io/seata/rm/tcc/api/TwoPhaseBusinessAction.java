@@ -61,6 +61,22 @@ public @interface TwoPhaseBusinessAction {
     String rollbackMethod() default "rollback";
 
     /**
+     * commit method's args
+     *
+     * @return the Class[]
+     * @see io.seata.rm.tcc.remoting.parser.DefaultRemotingParser#findTwoPhaseMethod
+     */
+    Class<?>[] commitArgsClasses() default {};
+
+    /**
+     * rollback method's args
+     *
+     * @return the Class[]
+     * @see io.seata.rm.tcc.remoting.parser.DefaultRemotingParser#findTwoPhaseMethod
+     */
+    Class<?>[] rollbackArgsClasses() default {};
+
+    /**
      * delay branch report while sharing params to tcc phase 2 to enhance performance
      *
      * @return isDelayReport
@@ -73,18 +89,4 @@ public @interface TwoPhaseBusinessAction {
      * @return the boolean
      */
     boolean useTCCFence() default false;
-
-    /**
-     * commit method's args
-     *
-     * @return the Class[]
-     */
-    Class<?>[] commitArgsClasses() default {BusinessActionContext.class};
-
-    /**
-     * rollback method's args
-     *
-     * @return the Class[]
-     */
-    Class<?>[] rollbackArgsClasses() default {BusinessActionContext.class};
 }

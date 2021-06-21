@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.seata.common.exception.FrameworkException;
 import io.seata.common.loader.EnhancedServiceLoader;
 import io.seata.common.util.CollectionUtils;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.rm.DefaultResourceManager;
 import io.seata.rm.tcc.TCCResource;
 import io.seata.rm.tcc.api.BusinessActionContext;
@@ -184,14 +185,14 @@ public class DefaultRemotingParser {
                         tccResource.setTargetBean(targetBean);
                         tccResource.setPrepareMethod(m);
                         tccResource.setCommitMethodName(twoPhaseBusinessAction.commitMethod());
-                        tccResource.setCommitMethod(interfaceClass.getMethod(twoPhaseBusinessAction.commitMethod(),
+                        tccResource.setCommitMethod(getTwoPhaseMethod(interfaceClass, twoPhaseBusinessAction.commitMethod(),
                                 twoPhaseBusinessAction.commitArgsClasses()));
                         tccResource.setRollbackMethodName(twoPhaseBusinessAction.rollbackMethod());
-                        tccResource.setRollbackMethod(interfaceClass.getMethod(twoPhaseBusinessAction.rollbackMethod(),
+                        tccResource.setRollbackMethod(getTwoPhaseMethod(interfaceClass, twoPhaseBusinessAction.rollbackMethod(),
                                 twoPhaseBusinessAction.rollbackArgsClasses()));
                         // set argsClasses
-                        tccResource.setCommitArgsClasses(twoPhaseBusinessAction.commitArgsClasses());
-                        tccResource.setRollbackArgsClasses(twoPhaseBusinessAction.rollbackArgsClasses());
+                        tccResource.setCommitArgsClasses(tccResource.getCommitMethod().getParameterTypes());
+                        tccResource.setRollbackArgsClasses(tccResource.getRollbackMethod().getParameterTypes());
                         // set phase two method's keys
                         tccResource.setPhaseTwoCommitKeys(this.getTwoPhaseArgs(tccResource.getCommitMethod(),
                                 twoPhaseBusinessAction.commitArgsClasses()));
@@ -210,6 +211,35 @@ public class DefaultRemotingParser {
             remotingBeanDesc.setReference(true);
         }
         return remotingBeanDesc;
+    }
+
+    protected Method getTwoPhaseMethod(Class<?> interfaceClass, String methodName, Class<?>[] argsClassesOnAnnotation) throws NoSuchMethodException {
+        // get by argsClassOnAnnotation
+        if (argsClassesOnAnnotation.length > 0) {
+            return interfaceClass.getMethod(methodName, argsClassesOnAnnotation);
+        }
+
+        // try to get by {BusinessActionClass.class}
+        argsClassesOnAnnotation = new Class<?>[]{BusinessActionContext.class};
+        try {
+            return interfaceClass.getMethod(methodName, argsClassesOnAnnotation);
+        } catch (NoSuchMethodException ignore) {
+        }
+
+        // try to find only one method by 'methodName'
+        List<Method> methodList = new ArrayList<>();
+        Method[] methods = interfaceClass.getDeclaredMethods();
+        for (Method m : methods) {
+            if (m.getName().equals(methodName)) {
+                methodList.add(m);
+            }
+        }
+        if (methodList.size() == 1) {
+            // if only one method, return it
+            return methodList.get(0);
+        }
+
+        throw new NoSuchMethodException("no such TCC-phase-two method: " + ReflectionUtil.methodToString(interfaceClass, methodName, argsClassesOnAnnotation));
     }
 
     protected String[] getTwoPhaseArgs(Method method, Class<?>[] argsClasses) {
