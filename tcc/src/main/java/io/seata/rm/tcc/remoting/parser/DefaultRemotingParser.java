@@ -232,6 +232,9 @@ public class DefaultRemotingParser {
         for (Method m : methods) {
             if (m.getName().equals(methodName)) {
                 methodList.add(m);
+                if (methodList.size() > 1) {
+                    break;
+                }
             }
         }
         if (methodList.size() == 1) {
