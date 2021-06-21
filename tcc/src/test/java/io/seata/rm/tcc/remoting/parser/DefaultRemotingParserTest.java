@@ -17,11 +17,11 @@ public class DefaultRemotingParserTest {
         Class<?>[] argsCommitClasses = new Class[] {BusinessActionContext.class, TccParam.class, Integer.class};
         Method commitMethod = tccActionImpl.getMethod("commit", argsCommitClasses);
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            defaultRemotingParser.getTwoPhaseArgs(commitMethod, argsCommitClasses);
+            defaultRemotingParser.getTwoPhaseArgKeys(commitMethod);
         });
         Class<?>[] argsRollbackClasses = new Class[] {BusinessActionContext.class, TccParam.class};
         Method rollbackMethod = tccActionImpl.getMethod("rollback", argsRollbackClasses);
-        String[] keys = defaultRemotingParser.getTwoPhaseArgs(rollbackMethod, argsRollbackClasses);
+        String[] keys = defaultRemotingParser.getTwoPhaseArgKeys(rollbackMethod);
         Assertions.assertNull(keys[0]);
         Assertions.assertEquals("tccParam", keys[1]);
     }
