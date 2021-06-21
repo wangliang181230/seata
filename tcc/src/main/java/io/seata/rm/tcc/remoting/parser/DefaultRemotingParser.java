@@ -194,10 +194,8 @@ public class DefaultRemotingParser {
                         tccResource.setCommitArgsClasses(tccResource.getCommitMethod().getParameterTypes());
                         tccResource.setRollbackArgsClasses(tccResource.getRollbackMethod().getParameterTypes());
                         // set phase two method's keys
-                        tccResource.setPhaseTwoCommitKeys(this.getTwoPhaseArgs(tccResource.getCommitMethod(),
-                                twoPhaseBusinessAction.commitArgsClasses()));
-                        tccResource.setPhaseTwoRollbackKeys(this.getTwoPhaseArgs(tccResource.getRollbackMethod(),
-                                twoPhaseBusinessAction.rollbackArgsClasses()));
+                        tccResource.setPhaseTwoCommitKeys(this.getTwoPhaseArgKeys(tccResource.getCommitMethod()));
+                        tccResource.setPhaseTwoRollbackKeys(this.getTwoPhaseArgKeys(tccResource.getRollbackMethod()));
                         //registry tcc resource
                         DefaultResourceManager.get().registerResource(tccResource);
                     }
@@ -245,7 +243,9 @@ public class DefaultRemotingParser {
         throw new NoSuchMethodException("no such TCC-phase-two method: " + ReflectionUtil.methodToString(interfaceClass, methodName, argsClassesOnAnnotation));
     }
 
-    protected String[] getTwoPhaseArgs(Method method, Class<?>[] argsClasses) {
+    protected String[] getTwoPhaseArgKeys(Method method) {
+        Class<?>[] argsClasses = method.getParameterTypes();
+
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         String[] keys = new String[parameterAnnotations.length];
         /*
