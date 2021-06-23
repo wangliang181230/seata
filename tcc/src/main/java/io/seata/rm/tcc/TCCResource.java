@@ -46,10 +46,6 @@ public class TCCResource implements Resource {
 
     private Method rollbackMethod;
 
-    private Class<?>[] commitArgsClasses;
-
-    private Class<?>[] rollbackArgsClasses;
-
     private String[] phaseTwoCommitKeys;
 
     private String[] phaseTwoRollbackKeys;
@@ -227,15 +223,7 @@ public class TCCResource implements Resource {
      * @return class array
      */
     public Class<?>[] getCommitArgsClasses() {
-        return commitArgsClasses;
-    }
-
-    /**
-     * set commit method args
-     * @param commitArgsClasses commitArgsClasses
-     */
-    public void setCommitArgsClasses(Class<?>[] commitArgsClasses) {
-        this.commitArgsClasses = commitArgsClasses;
+        return commitMethod.getParameterTypes();
     }
 
     /**
@@ -243,15 +231,7 @@ public class TCCResource implements Resource {
      * @return class array
      */
     public Class<?>[] getRollbackArgsClasses() {
-        return rollbackArgsClasses;
-    }
-
-    /**
-     * set rollback method args
-     * @param rollbackArgsClasses rollbackArgsClasses
-     */
-    public void setRollbackArgsClasses(Class<?>[] rollbackArgsClasses) {
-        this.rollbackArgsClasses = rollbackArgsClasses;
+        return rollbackMethod.getParameterTypes();
     }
 
     /**

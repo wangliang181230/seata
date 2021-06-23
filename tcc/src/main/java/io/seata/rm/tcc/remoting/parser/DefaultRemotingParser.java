@@ -185,14 +185,11 @@ public class DefaultRemotingParser {
                         tccResource.setTargetBean(targetBean);
                         tccResource.setPrepareMethod(m);
                         tccResource.setCommitMethodName(twoPhaseBusinessAction.commitMethod());
-                        tccResource.setCommitMethod(getTwoPhaseMethod(interfaceClass, twoPhaseBusinessAction.commitMethod(),
+                        tccResource.setCommitMethod(this.getTwoPhaseMethod(interfaceClass, twoPhaseBusinessAction.commitMethod(),
                                 twoPhaseBusinessAction.commitArgsClasses()));
                         tccResource.setRollbackMethodName(twoPhaseBusinessAction.rollbackMethod());
-                        tccResource.setRollbackMethod(getTwoPhaseMethod(interfaceClass, twoPhaseBusinessAction.rollbackMethod(),
+                        tccResource.setRollbackMethod(this.getTwoPhaseMethod(interfaceClass, twoPhaseBusinessAction.rollbackMethod(),
                                 twoPhaseBusinessAction.rollbackArgsClasses()));
-                        // set argsClasses
-                        tccResource.setCommitArgsClasses(tccResource.getCommitMethod().getParameterTypes());
-                        tccResource.setRollbackArgsClasses(tccResource.getRollbackMethod().getParameterTypes());
                         // set phase two method's keys
                         tccResource.setPhaseTwoCommitKeys(this.getTwoPhaseArgKeys(tccResource.getCommitMethod()));
                         tccResource.setPhaseTwoRollbackKeys(this.getTwoPhaseArgKeys(tccResource.getRollbackMethod()));
