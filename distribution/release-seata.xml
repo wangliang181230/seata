@@ -31,7 +31,6 @@
         </fileSet>
 
         <fileSet>
-            <lineEnding>unix</lineEnding>
             <includes>
                 <include>bin/*</include>
             </includes>
