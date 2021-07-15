@@ -83,7 +83,7 @@ public final class ActionContextUtil {
             }
 
             // fetch context from the fields
-            Map<String, Object> context = new HashMap<>(8);
+            Map<String, Object> context = new HashMap<>(fields.length);
             for (Field f : fields) {
                 // get annotation
                 BusinessActionContextParameter annotation = f.getAnnotation(BusinessActionContextParameter.class);
