@@ -39,7 +39,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  * TCC Fence Handler(idempotent, non_rollback, suspend)
  *
  * @author kaka2code
- * @author Yujianfei
  */
 public class TCCFenceHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(TCCFenceHandler.class);
@@ -94,6 +93,7 @@ public class TCCFenceHandler {
      * @param businessActionContext businessActionContext
      * @param xid                   the global transaction id
      * @param branchId              the branch transaction id
+     * @param args                  commit method's parameters
      * @return the boolean
      */
     public static boolean commitFence(Method commitMethod, Object targetTCCBean, BusinessActionContext businessActionContext,
@@ -133,6 +133,7 @@ public class TCCFenceHandler {
      * @param xid                   the global transaction id
      * @param branchId              the branch transaction id
      * @param actionName            the action name
+     * @param args                  rollback method's parameters
      * @return the boolean
      */
     public static boolean rollbackFence(Method rollbackMethod, Object targetTCCBean, BusinessActionContext businessActionContext,
