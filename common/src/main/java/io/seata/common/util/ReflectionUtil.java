@@ -709,43 +709,6 @@ public final class ReflectionUtil {
         return annotation;
     }
 
-    //endregion
-
-
-    //region Instance
-
-
-    /**
-     * get singleton for the class
-     *
-     * @param clazz the clazz
-     * @param <T>   the type
-     * @return the singleton
-     * @throws IllegalArgumentException
-     */
-    public static <T> T getSingleton(Class<T> clazz) {
-        if (clazz == null) {
-            throw new IllegalArgumentException("clazz must be not null");
-        }
-
-        if (clazz.isInterface()) {
-            throw new IllegalArgumentException("clazz must be not an interface: " + clazz);
-        }
-
-        return (T)CollectionUtils.computeIfAbsent(SINGLETON_CACHE, clazz, key -> {
-            try {
-                return clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new IllegalArgumentException("new instance failed, class: " + clazz, e);
-            }
-        });
-    }
-
-    //endregion
-
-
-    //region Annotation
-
     /**
      * get annotation values
      *
@@ -754,7 +717,7 @@ public final class ReflectionUtil {
      */
     public static Map<String, Object> getAnnotationValues(Annotation annotation) throws NoSuchFieldException {
         InvocationHandler h = Proxy.getInvocationHandler(annotation);
-        return (Map<String, Object>)getFieldValue(h, "memberValues");
+        return getFieldValue(h, "memberValues");
     }
 
     //endregion
@@ -812,7 +775,7 @@ public final class ReflectionUtil {
      * @return the string
      */
     public static String fieldToString(Class<?> clazz, String fieldName, Class<?> fieldType) {
-        return "Field<" + clazz.getSimpleName() + ".(" + fieldType.getSimpleName() + ")" + fieldName + ">";
+        return "Field<" + clazz.getSimpleName() + ".(" + fieldType.getSimpleName() + " " + fieldName + ")>";
     }
 
     /**
