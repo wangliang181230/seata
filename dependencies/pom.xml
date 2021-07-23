@@ -18,6 +18,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <!--资源上传库管理-->
+    <distributionManagement>
+        <repository>
+            <id>kt-nexus-releases</id>
+            <url>http://www.kingtsoft.com:33084/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>kt-nexus-snapshots</id>
+            <url>http://www.kingtsoft.com:33084/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <groupId>io.seata</groupId>
     <artifactId>seata-dependencies</artifactId>
     <version>1.5.0-CUSTOM-SNAPSHOT</version>
