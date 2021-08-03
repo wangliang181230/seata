@@ -49,4 +49,11 @@ public @interface LoadLevel {
      * @return
      */
     Scope scope() default Scope.SINGLETON;
+
+    /**
+     * Depend on the classes.
+     *
+     * @return the classes
+     */
+    Class<?>[] dependOnClasses() default {};
 }
