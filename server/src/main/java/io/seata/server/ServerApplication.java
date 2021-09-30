@@ -32,9 +32,9 @@ public class ServerApplication {
         System.out.println("args: " + CollectionUtils.toString(Arrays.asList(args)));
 
         // get rpc port first, use to logback-spring.xml, @see the class named `SystemPropertyLoggerContextListener`
-        int port = PortHelper.getPort(args);
+        int port = PortHelper.getPortFromEnvOrStartup(args);
         System.out.println("端口号：" + port);
-        System.setProperty(ConfigurationKeys.SERVER_RPC_PORT, Integer.toString(port));
+        System.setProperty(ConfigurationKeys.SERVER_SERVICE_PORT_CAMEL, Integer.toString(port));
 
         // run the spring-boot application
         SpringApplication.run(ServerApplication.class, args);

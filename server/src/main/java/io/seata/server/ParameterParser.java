@@ -26,6 +26,7 @@ import io.seata.core.constants.ConfigurationKeys;
 import io.seata.server.env.ContainerHelper;
 
 import static io.seata.common.DefaultValues.SERVER_DEFAULT_STORE_MODE;
+import static io.seata.common.DefaultValues.SERVICE_DEFAULT_PORT;
 import static io.seata.config.ConfigurationFactory.ENV_PROPERTY_KEY;
 
 /**
@@ -91,8 +92,8 @@ public class ParameterParser {
                 this.host = System.getProperty("seata.host");
                 System.out.println("读取到 -Dseata.host: " + this.host);
             }
-            if (this.port == SERVER_DEFAULT_PORT && StringUtils.isNotBlank(System.getProperty("seata.port"))) {
-                this.port = NumberUtils.toInt(System.getProperty("seata.port"), SERVER_DEFAULT_PORT);
+            if (this.port == SERVICE_DEFAULT_PORT && StringUtils.isNotBlank(System.getProperty("seata.port"))) {
+                this.port = NumberUtils.toInt(System.getProperty("seata.port"), SERVICE_DEFAULT_PORT);
                 System.out.println("读取到 -Dseata.port: " + this.port);
             }
             if (StringUtils.isNotBlank(seataEnv)) {
