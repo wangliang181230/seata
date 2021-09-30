@@ -1,5 +1,5 @@
 server:
-  port: 9091
+  port: 7091
 
 spring:
   application:
@@ -25,6 +25,9 @@ seata:
     type: file
   store:
     # support: file 、 db 、 redis
+    mode: file
+  server:
+    service-port: 8091
     mode: db
     session:
       mode: db

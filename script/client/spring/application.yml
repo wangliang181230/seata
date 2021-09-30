@@ -139,10 +139,8 @@ seata:
     exception-rate: 100
   tcc:
     fence:
-      enabled: true
       log-table-name: tcc_fence_log
-      clean-mode: hour
-      clean-period: 1
+      clean-period: 1h
   proxy:
     enabled: false
     proxy-interceptor-order: -2147482648 #Ordered.HIGHEST_PRECEDENCE + 1000

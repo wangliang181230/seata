@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -36,15 +35,14 @@ import javax.sql.DataSource;
  *
  * @author kaka2code
  */
-@ConditionalOnExpression("${seata.enabled:true} && ${seata.tcc.fence.enabled:true}")
-@AutoConfigureAfter({DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
+@ConditionalOnExpression("${seata.enabled:true}")
+@AutoConfigureAfter({SeataCoreAutoConfiguration.class, DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
 public class SeataTCCFenceAutoConfiguration {
 
     public static final String TCC_FENCE_DATA_SOURCE_BEAN_NAME = "seataTCCFenceDataSource";
     public static final String TCC_FENCE_TRANSACTION_MANAGER_BEAN_NAME = "seataTCCFenceTransactionManager";
 
     @Bean
-    @Lazy(false)
     @ConditionalOnMissingBean(TCCFenceConfig.class)
     @ConditionalOnBean({DataSource.class, PlatformTransactionManager.class})
     @ConfigurationProperties(StarterConstants.TCC_FENCE_PREFIX)
