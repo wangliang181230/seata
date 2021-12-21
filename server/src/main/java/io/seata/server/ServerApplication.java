@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * @author spilledyear@outlook.com
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"io.seata"})
 public class ServerApplication {
     public static void main(String[] args) {
         System.out.println("args: " + CollectionUtils.toString(Arrays.asList(args)));
