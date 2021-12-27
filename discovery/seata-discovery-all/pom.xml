@@ -38,13 +38,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-discovery-custom</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-discovery-etcd3</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <!--<dependency>
+        </dependency>-->
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-discovery-eureka</artifactId>
             <version>${project.version}</version>
@@ -53,13 +53,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-discovery-nacos</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
-        <dependency>
+        </dependency>
+        <!--<dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-discovery-redis</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-discovery-sofa</artifactId>
             <version>${project.version}</version>
