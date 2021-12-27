@@ -19,25 +19,41 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 public class CompressUtilTest {
 
-    @Test
-    public void testCompress() throws IOException {
-        byte[] bytes = new byte[]{31, -117, 8, 0, 0, 0, 0, 0, 0, 0,
-                99, 100, 98, 6, 0, 29, -128, -68, 85, 3, 0, 0, 0};
+    final byte[] originBytes = new byte[]{1, 2, 3};
 
-        Assertions.assertArrayEquals(bytes,
-                CompressUtil.compress(new byte[]{1, 2, 3}));
+    final byte[] compressedBytes1 = new byte[]{31, -117, 8, 0, 0, 0, 0, 0, 0, 0,
+            99, 100, 98, 6, 0, 29, -128, -68, 85, 3, 0, 0, 0};
+
+    final byte[] compressedBytes2 = new byte[]{31, -117, 8, 0, 0, 0, 0, 0, 0, -1,
+            99, 100, 98, 6, 0, 29, -128, -68, 85, 3, 0, 0, 0};
+
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_17)
+    public void testCompress() throws IOException {
+        byte[] compressedBytes = CompressUtil.compress(originBytes);
+        Assertions.assertEquals(StringUtils.toString(compressedBytes1), StringUtils.toString(compressedBytes));
+        Assertions.assertEquals(StringUtils.toString(originBytes), StringUtils.toString(CompressUtil.uncompress(compressedBytes)));
+    }
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_17)
+    public void testCompressForJava17() throws IOException {
+        byte[] compressedBytes = CompressUtil.compress(originBytes);
+        Assertions.assertEquals(StringUtils.toString(compressedBytes2), StringUtils.toString(compressedBytes));
+        Assertions.assertEquals(StringUtils.toString(originBytes), StringUtils.toString(CompressUtil.uncompress(compressedBytes)));
     }
 
     @Test
     public void testUncompress() throws IOException {
-        byte[] bytes = new byte[]{31, -117, 8, 0, 0, 0, 0, 0, 0, 0,
-                99, 100, 98, 6, 0, 29, -128, -68, 85, 3, 0, 0, 0};
-
-        Assertions.assertArrayEquals(new byte[]{1, 2, 3},
-                CompressUtil.uncompress(bytes));
+        Assertions.assertEquals(StringUtils.toString(originBytes), StringUtils.toString(CompressUtil.uncompress(compressedBytes1)));
+        Assertions.assertEquals(StringUtils.toString(originBytes), StringUtils.toString(CompressUtil.uncompress(compressedBytes2)));
     }
 
     @Test

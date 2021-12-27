@@ -25,13 +25,11 @@ import io.seata.rm.datasource.exec.LockWaitTimeoutException;
 import io.seata.rm.datasource.mock.MockConnection;
 import io.seata.rm.datasource.mock.MockDriver;
 import io.seata.rm.datasource.undo.SQLUndoLog;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 /**
  * ConnectionProxy test
@@ -47,17 +45,10 @@ public class ConnectionProxyTest {
 
     private final static String lockKey = "order:123";
 
-    private Field branchRollbackFlagField;
 
     @BeforeEach
     public void initBeforeEach() throws Exception {
-        branchRollbackFlagField = ConnectionProxy.LockRetryPolicy.class.getDeclaredField("LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT");
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(branchRollbackFlagField, branchRollbackFlagField.getModifiers() & ~Modifier.FINAL);
-        branchRollbackFlagField.setAccessible(true);
-        boolean branchRollbackFlag = (boolean) branchRollbackFlagField.get(null);
-        Assertions.assertTrue(branchRollbackFlag);
+        Assertions.assertTrue(ConnectionProxy.LockRetryPolicy.isLockRetryPolicyBranchRollbackOnConflict());
 
         dataSourceProxy = Mockito.mock(DataSourceProxy.class);
         Mockito.when(dataSourceProxy.getResourceId())
@@ -70,26 +61,30 @@ public class ConnectionProxyTest {
         DefaultResourceManager.mockResourceManager(BranchType.AT, rm);
     }
 
-    @Test
-    public void testLockRetryPolicyRollbackOnConflict() throws Exception {
-        boolean oldBranchRollbackFlag = (boolean) branchRollbackFlagField.get(null);
-        branchRollbackFlagField.set(null, true);
-        ConnectionProxy connectionProxy = new ConnectionProxy(dataSourceProxy, new MockConnection(new MockDriver(), "", null));        connectionProxy.bind(TEST_XID);
-        connectionProxy.appendUndoLog(new SQLUndoLog());
-        connectionProxy.appendLockKey(lockKey);
-        Assertions.assertThrows(LockWaitTimeoutException.class, connectionProxy::commit);
-        branchRollbackFlagField.set(null, oldBranchRollbackFlag);
+    @AfterEach
+    public void cleanAfterEach() {
+        ConnectionProxy.LockRetryPolicy.removeLockRetryPolicyBranchRollbackOnConflict();
     }
 
     @Test
-    public void testLockRetryPolicyNotRollbackOnConflict() throws Exception {
-        boolean oldBranchRollbackFlag = (boolean) branchRollbackFlagField.get(null);
-        branchRollbackFlagField.set(null, false);
+    public void testLockRetryPolicyRollbackOnConflict() {
+        ConnectionProxy.LockRetryPolicy.setLockRetryPolicyBranchRollbackOnConflict(true);
+
+        ConnectionProxy connectionProxy = new ConnectionProxy(dataSourceProxy, new MockConnection(new MockDriver(), "", null));
+        connectionProxy.bind(TEST_XID);
+        connectionProxy.appendUndoLog(new SQLUndoLog());
+        connectionProxy.appendLockKey(lockKey);
+        Assertions.assertThrows(LockWaitTimeoutException.class, connectionProxy::commit);
+    }
+
+    @Test
+    public void testLockRetryPolicyNotRollbackOnConflict() {
+        ConnectionProxy.LockRetryPolicy.setLockRetryPolicyBranchRollbackOnConflict(false);
+
         ConnectionProxy connectionProxy = new ConnectionProxy(dataSourceProxy, null);
         connectionProxy.bind(TEST_XID);
         connectionProxy.appendUndoLog(new SQLUndoLog());
         connectionProxy.appendLockKey(lockKey);
         Assertions.assertThrows(LockWaitTimeoutException.class, connectionProxy::commit);
-        branchRollbackFlagField.set(null, oldBranchRollbackFlag);
     }
 }

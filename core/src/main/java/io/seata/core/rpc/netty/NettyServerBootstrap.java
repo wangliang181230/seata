@@ -16,6 +16,7 @@
 package io.seata.core.rpc.netty;
 
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -171,17 +172,19 @@ public class NettyServerBootstrap implements RemotingBootstrap {
             LOGGER.info("Server started, service listen port: {}", getListenPort());
             RegistryFactory.getInstance().register(new InetSocketAddress(XID.getIpAddress(), XID.getPort()));
             initialized.set(true);
+        } catch (SocketException se) {
+            LOGGER.error("Server start failed, the listen port: {}", getListenPort());
+            throw new RuntimeException("Server start failed", se);
         } catch (Exception exx) {
-            throw new RuntimeException(exx);
+            throw new RuntimeException("Server start failed", exx);
         }
-
     }
 
     @Override
     public void shutdown() {
         try {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Shutting server down. ");
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Shutting server down, the listen port: {}", XID.getPort());
             }
             if (initialized.get()) {
                 RegistryFactory.getInstance().unregister(new InetSocketAddress(XID.getIpAddress(), XID.getPort()));
@@ -193,7 +196,7 @@ public class NettyServerBootstrap implements RemotingBootstrap {
             this.eventLoopGroupBoss.shutdownGracefully();
             this.eventLoopGroupWorker.shutdownGracefully();
         } catch (Exception exx) {
-            LOGGER.error("shutdown execute error:{}",exx.getMessage(),exx);
+            LOGGER.error("shutdown execute error: {}",exx.getMessage(),exx);
         }
     }
 }
