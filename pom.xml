@@ -31,18 +31,6 @@
     <name>Seata Parent POM ${project.version}</name>
     <description>top seata project pom.xml file</description>
 
-    <!--资源上传库管理-->
-    <distributionManagement>
-        <repository>
-            <id>kt-nexus-releases</id>
-            <url>http://www.kingtsoft.com:33084/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>kt-nexus-snapshots</id>
-            <url>http://www.kingtsoft.com:33084/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <modules>
         <module>all</module>
         <module>bom</module>

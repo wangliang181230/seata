@@ -31,18 +31,6 @@
     <name>Seata Dependencies ${project.version}</name>
     <description>Seata dependencies</description>
 
-    <!--资源上传库管理-->
-    <distributionManagement>
-        <repository>
-            <id>kt-nexus-releases</id>
-            <url>http://www.kingtsoft.com:33084/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>kt-nexus-snapshots</id>
-            <url>http://www.kingtsoft.com:33084/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <properties>
         <spring-boot.version>2.4.13</spring-boot.version>
 
