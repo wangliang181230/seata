@@ -116,6 +116,7 @@ public class MysqlTableMetaCache extends AbstractTableMetaCache {
 
         try (ResultSet rsColumns = dbmd.getColumns(catalogName, schemaName, tableName, "%");
              ResultSet rsIndex = dbmd.getIndexInfo(catalogName, schemaName, tableName, false, true);
+             ResultSet rsPrimary = dbmd.getPrimaryKeys(null, schemaName, tableName);
              ResultSet onUpdateColumns = dbmd.getVersionColumns(catalogName, schemaName, tableName)) {
             while (rsColumns.next()) {
                 ColumnMeta col = new ColumnMeta();
@@ -167,7 +168,7 @@ public class MysqlTableMetaCache extends AbstractTableMetaCache {
                     index.setAscOrDesc(rsIndex.getString("ASC_OR_DESC"));
                     index.setCardinality(rsIndex.getInt("CARDINALITY"));
                     index.getValues().add(col);
-                    if ("PRIMARY".equalsIgnoreCase(indexName)) {
+                    if (this.isPrimaryIndex(index, rsPrimary)) {
                         index.setIndextype(IndexType.PRIMARY);
                     } else if (!index.isNonUnique()) {
                         index.setIndextype(IndexType.UNIQUE);
@@ -183,5 +184,22 @@ public class MysqlTableMetaCache extends AbstractTableMetaCache {
             }
         }
         return tm;
+    }
+
+    protected boolean isPrimaryIndex(IndexMeta indexMeta, ResultSet rsPrimary) throws SQLException {
+        if ("PRIMARY".equalsIgnoreCase(indexMeta.getIndexName())) {
+            return true;
+        }
+
+        while (rsPrimary.next()) {
+            String colName = rsPrimary.getString("COLUMN_NAME");
+            for (ColumnMeta columnMeta : indexMeta.getValues()) {
+                if (columnMeta.getColumnName().equals(colName)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

@@ -116,7 +116,7 @@ public class TableMeta {
     public Map<String, ColumnMeta> getPrimaryKeyMap() {
         Map<String, ColumnMeta> pk = new HashMap<>();
         allIndexes.forEach((key, index) -> {
-            if (index.getIndextype().value() == IndexType.PRIMARY.value()) {
+            if (index.getIndextype() == IndexType.PRIMARY) {
                 for (ColumnMeta col : index.getValues()) {
                     pk.put(col.getColumnName(), col);
                 }

@@ -38,7 +38,7 @@ public enum IndexType {
      */
     FULL_TEXT(3);
 
-    private int i;
+    private final int i;
 
     IndexType(int i) {
         this.i = i;
