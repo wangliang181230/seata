@@ -138,4 +138,21 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+
+    <!--<profiles>
+        <profile>
+            <id>args-for-test-by-jdk17</id>
+            <activation>
+                <jdk>17</jdk>
+            </activation>
+            <properties>
+                <maven.surefire.argLine>
+                    &#45;&#45;add-opens java.base/java.lang=ALL-UNNAMED
+
+                    &#45;&#45;illegal-access=permit
+                    -Dillegal-access=permit
+                </maven.surefire.argLine>
+            </properties>
+        </profile>
+    </profiles>-->
 </project>
