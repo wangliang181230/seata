@@ -41,6 +41,11 @@ jobs:
           java-version: ${{ matrix.java }}
 
       # step 3
+      - name: "Maven version"
+        run: |
+          mvn -version
+
+      # step 3
       - name: "Test with Maven"
         # https://docs.github.com/cn/free-pro-team@latest/actions/reference/context-and-expression-syntax-for-github-actions#github-context
         run: |
