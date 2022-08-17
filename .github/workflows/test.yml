@@ -2,7 +2,7 @@ name: "test"
 
 on:
   push:
-    branches: [ test*, "*.*.*" ]
+    branches: [ support_jdk17 ]
 
 jobs:
   test:
