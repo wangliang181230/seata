@@ -20,12 +20,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-
 import io.seata.common.util.CollectionUtils;
 import io.seata.common.util.DurationUtil;
 import io.seata.common.util.StringUtils;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.implementation.InvocationHandlerAdapter;
+import net.bytebuddy.matcher.ElementMatchers;
 
 /**
  * @author funkye
@@ -36,7 +36,7 @@ public class ConfigurationCache implements ConfigurationChangeListener {
 
     private static final String METHOD_LATEST_CONFIG = METHOD_PREFIX + "LatestConfig";
 
-    private static final ConcurrentHashMap<String, ObjectWrapper> CONFIG_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, ObjectWrapper> CONFIG_CACHE = new ConcurrentHashMap<>();
 
     private Map<String, HashSet<ConfigurationChangeListener>> configListenersMap = new HashMap<>();
 
@@ -249,7 +249,8 @@ public class ConfigurationCache implements ConfigurationChangeListener {
             }
 
             public static ConfigType fromCode(String code) {
-                return CODE_TO_VALUE.get(code.toUpperCase());
+                ConfigType configType = CODE_TO_VALUE.get(code.toUpperCase());
+                return configType == null ? ConfigType.STRING : configType;
             }
 
             public static ConfigType fromName(String name) {
