@@ -54,6 +54,10 @@
             <artifactId>seata-serializer-all</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+        </dependency>
 
         <!-- spring  -->
         <dependency>
