@@ -100,11 +100,16 @@ public class ConfigurationCache implements ConfigurationChangeListener {
         }
     }
 
-    public Configuration proxy(Configuration originalConfiguration) {
-        return (Configuration)Enhancer.create(Configuration.class,
-            (MethodInterceptor)(proxy, method, args, methodProxy) -> {
-                if (method.getName().startsWith(METHOD_PREFIX)
-                        && !method.getName().equalsIgnoreCase(METHOD_LATEST_CONFIG)) {
+    public Configuration proxy(Configuration originalConfiguration) throws Exception {
+        Class<?> clazz;
+        if (originalConfiguration.getClass().getName().contains("$$")) {
+            clazz = originalConfiguration.getClass().getSuperclass();
+        } else {
+            clazz = originalConfiguration.getClass();
+        }
+        return (Configuration)new ByteBuddy().subclass(clazz).method(ElementMatchers.nameStartsWith(METHOD_PREFIX))
+            .intercept(InvocationHandlerAdapter.of((proxy, method, args) -> {
+                if (!method.getName().equalsIgnoreCase(METHOD_LATEST_CONFIG)) {
                     String rawDataId = (String)args[0];
                     ObjectWrapper wrapper = CONFIG_CACHE.get(rawDataId);
                     ObjectWrapper.ConfigType type = ObjectWrapper.getTypeByName(method.getName().substring(METHOD_PREFIX.length()));
@@ -123,7 +128,7 @@ public class ConfigurationCache implements ConfigurationChangeListener {
                     return wrapper == null ? null : wrapper.convertData(type);
                 }
                 return method.invoke(originalConfiguration, args);
-            });
+            })).make().load(this.getClass().getClassLoader()).getLoaded().getDeclaredConstructor().newInstance();
     }
 
     private static class ConfigurationCacheInstance {
