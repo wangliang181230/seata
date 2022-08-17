@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 11, 17, 18, 19 ]
+        java: [ 8, 11, 17, 18 ]
         springboot: [
           2.7.2          -Dspring-framework.version=5.3.22,
           2.6.10         -Dspring-framework.version=5.3.22,
