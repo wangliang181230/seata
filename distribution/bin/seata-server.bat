@@ -52,7 +52,7 @@ goto Win9xApp
 :Win9xGetScriptDir
 set SAVEDIR=%CD%
 %0\
-cd %0\..\..
+cd %0\..\.. 
 set BASEDIR=%CD%
 cd %SAVEDIR%
 set SAVE_DIR=
