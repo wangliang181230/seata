@@ -23,12 +23,15 @@ import io.seata.core.protocol.transaction.BranchCommitRequest;
 import io.seata.core.protocol.transaction.BranchCommitResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author jsbxyyx
  */
+@DisabledOnJre(value = JRE.JAVA_17)
 public class KryoSerializerTest {
 
     private static KryoSerializer kryoCodec;

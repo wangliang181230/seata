@@ -148,6 +148,7 @@
             <properties>
                 <maven.surefire.argLine>
                     &#45;&#45;add-opens java.base/java.lang=ALL-UNNAMED
+                    &#45;&#45;add-opens java.base/java.util=ALL-UNNAMED
 
                     &#45;&#45;illegal-access=permit
                     -Dillegal-access=permit
