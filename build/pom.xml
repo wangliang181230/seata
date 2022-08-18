@@ -370,5 +370,30 @@
                 <gpg.arg2>loopback</gpg.arg2>
             </properties>
         </profile>
+
+        <!-- profile: args-for-test-by-jdk17 -->
+        <profile>
+            <id>args-for-test-by-jdk17</id>
+            <activation>
+                <jdk>17</jdk>
+            </activation>
+            <properties>
+                <maven.surefire.argLine>
+                    --add-opens java.base/java.lang=ALL-UNNAMED
+                    --add-opens java.base/java.net=ALL-UNNAMED
+                    --add-opens java.base/java.math=ALL-UNNAMED
+                    --add-opens java.base/java.text=ALL-UNNAMED
+                    --add-opens java.base/java.util=ALL-UNNAMED
+                    --add-opens java.base/java.util.regex=ALL-UNNAMED
+                    --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+
+                    --add-opens java.sql/java.sql=ALL-UNNAMED
+                    --add-opens java.sql.rowset/javax.sql.rowset.serial=ALL-UNNAMED
+
+                    --illegal-access=permit
+                    -Dillegal-access=permit
+                </maven.surefire.argLine>
+            </properties>
+        </profile>
     </profiles>
 </project>

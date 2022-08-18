@@ -247,7 +247,7 @@
                 <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <from>
-                        <image>openjdk:17.0.2</image>
+                        <image>${IMAGE_NAME}</image>
                         <platforms>
                             <platform>
                                 <os>linux</os>
@@ -261,7 +261,7 @@
                     </from>
                     <to>
                         <image>docker.io/easyj/seata-server</image>
-                        <tags>1.6.0-test</tags>
+                        <tags>${image.tags}</tags>
                         <auth>
                             <username>${REGISTRY_USERNAME}</username>
                             <password>${REGISTRY_PASSWORD}</password>

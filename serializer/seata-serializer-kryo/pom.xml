@@ -33,21 +33,4 @@
             <artifactId>kryo-serializers</artifactId>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>args-for-test-by-jdk17</id>
-            <activation>
-                <jdk>[17,)</jdk>
-            </activation>
-            <properties>
-                <maven.surefire.argLine>
-                    --add-opens java.base/java.util=ALL-UNNAMED
-
-                    --illegal-access=permit
-                    -Dillegal-access=permit
-                </maven.surefire.argLine>
-            </properties>
-        </profile>
-    </profiles>
 </project>
