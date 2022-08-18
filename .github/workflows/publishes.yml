@@ -10,47 +10,57 @@ on:
     - cron: '0 16 * * *' #GMT+0
 
 jobs:
-  publish:
-    name: "Publish"
+#  # job 1
+#  publish-ossrh:
+#    name: "Publish-To-OSSRH"
+#    runs-on: ubuntu-latest
+#    steps:
+#      # step 1.1
+#      - name: "Checkout"
+#        uses: actions/checkout@v2.4.0
+#
+#      # step 1.2
+#      - name: "Setup Java JDK"
+#        uses: actions/setup-java@v2.5.0
+#        with:
+#          distribution: 'zulu'
+#          java-version: 8
+#          server-id: oss_seata
+#          server-username: OSSRH_USERNAME
+#          server-password: OSSRH_PASSWORD
+#
+#      # step 1.3
+#      - name: "Import GPG-SECRET-KEY, Package and Publish-To-OSSRH"
+#        env:
+#          OSSRH_USERNAME: ${{ secrets.OSSRH_USER }}
+#          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+#        run: |
+#          cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import;
+#          ./mvnw -T 4C clean deploy -Prelease,release-by-github-actions -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} -DskipTests -e -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  # job 2
+  publish-image:
+    name: "Publish Image"
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        type: [ "image" ]
     steps:
-      # step 1
+      # step 2.1
       - name: "Checkout"
         uses: actions/checkout@v2.4.0
 
-      # step 2
+      # step 2.2
       - name: "Setup Java JDK"
         uses: actions/setup-java@v2.5.0
         with:
           distribution: 'zulu'
-          java-version: 8
-          server-id: oss_seata
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_PASSWORD
+          java-version: 17
 
-      # step 3 for type=OSSRH
-      - name: "Import GPG-SECRET-KEY, Package and Publish-To-OSSRH"
-        if: matrix.type == 'OSSRH'
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USER }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        run: |
-          cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import;
-          ./mvnw -T 4C clean deploy -Prelease,release-by-github-actions -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} -DskipTests -e -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-      # step 4 for type=image
-      - name: "set env"
-        if: matrix.type == 'image'
+      # step 2.3
+      - name: "Setup ENV"
         run: |
           echo "IMAGE_NAME=openjdk:17.0.2" >> $GITHUB_ENV;
 
-      # step 4 for type=image
+      # step 2.4
       - name: "Package and Publish-Image-To-DockerHub"
-        if: matrix.type == 'image'
         env:
           REGISTRY_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
