@@ -247,7 +247,7 @@
                 <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <from>
-                        <image>docker.io/openjdk:17.0.2</image>
+                        <image>openjdk:17.0.2</image>
                         <platforms>
                             <platform>
                                 <os>linux</os>
