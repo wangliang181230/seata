@@ -43,13 +43,18 @@ jobs:
           ./mvnw -T 4C clean deploy -Prelease,release-by-github-actions -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} -DskipTests -e -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       # step 4 for type=image
+      - name: "set env"
+        if: matrix.type == 'image'
+        run: |
+          echo "IMAGE_NAME=openjdk:17.0.2" >> $GITHUB_ENV;
+
+      # step 4 for type=image
       - name: "Package and Publish-Image-To-DockerHub"
         if: matrix.type == 'image'
         env:
           REGISTRY_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         run: |
-          echo "IMAGE_NAME=openjdk:17.0.2" >> $GITHUB_ENV;
           if [ "${{github.ref}}" == "refs/heads/snapshot" ] || [ "${{github.ref}}" == "refs/heads/develop" ]; then
             ./mvnw -T 4C clean package -Pimage               -DskipTests -e -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn;
           else
