@@ -105,7 +105,7 @@ public class ConfigurationCache implements ConfigurationChangeListener {
             .intercept(InvocationHandlerAdapter.of((proxy, method, args) -> {
                 String methodName = method.getName();
                 if (methodName.startsWith(METHOD_PREFIX) && !methodName.equalsIgnoreCase(METHOD_LATEST_CONFIG)) {
-                     String rawDataId = (String)args[0];
+                    String rawDataId = (String)args[0];
                     ObjectWrapper wrapper = CONFIG_CACHE.get(rawDataId);
                     ObjectWrapper.ConfigType type =
                         ObjectWrapper.getTypeByName(methodName.substring(METHOD_PREFIX.length()));
