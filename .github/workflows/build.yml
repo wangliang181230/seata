@@ -2,12 +2,12 @@ name: "build"
 
 on:
   push:
-    branches: [ 2.x, develop, master ]
+    branches: [ temp* ]
   pull_request:
-    branches: [ 2.x, develop, master ]
+    branches: [ temp* ]
 
 jobs:
-  build_arm64-binary: 
+  build_arm64-binary:
      runs-on: ubuntu-latest
      if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/2.x') }}
      strategy:
