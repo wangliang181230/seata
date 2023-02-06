@@ -13,42 +13,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package io.seata.config;
-
-import java.util.Objects;
-import javax.annotation.Nonnull;
-
-import io.seata.common.executor.AbstractInitialize;
+package io.seata.common.executor;
 
 /**
- * The type Abstract configuration
+ * The type Cleanable utils.
  *
  * @author wang.liang
  */
-public abstract class AbstractConfiguration extends AbstractInitialize implements Configuration {
+public class CleanableUtils {
 
     /**
-     * The name
+     * Clean the obj,
+     *
+     * @param obj the obj
      */
-    @Nonnull
-    private final String name;
+    public static void clean(Object obj) {
+        if (obj instanceof Cleanable) {
+            ((Cacheable)obj).clean();
+            return;
+        }
 
-
-    protected AbstractConfiguration(@Nonnull String name) {
-        Objects.requireNonNull(name, "The 'name' must not be null.");
-        this.name = name;
+        if (obj instanceof Wrapper) {
+            Cleanable cleanable = ((Wrapper)obj).unwrap(Cleanable.class);
+            if (cleanable != null) {
+                cleanable.clean();
+            }
+        }
     }
 
-
-    @Nonnull
-    @Override
-    public String getName() {
-        return name;
-    }
-
-
-    @Override
-    public String toString() {
-        return "[name='" + getName() + "']";
-    }
 }

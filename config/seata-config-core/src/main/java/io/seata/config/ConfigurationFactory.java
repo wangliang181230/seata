@@ -18,9 +18,9 @@ package io.seata.config;
 import java.util.Set;
 
 import io.seata.common.exception.NotSupportYetException;
-import io.seata.common.executor.Cacheable;
-import io.seata.common.executor.Cleanable;
-import io.seata.common.executor.Initialize;
+import io.seata.common.executor.CacheableUtils;
+import io.seata.common.executor.CleanableUtils;
+import io.seata.common.executor.InitializeUtils;
 import io.seata.common.loader.EnhancedServiceLoader;
 import io.seata.config.changelistener.ConfigurationChangeListener;
 import io.seata.config.changelistener.ConfigurationChangeListenerManager;
@@ -72,56 +72,74 @@ public final class ConfigurationFactory {
     }
 
     private static void initConfiguration() {
-        if (!(instance instanceof Initialize)) {
+        if (InitializeUtils.isInitialize(instance)) {
             // not an Initialize.
             return;
         }
 
-        Initialize initialize = (Initialize)instance;
-        if (initialize.isInitialized()) {
+        if (InitializeUtils.isInitialized(instance)) {
             // instance is initialized.
             return;
         }
 
         if (!instanceInitializing) {
             synchronized (Configuration.class) {
-                if (!instanceInitializing && !initialize.isInitialized()) {
+                if (!instanceInitializing && !InitializeUtils.isInitialized(instance)) {
                     instanceInitializing = true;
-                    initialize.init();
+                    InitializeUtils.init(instance);
                     instanceInitializing = false;
                 }
             }
-        } else if (!initialize.isInitialized()) {
+        } else if (!InitializeUtils.isInitialized(instance)) {
             LOGGER.warn("Current configuration '{}' has not been fully initialized. Some config source may not be available.",
                     instance.getName());
-        }
-    }
-
-    public static void clean() {
-        if (instance instanceof Cleanable) {
-            ((Cleanable)instance).clean();
-        }
-    }
-
-    public static void removeCache(String dataId) {
-        if (instance instanceof Cacheable) {
-            ((Cacheable)instance).removeCache(dataId);
-        }
-    }
-
-    public static void cleanCaches() {
-        if (instance instanceof Cacheable) {
-            ((Cacheable)instance).cleanCaches();
         }
     }
 
     /**
      * Reload the instance.
      */
-    static void reload() {
-        clean();
-        instance = null;
+    public static void reload() {
+        if (instance != null && !instanceInitializing) {
+            synchronized (Configuration.class) {
+                if (instance != null && !instanceInitializing) {
+                    clean();
+                    instance = null;
+                }
+            }
+        }
+
         getInstance();
+    }
+
+    //endregion
+
+
+    //region Cleanable
+
+    public static void clean() {
+        CleanableUtils.clean(instance);
+    }
+
+    //endregion
+
+
+    //region Cacheable
+
+    public static Object getCache(String dataId) {
+        return CacheableUtils.getCache(instance, dataId);
+    }
+
+    public static boolean containsCacheKey(String dataId) {
+        return CacheableUtils.containsCacheKey(instance, dataId);
+    }
+
+    public static Object removeCache(String dataId) {
+        return CacheableUtils.removeCache(instance, dataId);
+    }
+
+    public static void cleanCaches() {
+        CacheableUtils.cleanCaches(instance);
     }
 
     //endregion

@@ -16,35 +16,47 @@
 package io.seata.config.defaultconfig;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 
+import io.seata.common.executor.Initialize;
 import io.seata.common.loader.EnhancedServiceLoader;
+import io.seata.config.AbstractConfiguration;
 import io.seata.config.CacheableConfiguration;
-import io.seata.config.ConfigCache;
+import io.seata.config.Configuration;
+import io.seata.config.ConfigurationWrapper;
 
 /**
  * The type Seata default config manager.
  *
  * @author wang.liang
  */
-public class SeataDefaultConfigManager extends CacheableConfiguration
-        implements DefaultConfigManager {
+public class SeataDefaultConfigManager extends AbstractConfiguration
+        implements DefaultConfigManager, ConfigurationWrapper, Initialize {
 
-    public static final String DEFAULT_NAME = "seata-default-config-manager";
+    private static final String NAME_PREFIX = "seata:";
 
 
-    public SeataDefaultConfigManager(String name, Map<String, ConfigCache> configCacheMap) {
-        super(name, configCacheMap);
+    @Nonnull
+    private final CacheableConfiguration cacheable;
+
+
+    public SeataDefaultConfigManager(CacheableConfiguration cacheable) {
+        Objects.requireNonNull(cacheable, "The 'cacheable' configuration must not be null.");
+        this.cacheable = cacheable;
     }
 
-    public SeataDefaultConfigManager(String name) {
-        super(name);
+
+    @Nonnull
+    @Override
+    public Configuration getOrigin() {
+        return cacheable;
     }
 
-    public SeataDefaultConfigManager() {
-        this(DEFAULT_NAME);
+    @Override
+    public String getNamePrefix() {
+        return NAME_PREFIX;
     }
-
 
     /**
      * Override for load the DefaultConfigSource list in this method,

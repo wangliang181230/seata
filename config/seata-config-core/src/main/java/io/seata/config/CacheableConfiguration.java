@@ -36,38 +36,63 @@ import org.slf4j.LoggerFactory;
  *
  * @author wang.liang
  */
-public class CacheableConfiguration extends SimpleConfiguration
-        implements Cacheable, Cleanable {
+public class CacheableConfiguration implements ConfigurationWrapper, Cacheable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheableConfiguration.class);
 
-    public static final String DEFAULT_NAME = "cacheable-configuration";
+    public static final String NAME_PREFIX = "cacheable:";
 
+
+    /**
+     * The origin configuration.
+     */
+    private final Configuration origin;
 
     /**
      * The cache map.
      */
+    private final Map<String, ConfigCache> configCacheMap = new ConcurrentHashMap<>();
+
+
+    private CacheableConfiguration(Configuration origin) {
+        Objects.requireNonNull(origin, "The 'origin' configuration must not be null.");
+        this.origin = origin;
+    }
+
+
+    /**
+     * Wrap the origin configuration.
+     *
+     * @param origin the origin configuration
+     * @return the cacheable configuration
+     */
+    public static CacheableConfiguration wrap(Configuration origin) {
+        if (origin instanceof CacheableConfiguration) {
+            return (CacheableConfiguration)origin;
+        }
+
+        return new CacheableConfiguration(origin);
+    }
+
+
+    //region # Override ConfigurationWrapper
+
     @Nonnull
-    private final Map<String, ConfigCache> configCacheMap;
-
-
-    public CacheableConfiguration(String name, @Nonnull Map<String, ConfigCache> configCacheMap) {
-        super(name);
-
-        Objects.requireNonNull(configCacheMap, "The 'configCacheMap' must not be null.");
-        this.configCacheMap = configCacheMap;
+    @Override
+    public Configuration getOrigin() {
+        return origin;
     }
 
-    public CacheableConfiguration(String name) {
-        this(name, new ConcurrentHashMap<>());
+    //region # Override ConfigurationWrapper
+
+
+    //region # Override Configuration
+
+    @Nonnull
+    @Override
+    public String getNamePrefix() {
+        return NAME_PREFIX;
     }
-
-    public CacheableConfiguration() {
-        this(DEFAULT_NAME);
-    }
-
-
-    //region # Override AbstractConfiguration
 
     /**
      * Override to use cache
@@ -81,7 +106,7 @@ public class CacheableConfiguration extends SimpleConfiguration
         // Get config from cache
         ConfigCache cache = CollectionUtils.computeIfAbsent(configCacheMap, dataId, key -> {
             // Get config from sources
-            ConfigInfo config = this.getConfigFromSources(dataId, timeoutMills);
+            ConfigInfo config = origin.getConfigFromSources(dataId, timeoutMills);
             // Wrap config, also when config is null or blank
             return ConfigCache.fromConfigInfo(dataId, config, dataType);
         });
@@ -116,52 +141,54 @@ public class CacheableConfiguration extends SimpleConfiguration
         return value;
     }
 
-    //endregion # Override AbstractConfiguration
-
-
-    //region # Override ConfigSourceManager
+    //region ## Override ConfigSourceManager
 
     @Override
     public void afterAddingSource(ConfigSource newSource) {
-        super.afterAddingSource(newSource);
+        origin.afterAddingSource(newSource);
 
         // clean cache
-        this.cleanCaches();
+        this.clean();
     }
 
-    //endregion # Override ConfigSourceManager
+    //endregion ## Override ConfigSourceManager
+
+    //endregion # Override Configuration
 
 
     //region # Override Cacheable, Cleanable
 
-
-    @Override
-    public ConfigCache removeCache(String key) {
-        return this.configCacheMap.remove(key);
-    }
-
-    @Override
-    public void cleanCaches() {
-        this.configCacheMap.clear();
-    }
-
-    @Override
-    public void clean() {
-        this.cleanCaches();
-    }
-
-    @Nonnull
-    protected Map<String, ConfigCache> getCacheMap() {
-        return this.configCacheMap;
-    }
-
     @Nullable
-    protected ConfigCache getCache(String dataId) {
+    @Override
+    public ConfigCache getCache(String dataId) {
         return this.configCacheMap.get(dataId);
     }
 
     @Nullable
-    protected Object getCacheValue(String dataId) {
+    @Override
+    public ConfigCache removeCache(String dataId) {
+        return this.configCacheMap.remove(dataId);
+    }
+
+    @Override
+    public boolean containsCacheKey(String dataId) {
+        return this.configCacheMap.containsKey(dataId);
+    }
+
+    @Override
+    public void clean() {
+        if (origin instanceof Cleanable) {
+            ((Cleanable)origin).clean();
+        }
+        this.cleanCaches();
+    }
+
+    public void cleanCaches() {
+        this.configCacheMap.clear();
+    }
+
+    @Nullable
+    public Object getCacheValue(String dataId) {
         ConfigCache configCache = this.getCache(dataId);
         return configCache != null ? configCache.getValue() : null;
     }

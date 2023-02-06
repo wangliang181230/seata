@@ -19,9 +19,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import io.seata.common.exception.NotSupportYetException;
+import io.seata.common.executor.Cleanable;
 import io.seata.common.loader.EnhancedServiceLoader;
 import io.seata.common.util.ObjectUtils;
 import io.seata.common.util.StringUtils;
@@ -40,54 +42,60 @@ import org.slf4j.LoggerFactory;
  *
  * @author wang.liang
  */
-public class SeataConfiguration extends CacheableConfiguration
-        implements ConfigurationChangeListener, ConfigurationChangeListenerManager
-        , UpdatableConfiguration {
+public class SeataConfiguration implements ConfigurationWrapper, ConfigurationChangeListener, ConfigurationChangeListenerManager
+        , UpdatableConfiguration, Cleanable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SeataConfiguration.class);
 
-    public static final String DEFAULT_NAME = "seata-default";
+    public static final String NAME_PREFIX = "seata:";
 
+
+    /**
+     * The cacheable Configuration.
+     */
+    private final CacheableConfiguration cacheableConfiguration;
 
     /**
      * The default config manager.
      */
-    protected final DefaultConfigManager defaultConfigManager;
+    private final DefaultConfigManager defaultConfigManager;
 
     /**
      * The config change listener map.
      */
-    protected final Map<String, Set<ConfigurationChangeListener>> listenersMap = new ConcurrentHashMap<>();
+    private final Map<String, Set<ConfigurationChangeListener>> listenersMap = new ConcurrentHashMap<>();
 
 
     //region # Constructor
 
-    public SeataConfiguration(String name, Map<String, ConfigCache> configCache, DefaultConfigManager defaultConfigManager) {
-        super(name, configCache);
+    public SeataConfiguration(CacheableConfiguration cacheableConfiguration, DefaultConfigManager defaultConfigManager) {
+        this.cacheableConfiguration = cacheableConfiguration;
         this.defaultConfigManager = defaultConfigManager;
     }
 
-    public SeataConfiguration(String name, DefaultConfigManager defaultConfigManager) {
-        super(name);
-        this.defaultConfigManager = defaultConfigManager;
-    }
-
-    public SeataConfiguration(String name, Map<String, ConfigCache> configCache) {
-        super(name, configCache);
-        this.defaultConfigManager = this.buildDefaultConfigManager();
-    }
-
-    public SeataConfiguration(String name) {
-        super(name);
-        this.defaultConfigManager = this.buildDefaultConfigManager();
-    }
-
-    public SeataConfiguration() {
-        super(DEFAULT_NAME);
+    public SeataConfiguration(CacheableConfiguration cacheableConfiguration) {
+        this.cacheableConfiguration = cacheableConfiguration;
         this.defaultConfigManager = this.buildDefaultConfigManager();
     }
 
     //endregion # Constructor
+
+
+    //region # Override ConfigurationWrapper
+
+    @Nonnull
+    @Override
+    public Configuration getOrigin() {
+        return cacheableConfiguration;
+    }
+
+    @Nonnull
+    @Override
+    public String getNamePrefix() {
+        return NAME_PREFIX;
+    }
+
+    //endregion # Override ConfigurationWrapper
 
 
     //region # Override CacheableConfiguration
@@ -99,7 +107,7 @@ public class SeataConfiguration extends CacheableConfiguration
      */
     @Override
     public <T> T getConfig(String dataId, T defaultValue, long timeoutMills, Class<T> dataType) {
-        T config = super.getConfig(dataId, defaultValue, timeoutMills, dataType);
+        T config = cacheableConfiguration.getConfig(dataId, defaultValue, timeoutMills, dataType);
 
         if (ObjectUtils.isNullOrBlank(config)) {
             // Get default value from defaultConfigManager.
@@ -158,8 +166,8 @@ public class SeataConfiguration extends CacheableConfiguration
 
     @Override
     public boolean putConfig(String dataId, String content, long timeoutMills) {
-        if (mainSource instanceof UpdatableConfigSource) {
-            return ((UpdatableConfigSource)mainSource).putConfig(dataId, content, timeoutMills);
+        if (cacheableConfiguration.getMainSource() instanceof UpdatableConfigSource) {
+            return ((UpdatableConfigSource)cacheableConfiguration.getMainSource()).putConfig(dataId, content, timeoutMills);
         } else {
             throw new NotSupportYetException("Configuration '" + this.getClass().getSimpleName() + "(" + this.getName() + ")' " +
                     "not support putConfig");
@@ -168,8 +176,8 @@ public class SeataConfiguration extends CacheableConfiguration
 
     @Override
     public boolean putConfigIfAbsent(String dataId, String content, long timeoutMills) {
-        if (mainSource instanceof UpdatableConfigSource) {
-            return ((UpdatableConfigSource)mainSource).putConfigIfAbsent(dataId, content, timeoutMills);
+        if (cacheableConfiguration.getMainSource() instanceof UpdatableConfigSource) {
+            return ((UpdatableConfigSource)cacheableConfiguration.getMainSource()).putConfigIfAbsent(dataId, content, timeoutMills);
         } else {
             throw new NotSupportYetException("Configuration '" + this.getClass().getSimpleName() + "(" + this.getName() + ")' " +
                     "not support atomic operation putConfigIfAbsent");
@@ -178,8 +186,8 @@ public class SeataConfiguration extends CacheableConfiguration
 
     @Override
     public boolean removeConfig(String dataId, long timeoutMills) {
-        if (mainSource instanceof UpdatableConfigSource) {
-            return ((UpdatableConfigSource)mainSource).removeConfig(dataId, timeoutMills);
+        if (cacheableConfiguration.getMainSource() instanceof UpdatableConfigSource) {
+            return ((UpdatableConfigSource)cacheableConfiguration.getMainSource()).removeConfig(dataId, timeoutMills);
         } else {
             throw new NotSupportYetException("Configuration '" + this.getClass().getSimpleName() + "(" + this.getName() + ")' " +
                     "not support removeConfig");
@@ -272,7 +280,7 @@ public class SeataConfiguration extends CacheableConfiguration
     }
 
 
-    private void cleanListeners() {
+    public void cleanListeners() {
         // First, remove self (self is a ConfigurationChangeListener) from sources.
         this.removeSelfConfigListenerFromSources();
 
@@ -310,7 +318,7 @@ public class SeataConfiguration extends CacheableConfiguration
         String dataId = event.getDataId();
 
         // Get config cache
-        ConfigCache configCache = this.getCache(dataId);
+        ConfigCache configCache = this.cacheableConfiguration.getCache(dataId);
         if (configCache != null) {
             String cacheValue = configCache.getStringValue();
 
@@ -342,7 +350,7 @@ public class SeataConfiguration extends CacheableConfiguration
                             " and newValue is not equals to cacheValue '{}'. It may affect the final value of the config.",
                     dataId, event.getOldValue(), event.getNewValue(), event.getChangeEventSourceTypeName(), cacheValue
             );
-            this.removeCache(dataId);
+            this.cacheableConfiguration.removeCache(dataId);
         }
 
         return false;
@@ -360,7 +368,7 @@ public class SeataConfiguration extends CacheableConfiguration
      */
     @Override
     public void afterAddingSource(ConfigSource newSource) {
-        super.afterAddingSource(newSource);
+        cacheableConfiguration.afterAddingSource(newSource);
 
         // add self (self is a ConfigurationChangeListener) to source
         this.addSelfConfigListenersToSource(newSource);
@@ -373,8 +381,7 @@ public class SeataConfiguration extends CacheableConfiguration
 
     @Override
     public void clean() {
-        super.clean();
-        this.cleanListeners();
+        this.cacheableConfiguration.clean();
     }
 
     //endregion ## Override Cleanable

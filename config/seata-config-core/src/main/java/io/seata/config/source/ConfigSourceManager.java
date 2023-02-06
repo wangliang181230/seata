@@ -22,12 +22,32 @@ import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import io.seata.common.util.StringUtils;
+import io.seata.config.ConfigInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static io.seata.config.Configuration.DEFAULT_CONFIG_TIMEOUT;
+
 /**
  * The interface ConfigSourceManager.
  *
+ * @author slievrly
  * @author wang.liang
  */
 public interface ConfigSourceManager {
+
+    Logger LOGGER = LoggerFactory.getLogger(ConfigSourceManager.class);
+
+
+    /**
+     * Get name
+     *
+     * @return the name
+     */
+    @Nonnull
+    String getName();
+
 
     //region main source
 
@@ -45,8 +65,10 @@ public interface ConfigSourceManager {
      */
     void setMainSource(ConfigSource mainSource);
 
-    //endregion
+    //endregion main source
 
+
+    //region sources
 
     /**
      * Get all the sources, contains the main source.
@@ -74,6 +96,11 @@ public interface ConfigSourceManager {
     default ConfigSource getSource(String sourceName) {
         return getSourceMap().get(sourceName);
     }
+
+    //endregion sources
+
+
+    //region add source
 
     /**
      * add source to first position
@@ -183,4 +210,61 @@ public interface ConfigSourceManager {
     default void afterAddingSource(ConfigSource newSource) {
     }
 
+    //endregion add source
+
+
+    //region get config info from sources
+
+    @Nullable
+    default ConfigInfo getConfigFromSources(String dataId, long timeoutMills) {
+        if (StringUtils.isBlank(dataId)) {
+            return null;
+        }
+
+        // get sources
+        List<ConfigSource> sources = this.getSources();
+
+        String blankValue = null;
+        ConfigSource blankValueFromSource = null;
+
+        String value;
+        for (ConfigSource source : sources) {
+            value = source.getLatestConfig(dataId, timeoutMills);
+
+            if (value == null) {
+                continue;
+            }
+
+            if (StringUtils.isBlank(value)) {
+                if (blankValue == null) {
+                    blankValue = value;
+                    blankValueFromSource = source;
+                }
+                LOGGER.debug("Skip config '{}' blank value '{}' of type [{}] from source '{}' by configuration '{}'.",
+                        dataId, value, value.getClass().getName(), source.getName(), this.getName());
+                continue;
+            }
+
+            LOGGER.debug("Get config ['{}' = '{}'] of type [{}] from source '{}' by configuration '{}'.",
+                    dataId, value, value.getClass().getName(), source.getName(), this.getName());
+
+            // 1. Not blank value.
+            return new ConfigInfo(dataId, value, source);
+        }
+
+        if (blankValue != null) {
+            // 2. Is blank value.
+            return new ConfigInfo(dataId, blankValue, blankValueFromSource);
+        }
+
+        // 3. null
+        return null;
+    }
+
+    @Nullable
+    default ConfigInfo getConfigFromSources(String dataId) {
+        return this.getConfigFromSources(dataId, DEFAULT_CONFIG_TIMEOUT);
+    }
+
+    //endregion get config info from sources
 }

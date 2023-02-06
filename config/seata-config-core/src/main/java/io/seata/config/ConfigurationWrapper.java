@@ -15,40 +15,37 @@
  */
 package io.seata.config;
 
-import java.util.Objects;
 import javax.annotation.Nonnull;
 
-import io.seata.common.executor.AbstractInitialize;
+import io.seata.config.source.ConfigSourceManagerWrapper;
 
 /**
- * The type Abstract configuration
+ * The interface ConfigurationWrapper.
  *
  * @author wang.liang
  */
-public abstract class AbstractConfiguration extends AbstractInitialize implements Configuration {
+public interface ConfigurationWrapper extends Configuration, ConfigSourceManagerWrapper {
 
     /**
-     * The name
+     * Get origin configuration
+     *
+     * @return the origin configuration
      */
     @Nonnull
-    private final String name;
+    @Override
+    Configuration getOrigin();
 
-
-    protected AbstractConfiguration(@Nonnull String name) {
-        Objects.requireNonNull(name, "The 'name' must not be null.");
-        this.name = name;
-    }
+    /**
+     * Get name prefix.
+     *
+     * @return the name prefix
+     */
+    String getNamePrefix();
 
 
     @Nonnull
     @Override
-    public String getName() {
-        return name;
-    }
-
-
-    @Override
-    public String toString() {
-        return "[name='" + getName() + "']";
+    default String getName() {
+        return getNamePrefix() + getOrigin().getName();
     }
 }

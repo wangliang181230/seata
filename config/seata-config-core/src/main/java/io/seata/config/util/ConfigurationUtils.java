@@ -16,6 +16,7 @@
 package io.seata.config.util;
 
 import io.seata.common.util.StringUtils;
+import io.seata.config.CacheableConfiguration;
 import io.seata.config.Configuration;
 import io.seata.config.source.ConfigSource;
 import io.seata.config.source.ConfigSourceType;
@@ -42,6 +43,8 @@ public final class ConfigurationUtils {
         return defaultValue;
     }
 
+
+    //region some config
 
     //region get configFileName
 
@@ -72,7 +75,6 @@ public final class ConfigurationUtils {
     }
 
     //endregion
-
 
     //region get configTypeName and configType
 
@@ -105,6 +107,10 @@ public final class ConfigurationUtils {
 
     //endregion
 
+    //endregion
+
+
+    //region file config
 
     /**
      * load file sources
@@ -154,4 +160,6 @@ public final class ConfigurationUtils {
             configuration.setMainSource(mainSource);
         }
     }
+
+    //endregion
 }

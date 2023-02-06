@@ -22,6 +22,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import io.seata.common.util.ConvertUtils;
+import io.seata.common.util.StringUtils;
 import io.seata.config.source.ConfigSourceManager;
 
 /**
@@ -48,14 +49,6 @@ public interface Configuration extends ConfigSourceManager {
 
 
     /**
-     * Get name
-     *
-     * @return the name
-     */
-    @Nonnull
-    String getName();
-
-    /**
      * Get config.
      *
      * @param dataId       the data id
@@ -65,7 +58,20 @@ public interface Configuration extends ConfigSourceManager {
      * @param <T>          the data type
      * @return the Latest config
      */
-    <T> T getConfig(String dataId, T defaultValue, long timeoutMills, Class<T> dataType);
+    default <T> T getConfig(String dataId, T defaultValue, long timeoutMills, Class<T> dataType) {
+        if (StringUtils.isBlank(dataId)) {
+            return null;
+        }
+
+        ConfigInfo configInfo = this.getConfigFromSources(dataId, timeoutMills);
+
+        if (configInfo != null && (StringUtils.isNotBlank(configInfo.getValue()) || defaultValue == null)) {
+            // May be null or blank.
+            return ConvertUtils.convert(configInfo.getValue(), dataType);
+        }
+
+        return defaultValue;
+    }
 
     default <T> T getConfig(String dataId, T defaultValue, Class<T> dataType) {
         return getConfig(dataId, defaultValue, DEFAULT_CONFIG_TIMEOUT, dataType);

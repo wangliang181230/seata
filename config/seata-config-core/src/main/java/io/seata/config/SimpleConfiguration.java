@@ -33,7 +33,7 @@ import io.seata.config.source.ConfigSource;
  */
 public class SimpleConfiguration extends AbstractConfiguration {
 
-    public static final String DEFAULT_NAME = "simple-configuration";
+    private static final String NAME_PREFIX = "simple:";
 
 
     /**
@@ -53,11 +53,18 @@ public class SimpleConfiguration extends AbstractConfiguration {
 
 
     public SimpleConfiguration() {
-        this(DEFAULT_NAME);
+        this(NAME_PREFIX);
     }
 
     public SimpleConfiguration(String name) {
         super(name);
+    }
+
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return NAME_PREFIX + super.getName();
     }
 
 

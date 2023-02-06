@@ -15,24 +15,39 @@
  */
 package io.seata.common.executor;
 
+import javax.annotation.Nullable;
+
 /**
  * The interface Cacheable.
  *
  * @author wang.liang
  */
-public interface Cacheable {
+public interface Cacheable extends Cleanable {
+
+    /**
+     * Get cache by key
+     *
+     * @param key the cache key
+     * @return the cache or null
+     */
+    @Nullable
+    Object getCache(String key);
+
+    /**
+     * Contains cache key.
+     *
+     * @param key the cache key
+     * @return the boolean
+     */
+    boolean containsCacheKey(String key);
 
     /**
      * Remove cache by key.
      *
      * @param key the cache key
-     * @return the removed cache.
+     * @return the removed cache or null
      */
+    @Nullable
     Object removeCache(String key);
-
-    /**
-     * Clean the caches.
-     */
-    void cleanCaches();
 }
 

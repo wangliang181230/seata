@@ -13,42 +13,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package io.seata.config;
+package io.seata.common.executor;
 
-import java.util.Objects;
 import javax.annotation.Nonnull;
-
-import io.seata.common.executor.AbstractInitialize;
+import javax.annotation.Nullable;
 
 /**
- * The type Abstract configuration
+ * The interface Wrapper.
  *
  * @author wang.liang
  */
-public abstract class AbstractConfiguration extends AbstractInitialize implements Configuration {
-
-    /**
-     * The name
-     */
-    @Nonnull
-    private final String name;
-
-
-    protected AbstractConfiguration(@Nonnull String name) {
-        Objects.requireNonNull(name, "The 'name' must not be null.");
-        this.name = name;
-    }
-
+public interface Wrapper {
 
     @Nonnull
-    @Override
-    public String getName() {
-        return name;
-    }
+    Object getOrigin();
 
 
-    @Override
-    public String toString() {
-        return "[name='" + getName() + "']";
+    @Nullable
+    default <T> T unwrap(Class<T> iface) {
+        Object origin = getOrigin();
+        if (iface.isAssignableFrom(origin.getClass())) {
+            return (T)origin;
+        }
+
+        if (origin instanceof Wrapper) {
+            return ((Wrapper)origin).unwrap(iface);
+        }
+
+        return null;
     }
+
 }

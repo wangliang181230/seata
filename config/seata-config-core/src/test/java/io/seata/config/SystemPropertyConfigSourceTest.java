@@ -75,7 +75,7 @@ class SystemPropertyConfigSourceTest {
     @Test
     void testDiffDefaultValue() {
         Configuration config = ConfigurationFactory.getInstance();
-        ConfigurationFactory.cleanCaches();
+        ConfigurationFactory.clean();
 
         int intValue1 = config.getInt("int.not.exist", 100);
         int intValue2 = config.getInt("int.not.exist", 200);
