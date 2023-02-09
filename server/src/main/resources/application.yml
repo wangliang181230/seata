@@ -39,9 +39,15 @@ seata:
   config:
     # support: nacos, consul, apollo, zk, etcd3
     type: file
+    nacos:
+      server-addr: 192.168.1.103:8848
   registry:
     # support: nacos, eureka, redis, zk, consul, etcd3, sofa
     type: file
+    nacos:
+      server-addr: 192.168.1.103:8848
+    eureka:
+      service-url: http://192.168.1.103:8761/eureka
   store:
     # support: file 、 db 、 redis
     mode: file
