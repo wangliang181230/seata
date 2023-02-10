@@ -1,72 +1,9 @@
 [
   {
-    "name": "io.netty.handler.codec.sctp.SctpInboundByteStreamHandler",
-    "condition": {
-      "typeReachable": "com.thoughtworks.xstream.core.util.DependencyInjectionFactory"
-    },
-    "methods": [
-      {
-        "name": "<init>",
-        "parameterTypes": []
-      }
-    ]
-  },
-  {
-    "name": "com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider",
-    "condition": {
-      "typeReachable": "com.thoughtworks.xstream.core.util.DependencyInjectionFactory"
-    },
-    "methods": [
-      {
-        "name": "<init>",
-        "parameterTypes": []
-      }
-    ]
-  },
-  {
-    "name": "com.thoughtworks.xstream.mapper.EnumMapper",
+    "name": "com.thoughtworks.xstream.XStream",
     "condition": {
       "typeReachable": "com.thoughtworks.xstream.XStream"
     },
-    "methods": [
-      {
-        "name": "<init>",
-        "parameterTypes": [
-          "com.thoughtworks.xstream.mapper.Mapper"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "com.thoughtworks.xstream.mapper.LambdaMapper",
-    "condition": {
-      "typeReachable": "com.thoughtworks.xstream.XStream"
-    },
-    "methods": [
-      {
-        "name": "<init>",
-        "parameterTypes": [
-          "com.thoughtworks.xstream.mapper.Mapper"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "com.thoughtworks.xstream.mapper.AnnotationMapper",
-    "condition": {
-      "typeReachable": "com.thoughtworks.xstream.XStream"
-    },
-    "methods": [
-      {
-        "name": "<init>",
-        "parameterTypes": [
-          "com.thoughtworks.xstream.mapper.Mapper",
-          "com.thoughtworks.xstream.converters.ConverterRegistry",
-          "com.thoughtworks.xstream.converters.ConverterLookup",
-          "com.thoughtworks.xstream.core.ClassLoaderReference",
-          "com.thoughtworks.xstream.converters.reflection.ReflectionProvider"
-        ]
-      }
-    ]
+    "allPublicMethods": true
   }
 ]
