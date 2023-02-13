@@ -1,0 +1,36 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "pattern": "\\QMETA-INF\/services\/io.seata.\\E.*"
+      },
+      {
+        "pattern": "\\QMETA-INF\/seata\/io.seata.\\E.*"
+      },
+      {
+        "pattern": "\\QMETA-INF\/services\/com.alipay.sofa.rpc.filter.Filter\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF\/seata\/com.alipay.sofa.rpc.filter.Filter\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF\/services\/com.taobao.hsf.invocation.filter.RPCFilter\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF\/seata\/com.taobao.hsf.invocation.filter.RPCFilter\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF\/services\/com.weibo.api.motan.filter.Filter\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF\/seata\/com.weibo.api.motan.filter.Filter\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF\/services\/com.alibaba.dubbo.rpc.Filter\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF\/seata\/com.alibaba.dubbo.rpc.Filter\\E"
+      }
+    ]
+  }
+}

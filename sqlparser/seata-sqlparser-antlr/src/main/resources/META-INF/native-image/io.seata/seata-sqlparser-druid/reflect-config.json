@@ -1,0 +1,9 @@
+[
+  {
+    "condition": {
+      "typeReachable": "io.seata.sqlparser.antlr.mysql.AntlrMySQLRecognizerFactory"
+    },
+    "name": "io.seata.sqlparser.antlr.mysql.AntlrMySQLRecognizerFactory",
+    "allDeclaredConstructors": true
+  }
+]

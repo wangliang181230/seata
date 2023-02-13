@@ -34,7 +34,6 @@
         <module>seata-spring-aot-core</module>
         <module>seata-spring-aot-client</module>
 
-        <module>seata-spring-aot-3rd-party/seata-spring-aot-nacos</module>
         <module>seata-spring-aot-3rd-party/seata-spring-aot-zk</module>
     </modules>
 

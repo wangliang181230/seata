@@ -1,0 +1,70 @@
+[
+  {
+    "condition": {
+      "typeReachable": "com.alibaba.nacos.api.naming.NamingMaintainService"
+    },
+    "name": "com.alibaba.nacos.api.naming.pojo.ServiceInfo",
+    "allPublicClasses": true,
+    "allPublicConstructors": true,
+    "queryAllDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "queryAllDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "queryAllPublicMethods": true,
+    "allPublicMethods": true,
+    "allPublicFields": true,
+    "allDeclaredClasses": true,
+    "queryAllPublicConstructors": true
+  },
+  {
+    "condition": {
+      "typeReachable": "com.alibaba.nacos.api.naming.NamingMaintainService"
+    },
+    "name": "com.alibaba.nacos.api.naming.pojo.Instance",
+    "allPublicClasses": true,
+    "allPublicConstructors": true,
+    "queryAllDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "queryAllDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "queryAllPublicMethods": true,
+    "allPublicMethods": true,
+    "allPublicFields": true,
+    "allDeclaredClasses": true,
+    "queryAllPublicConstructors": true
+  },
+  {
+    "condition": {
+      "typeReachable": "com.alibaba.nacos.api.naming.NamingMaintainService"
+    },
+    "name": "com.alibaba.nacos.client.naming.core.PushReceiver$PushPacket",
+    "allPublicClasses": true,
+    "allPublicConstructors": true,
+    "queryAllDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "queryAllDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "queryAllPublicMethods": true,
+    "allPublicMethods": true,
+    "allPublicFields": true,
+    "allDeclaredClasses": true,
+    "queryAllPublicConstructors": true
+  },
+  {
+    "condition": {
+      "typeReachable": "com.alibaba.nacos.api.naming.NamingMaintainService"
+    },
+    "name": "com.alibaba.nacos.client.naming.NacosNamingService",
+    "allDeclaredConstructors": true
+  },
+  {
+    "condition": {
+      "typeReachable": "com.alibaba.nacos.api.naming.NamingMaintainService"
+    },
+    "name": "com.alibaba.nacos.common.notify.DefaultPublisher",
+    "allDeclaredConstructors": true
+  }
+]

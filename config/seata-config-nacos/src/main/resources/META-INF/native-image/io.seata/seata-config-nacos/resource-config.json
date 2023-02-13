@@ -1,0 +1,12 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "condition": {
+          "typeReachable": "com.alibaba.nacos.api.config.ConfigService"
+        },
+        "pattern": "\\Qnacos-version.txt\\E"
+      }
+    ]
+  }
+}

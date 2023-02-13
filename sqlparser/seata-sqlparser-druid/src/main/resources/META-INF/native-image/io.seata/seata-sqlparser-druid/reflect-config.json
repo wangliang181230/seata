@@ -1,0 +1,16 @@
+[
+  {
+    "condition": {
+      "typeReachable": "io.seata.sqlparser.druid.DruidDelegatingDbTypeParser"
+    },
+    "name": "io.seata.sqlparser.druid.DruidDbTypeParserImpl",
+    "allDeclaredConstructors": true
+  },
+  {
+    "condition": {
+      "typeReachable": "io.seata.sqlparser.druid.DruidDelegatingSQLRecognizerFactory"
+    },
+    "name": "io.seata.sqlparser.druid.DruidSQLRecognizerFactoryImpl",
+    "allDeclaredConstructors": true
+  }
+]

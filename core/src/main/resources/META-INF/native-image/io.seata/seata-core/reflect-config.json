@@ -1,0 +1,14 @@
+[
+  {
+    "condition": {
+      "typeReachable": "org.apache.dubbo.rpc.RpcContext"
+    },
+    "name": "org.apache.dubbo.rpc.RpcContext"
+  },
+  {
+    "condition": {
+      "typeReachable": "io.seata.serializer.protobuf.ProtobufSerializer"
+    },
+    "name": "io.seata.serializer.protobuf.ProtobufSerializer"
+  }
+]
