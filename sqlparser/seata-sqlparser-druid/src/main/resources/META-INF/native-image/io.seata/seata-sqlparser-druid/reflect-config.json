@@ -1,0 +1,14 @@
+[
+  {
+    "condition": {
+      "typeReachable": "io.seata.sqlparser.druid.DruidDelegatingDbTypeParser"
+    },
+    "name": "io.seata.sqlparser.druid.DruidDbTypeParserImpl",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  }
+]
