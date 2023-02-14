@@ -34,16 +34,12 @@
     "name": "io.seata.rm.datasource.undo.BranchUndoLog",
     "allPublicClasses": true,
     "allPublicConstructors": true,
-    "queryAllDeclaredMethods": true,
     "allDeclaredConstructors": true,
-    "queryAllDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
-    "queryAllPublicMethods": true,
     "allPublicMethods": true,
     "allPublicFields": true,
-    "allDeclaredClasses": true,
-    "queryAllPublicConstructors": true
+    "allDeclaredClasses": true
   },
   {
     "condition": {
@@ -52,16 +48,12 @@
     "name": "io.seata.rm.datasource.sql.struct.Row",
     "allPublicClasses": true,
     "allPublicConstructors": true,
-    "queryAllDeclaredMethods": true,
     "allDeclaredConstructors": true,
-    "queryAllDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
-    "queryAllPublicMethods": true,
     "allPublicMethods": true,
     "allPublicFields": true,
-    "allDeclaredClasses": true,
-    "queryAllPublicConstructors": true
+    "allDeclaredClasses": true
   },
   {
     "condition": {
@@ -70,16 +62,12 @@
     "name": "io.seata.rm.datasource.sql.struct.TableRecords",
     "allPublicClasses": true,
     "allPublicConstructors": true,
-    "queryAllDeclaredMethods": true,
     "allDeclaredConstructors": true,
-    "queryAllDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
-    "queryAllPublicMethods": true,
     "allPublicMethods": true,
     "allPublicFields": true,
-    "allDeclaredClasses": true,
-    "queryAllPublicConstructors": true
+    "allDeclaredClasses": true
   },
   {
     "condition": {
@@ -88,16 +76,12 @@
     "name": "io.seata.rm.datasource.sql.struct.Field",
     "allPublicClasses": true,
     "allPublicConstructors": true,
-    "queryAllDeclaredMethods": true,
     "allDeclaredConstructors": true,
-    "queryAllDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
-    "queryAllPublicMethods": true,
     "allPublicMethods": true,
     "allPublicFields": true,
-    "allDeclaredClasses": true,
-    "queryAllPublicConstructors": true
+    "allDeclaredClasses": true
   },
   {
     "condition": {
@@ -106,16 +90,12 @@
     "name": "io.seata.rm.datasource.sql.struct.TableRecords$EmptyTableRecords",
     "allPublicClasses": true,
     "allPublicConstructors": true,
-    "queryAllDeclaredMethods": true,
     "allDeclaredConstructors": true,
-    "queryAllDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
-    "queryAllPublicMethods": true,
     "allPublicMethods": true,
     "allPublicFields": true,
-    "allDeclaredClasses": true,
-    "queryAllPublicConstructors": true
+    "allDeclaredClasses": true
   },
   {
     "condition": {
@@ -124,15 +104,11 @@
     "name": "io.seata.rm.datasource.undo.SQLUndoLog",
     "allPublicClasses": true,
     "allPublicConstructors": true,
-    "queryAllDeclaredMethods": true,
     "allDeclaredConstructors": true,
-    "queryAllDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
-    "queryAllPublicMethods": true,
     "allPublicMethods": true,
     "allPublicFields": true,
-    "allDeclaredClasses": true,
-    "queryAllPublicConstructors": true
+    "allDeclaredClasses": true
   }
 ]
