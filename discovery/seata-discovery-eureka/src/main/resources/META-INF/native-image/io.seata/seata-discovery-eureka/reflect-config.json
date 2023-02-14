@@ -4,6 +4,97 @@
       "typeReachable": "com.netflix.discovery.DiscoveryClient"
     },
     "name": "com.thoughtworks.xstream.XStream",
-    "allPublicMethods": true
+    "allPublicClasses": true,
+    "allPublicConstructors": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allPublicFields": true,
+    "allDeclaredClasses": true
+  },
+  {
+    "condition": {
+      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+    },
+    "name": "com.thoughtworks.xstream.core.JVM",
+    "allPublicClasses": true,
+    "allPublicConstructors": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allPublicFields": true,
+    "allDeclaredClasses": true
+  },
+  {
+    "condition": {
+      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+    },
+    "name": "com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+    },
+    "name": "com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+    },
+    "name": "com.thoughtworks.xstream.mapper.EnumMapper",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+    },
+    "name": "com.thoughtworks.xstream.mapper.LambdaMapper",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+    },
+    "name": "com.thoughtworks.xstream.mapper.AnnotationMapper",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper",
+          "com.thoughtworks.xstream.converters.ConverterRegistry",
+          "com.thoughtworks.xstream.converters.ConverterLookup",
+          "com.thoughtworks.xstream.core.ClassLoaderReference",
+          "com.thoughtworks.xstream.converters.reflection.ReflectionProvider"
+        ]
+      }
+    ]
   }
 ]
