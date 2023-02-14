@@ -156,12 +156,16 @@ public class AotUtils extends NativeUtils {
         }
     }
 
+    public static void registerServices(ReflectionHints reflectionHints, String location, MemberCategory... memberCategories) {
+        registerServices(reflectionHints, location, null, memberCategories);
+    }
+
     public static void registerServices(ReflectionHints reflectionHints, @Nullable Predicate<Resource> predicate, MemberCategory... memberCategories) {
         registerServices(reflectionHints, "classpath*:" + SERVICES_DIRECTORY + "*", predicate, memberCategories);
     }
 
     public static void registerServices(ReflectionHints reflectionHints, MemberCategory... memberCategories) {
-        registerServices(reflectionHints, null, memberCategories);
+        registerServices(reflectionHints, "classpath*:" + SERVICES_DIRECTORY + "*", null, memberCategories);
     }
 
     //endregion ##
