@@ -19,11 +19,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.springframework.aot.hint.ResourceHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
+
+import static io.seata.common.loader.EnhancedServiceLoader.SEATA_DIRECTORY;
+import static io.seata.common.loader.EnhancedServiceLoader.SERVICES_DIRECTORY;
 
 /**
  * The seata /META-INF/services runtime hints registrar
@@ -46,30 +48,17 @@ class SeataServicesRuntimeHints implements RuntimeHintsRegistrar {
     public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
         // Register the services to reflection hints in 'META-INF/services', only the services required by seata.
         Predicate<Resource> predicate = this::isSeataServicesResource;
-        AotUtils.registerServices(hints.reflection(), predicate, AotUtils.MEMBER_CATEGORIES_FOR_INSTANTIATE);
-
-        // Register the service files to resources hints.
-        ResourceHints resourceHints = hints.resources();
-        this.registerServicesPattern(resourceHints, "io.seata.*");
-        for (String serviceFileName : OTHER_SERVICES) {
-            this.registerServicesPattern(resourceHints, serviceFileName);
-        }
+        AotUtils.registerServices(hints.reflection(), "classpath*:" + SERVICES_DIRECTORY + "*", predicate, AotUtils.MEMBER_CATEGORIES_FOR_INSTANTIATE);
+        AotUtils.registerServices(hints.reflection(), "classpath*:" + SEATA_DIRECTORY + "*", predicate, AotUtils.MEMBER_CATEGORIES_FOR_INSTANTIATE);
     }
 
-    /**
-     * @see io.seata.common.loader.EnhancedServiceLoader
-     */
-    private void registerServicesPattern(ResourceHints resourceHints, String pattern) {
-        resourceHints.registerPattern("META-INF/services/" + pattern);
-        resourceHints.registerPattern("META-INF/seata/" + pattern);
-    }
 
     private boolean isSeataServicesResource(Resource resource) {
         if (resource.getFilename() == null) {
             return false;
         }
 
-        if (resource.getFilename().startsWith("io.seata")) {
+        if (resource.getFilename().startsWith("io.seata.")) {
             return true;
         }
 

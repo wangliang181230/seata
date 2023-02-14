@@ -35,10 +35,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import static org.springframework.aot.hint.MemberCategory.INTROSPECT_DECLARED_CONSTRUCTORS;
+import static io.seata.common.loader.EnhancedServiceLoader.SERVICES_DIRECTORY;
 import static org.springframework.aot.hint.MemberCategory.INVOKE_DECLARED_CONSTRUCTORS;
 import static org.springframework.aot.hint.MemberCategory.INVOKE_DECLARED_METHODS;
-import static org.springframework.aot.hint.MemberCategory.INVOKE_PUBLIC_METHODS;
 
 /**
  * The AOT utils
@@ -62,14 +61,9 @@ public class AotUtils extends NativeUtils {
      */
     public static final MemberCategory[] EMPTY_MEMBER_CATEGORIES = new MemberCategory[0];
 
-    public static final MemberCategory[] MEMBER_CATEGORIES_FOR_INSTANTIATE = new MemberCategory[]{
-        INVOKE_DECLARED_CONSTRUCTORS
-    };
+    public static final MemberCategory[] MEMBER_CATEGORIES_FOR_INSTANTIATE = new MemberCategory[]{INVOKE_DECLARED_CONSTRUCTORS};
 
-    public static final MemberCategory[] MEMBER_CATEGORIES_FOR_INSTANTIATE_AND_INVOKE = new MemberCategory[]{
-        INVOKE_DECLARED_CONSTRUCTORS,
-        INVOKE_DECLARED_METHODS
-    };
+    public static final MemberCategory[] MEMBER_CATEGORIES_FOR_INSTANTIATE_AND_INVOKE = new MemberCategory[]{INVOKE_DECLARED_CONSTRUCTORS, INVOKE_DECLARED_METHODS};
 
 
     /**
@@ -145,15 +139,14 @@ public class AotUtils extends NativeUtils {
 
     //region ## Register 'classpath*:META-INF/services/*' to ReflectionHints
 
-    public static void registerServices(ReflectionHints reflectionHints, @Nullable Predicate<Resource> predicate, MemberCategory... memberCategories) {
-        Resource[] resources = ResourceUtil.getResources("classpath*:META-INF/services/*");
+    public static void registerServices(ReflectionHints reflectionHints, String location, @Nullable Predicate<Resource> predicate, MemberCategory... memberCategories) {
+        Resource[] resources = ResourceUtil.getResources(location);
         for (Resource resource : resources) {
             if (predicate != null && !predicate.test(resource)) {
                 continue;
             }
 
-            try (InputStreamReader isr = new InputStreamReader(resource.getInputStream());
-                 BufferedReader br = new BufferedReader(isr)) {
+            try (InputStreamReader isr = new InputStreamReader(resource.getInputStream()); BufferedReader br = new BufferedReader(isr)) {
                 br.lines().forEach(className -> {
                     AotUtils.registerTypes(reflectionHints, memberCategories, className);
                 });
@@ -161,6 +154,10 @@ public class AotUtils extends NativeUtils {
                 LOGGER.error("Register services '{}' fail:", resource.getFilename(), e);
             }
         }
+    }
+
+    public static void registerServices(ReflectionHints reflectionHints, @Nullable Predicate<Resource> predicate, MemberCategory... memberCategories) {
+        registerServices(reflectionHints, "classpath*:" + SERVICES_DIRECTORY + "*", predicate, memberCategories);
     }
 
     public static void registerServices(ReflectionHints reflectionHints, MemberCategory... memberCategories) {
