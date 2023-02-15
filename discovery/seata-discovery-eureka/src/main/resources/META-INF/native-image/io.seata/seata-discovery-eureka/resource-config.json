@@ -6,6 +6,36 @@
           "typeReachable": "com.netflix.discovery.DiscoveryClient"
         },
         "pattern": "\\QMETA-INF\/eureka-client.properties\\E"
+      },
+      {
+        "condition": {
+          "typeReachable": "com.netflix.discovery.DiscoveryClient"
+        },
+        "pattern": "\\QMETA-INF\/archaius-core.properties\\E"
+      },
+      {
+        "condition": {
+          "typeReachable": "com.netflix.discovery.DiscoveryClient"
+        },
+        "pattern": "\\Qsampleapp.properties\\E"
+      },
+      {
+        "condition": {
+          "typeReachable": "com.netflix.discovery.DiscoveryClient"
+        },
+        "pattern": "\\QMETA-INF\/netflix-eventbus.properties\\E"
+      },
+      {
+        "condition": {
+          "typeReachable": "com.netflix.discovery.DiscoveryClient"
+        },
+        "pattern": "\\QMETA-INF\/netflix-infix.properties\\E"
+      },
+      {
+        "condition": {
+          "typeReachable": "com.netflix.discovery.DiscoveryClient"
+        },
+        "pattern": "\\QMETA-INF\/servo-core.properties\\E"
       }
     ]
   }
