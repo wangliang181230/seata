@@ -1,0 +1,12 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "condition": {
+          "typeReachable": "com.netflix.discovery.DiscoveryClient"
+        },
+        "pattern": "\\QMETA-INF\/eureka-client.properties\\E"
+      }
+    ]
+  }
+}
