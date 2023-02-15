@@ -576,5 +576,83 @@
       "typeReachable": "com.netflix.discovery.shared.transport.jersey.EurekaJerseyClientImpl"
     },
     "name": "com.sun.jersey.core.header.MediaTypes"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.Clock$FixedClock"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.Clock$OffsetClock"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.Clock$SystemClock"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.Clock$TickClock"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.chrono.HijrahDate"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.chrono.HijrahEra"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.chrono.JapaneseEra"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.chrono.MinguoDate"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.chrono.MinguoEra"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.chrono.ThaiBuddhistDate"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.chrono.ThaiBuddhistEra"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.temporal.ValueRange"
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "java.time.temporal.WeekFields"
   }
 ]
