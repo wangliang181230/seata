@@ -53,7 +53,7 @@
   },
   {
     "condition": {
-      "typeReachable": "com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider"
+      "typeReachable": "com.thoughtworks.xstream.core.JVM"
     },
     "name": "com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider",
     "methods": [
@@ -65,7 +65,7 @@
   },
   {
     "condition": {
-      "typeReachable": "com.thoughtworks.xstream.mapper.EnumMapper"
+      "typeReachable": "com.thoughtworks.xstream.XStream"
     },
     "name": "com.thoughtworks.xstream.mapper.EnumMapper",
     "methods": [
@@ -79,7 +79,7 @@
   },
   {
     "condition": {
-      "typeReachable": "com.thoughtworks.xstream.mapper.LambdaMapper"
+      "typeReachable": "com.thoughtworks.xstream.XStream"
     },
     "name": "com.thoughtworks.xstream.mapper.LambdaMapper",
     "methods": [
@@ -93,7 +93,7 @@
   },
   {
     "condition": {
-      "typeReachable": "com.thoughtworks.xstream.mapper.AnnotationMapper"
+      "typeReachable": "com.thoughtworks.xstream.XStream"
     },
     "name": "com.thoughtworks.xstream.mapper.AnnotationMapper",
     "methods": [
@@ -108,5 +108,473 @@
         ]
       }
     ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.extended.SubjectConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.extended.ThrowableConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.converters.ConverterLookup"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.extended.StackTraceElementConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.extended.CurrencyConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.extended.RegexPatternConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.extended.CharsetConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.extended.DurationConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.enums.EnumConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.enums.EnumSetConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.enums.EnumMapConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.basic.StringBuilderConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.basic.UUIDConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.extended.PathConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.ChronologyConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.DurationConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.HijrahDateConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.JapaneseDateConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.JapaneseEraConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.InstantConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.LocalDateConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.LocalDateTimeConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.LocalTimeConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.MinguoDateConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.MonthDayConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.OffsetDateTimeConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.OffsetTimeConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.PeriodConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.SystemClockConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.ThaiBuddhistDateConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.ValueRangeConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.WeekFieldsConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.YearConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.YearMonthConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.ZonedDateTimeConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.time.ZoneIdConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.XStream"
+    },
+    "name": "com.thoughtworks.xstream.converters.reflection.LambdaConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.thoughtworks.xstream.mapper.Mapper",
+          "com.thoughtworks.xstream.converters.reflection.ReflectionProvider",
+          "com.thoughtworks.xstream.core.ClassLoaderReference"
+        ]
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.netflix.discovery.shared.transport.jersey.EurekaJerseyClientImpl"
+    },
+    "name": "com.sun.ws.rs.ext.RuntimeDelegateImpl",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.netflix.discovery.shared.transport.jersey.EurekaJerseyClientImpl"
+    },
+    "name": "com.sun.jersey.core.header.MediaTypes"
   }
 ]
