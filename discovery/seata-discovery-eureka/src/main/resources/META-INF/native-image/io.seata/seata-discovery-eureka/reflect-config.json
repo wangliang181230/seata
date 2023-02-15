@@ -1,7 +1,7 @@
 [
   {
     "condition": {
-      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+      "typeReachable": "com.thoughtworks.xstream.XStream"
     },
     "name": "com.thoughtworks.xstream.XStream",
     "allPublicClasses": true,
@@ -15,7 +15,7 @@
   },
   {
     "condition": {
-      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+      "typeReachable": "com.thoughtworks.xstream.core.JVM"
     },
     "name": "com.thoughtworks.xstream.core.JVM",
     "allPublicClasses": true,
@@ -29,7 +29,19 @@
   },
   {
     "condition": {
-      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+      "typeReachable": "com.thoughtworks.xstream.core.util.SerializationMembers$1"
+    },
+    "name": "com.thoughtworks.xstream.core.util.SerializationMembers$1",
+    "queriedMethods": [
+      {
+        "name": "noMethod",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "condition": {
+      "typeReachable": "com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider"
     },
     "name": "com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider",
     "methods": [
@@ -41,7 +53,7 @@
   },
   {
     "condition": {
-      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+      "typeReachable": "com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider"
     },
     "name": "com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider",
     "methods": [
@@ -53,7 +65,7 @@
   },
   {
     "condition": {
-      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+      "typeReachable": "com.thoughtworks.xstream.mapper.EnumMapper"
     },
     "name": "com.thoughtworks.xstream.mapper.EnumMapper",
     "methods": [
@@ -67,7 +79,7 @@
   },
   {
     "condition": {
-      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+      "typeReachable": "com.thoughtworks.xstream.mapper.LambdaMapper"
     },
     "name": "com.thoughtworks.xstream.mapper.LambdaMapper",
     "methods": [
@@ -81,7 +93,7 @@
   },
   {
     "condition": {
-      "typeReachable": "com.netflix.discovery.DiscoveryClient"
+      "typeReachable": "com.thoughtworks.xstream.mapper.AnnotationMapper"
     },
     "name": "com.thoughtworks.xstream.mapper.AnnotationMapper",
     "methods": [
