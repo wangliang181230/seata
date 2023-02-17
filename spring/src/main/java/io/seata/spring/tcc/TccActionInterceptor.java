@@ -16,7 +16,7 @@
 package io.seata.spring.tcc;
 
 import java.lang.reflect.Method;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import io.seata.common.DefaultValues;
 import io.seata.config.ConfigurationChangeEvent;

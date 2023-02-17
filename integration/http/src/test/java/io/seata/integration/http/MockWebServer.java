@@ -19,7 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.seata.common.util.StringUtils;
 import io.seata.core.context.RootContext;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

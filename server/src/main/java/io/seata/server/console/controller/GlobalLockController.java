@@ -15,7 +15,7 @@
  */
 package io.seata.server.console.controller;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import io.seata.server.console.param.GlobalLockParam;
 import io.seata.console.result.PageResult;

@@ -18,7 +18,7 @@ package io.seata.spring.annotation.scannercheckers;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import io.seata.common.loader.LoadLevel;
 import io.seata.spring.annotation.ScannerChecker;
