@@ -15,8 +15,6 @@
  */
 package io.seata.server;
 
-import java.io.IOException;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -25,8 +23,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication(scanBasePackages = {"io.seata"})
 public class ServerApplication {
-    public static void main(String[] args) throws IOException {
-        // run the spring-boot application
-        SpringApplication.run(ServerApplication.class, args);
+
+    public static void main(String[] args) throws Throwable {
+        try {
+            // run the spring-boot application
+            SpringApplication.run(ServerApplication.class, args);
+        } catch (Throwable t) {
+            t.printStackTrace();
+
+            // 为了能够看清控制台日志，暂停20秒
+            Thread.sleep(20000);
+
+            throw t;
+        }
     }
+
 }
