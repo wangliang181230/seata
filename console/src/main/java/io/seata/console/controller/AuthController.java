@@ -15,13 +15,12 @@
  */
 package io.seata.console.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
-
-import io.seata.console.config.WebSecurityConfig;
 import io.seata.console.constant.Code;
+import io.seata.console.constant.SecurityConstants;
 import io.seata.console.result.SingleResult;
 import io.seata.console.security.User;
 import io.seata.console.utils.JwtTokenUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -67,9 +66,9 @@ public class AuthController {
             //create token
             String token = jwtTokenUtils.createToken(authentication);
 
-            String authHeader = WebSecurityConfig.TOKEN_PREFIX + token;
+            String authHeader = SecurityConstants.TOKEN_PREFIX + token;
             //put token into http header
-            response.addHeader(WebSecurityConfig.AUTHORIZATION_HEADER, authHeader);
+            response.addHeader(SecurityConstants.AUTHORIZATION_HEADER, authHeader);
 
             return SingleResult.success(authHeader);
         } catch (BadCredentialsException authentication) {

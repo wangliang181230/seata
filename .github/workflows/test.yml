@@ -13,8 +13,8 @@ jobs:
       matrix:
         java: [ 17 ]
         springboot: [
-          3.0.2 -Dspring-framework.version=6.0.5 -Dkotlin-maven-plugin.version=1.7.22,
-          3.0.0 -Dspring-framework.version=6.0.0 -Dkotlin-maven-plugin.version=1.7.22
+          3.0.2 -Dspring-framework.version=6.0.5,
+          3.0.0 -Dspring-framework.version=6.0.0
         ]
     steps:
       # step 1

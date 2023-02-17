@@ -15,7 +15,7 @@
  */
 package io.seata.core.context;
 
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**

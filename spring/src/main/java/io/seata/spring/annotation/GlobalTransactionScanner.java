@@ -23,7 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 import io.seata.common.aot.NativeUtils;
 import io.seata.common.util.CollectionUtils;

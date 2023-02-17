@@ -21,7 +21,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 import com.alibaba.fastjson.JSON;
 import io.seata.common.Constants;

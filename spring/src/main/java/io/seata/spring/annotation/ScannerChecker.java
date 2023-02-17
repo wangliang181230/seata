@@ -15,7 +15,7 @@
  */
 package io.seata.spring.annotation;
 
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 

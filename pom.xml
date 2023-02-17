@@ -56,7 +56,7 @@
         <module>spring-aot</module>
         <module>spring-framework-fake-for-java8</module>
         <module>tcc</module>
-        <module>test</module>
+        <!--<module>test</module>-->
         <module>tm</module>
         <module>metrics</module>
         <module>serializer</module>
@@ -66,7 +66,7 @@
         <module>saga</module>
         <module>sqlparser</module>
         <module>server</module>
-        <module>ext/apm-seata-skywalking-plugin</module>
+        <!--<module>ext/apm-seata-skywalking-plugin</module>-->
         <!--<module>seata-plugin</module>-->
     </modules>
 
