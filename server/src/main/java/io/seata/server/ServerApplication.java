@@ -15,12 +15,10 @@
  */
 package io.seata.server;
 
+import io.seata.common.aot.NativeUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * @author spilledyear@outlook.com
- */
 @SpringBootApplication(scanBasePackages = {"io.seata"})
 public class ServerApplication {
 
@@ -28,11 +26,16 @@ public class ServerApplication {
         try {
             // run the spring-boot application
             SpringApplication.run(ServerApplication.class, args);
+        } catch (SpringApplication.AbandonedRunException ignored) {
+            // This exception is used to end `spring-boot-maven-plugin:process-aot`, so ignore it.
+            throw ignored;
         } catch (Throwable t) {
-            t.printStackTrace();
-
-            // 为了能够看清控制台日志，暂停20秒
-            Thread.sleep(20000);
+            // In the `native-image`, if an exception occurs prematurely during the startup process, the exception log will not be recorded,
+            // so here we sleep for 20 seconds to observe the exception information.
+            if (NativeUtils.inNativeImage()) {
+                t.printStackTrace();
+                Thread.sleep(20000);
+            }
 
             throw t;
         }
