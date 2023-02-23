@@ -51,10 +51,10 @@
             </includes>
         </fileSet>
 
-        <fileSet>
+        <!--<fileSet>
             <directory>../ext/apm-seata-skywalking-plugin/target/ext/skywalking-agent/</directory>
             <outputDirectory>ext/apm-skywalking</outputDirectory>
-        </fileSet>
+        </fileSet>-->
 
         <fileSet>
             <directory>../server/target/lib/</directory>
@@ -85,6 +85,11 @@
 
         <file>
             <source>../server/target/seata-server.jar</source>
+            <outputDirectory>target/</outputDirectory>
+        </file>
+
+        <file>
+            <source>../server/target/seata-server.exe</source>
             <outputDirectory>target/</outputDirectory>
         </file>
 
