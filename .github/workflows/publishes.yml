@@ -2,7 +2,7 @@ name: "Publishes"
 
 on:
   push:
-    branches: [ native ]
+    branches: [ native-server ]
     #tags: [ "*" ]
 
   #This schedule only takes effect in the default branch
@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        type: [ "OSSRH" ]
+        type: [ "image" ]
     steps:
       # step 1
       - name: "Checkout"
