@@ -8,13 +8,13 @@
         "pattern": "\\Qlua\/redislocker\/redislock.lua\\E"
       },
       {
-        "pattern": "\\Qapplication.yml\/\\E"
+        "pattern": "\\Qapplication.yml\\E"
       },
       {
-        "pattern": "\\Qbanner.txt\/\\E"
+        "pattern": "\\Qbanner.txt\\E"
       },
       {
-        "pattern": "\\Qlogback-spring.xml\/\\E"
+        "pattern": "\\Qlogback-spring.xml\\E"
       }
     ]
   }

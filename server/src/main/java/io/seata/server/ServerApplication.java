@@ -15,9 +15,9 @@
  */
 package io.seata.server;
 
-import io.seata.common.aot.NativeUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.NativeDetector;
 
 @SpringBootApplication(scanBasePackages = {"io.seata"})
 public class ServerApplication {
@@ -31,10 +31,10 @@ public class ServerApplication {
             throw ignored;
         } catch (Throwable t) {
             // In the `native-image`, if an exception occurs prematurely during the startup process, the exception log will not be recorded,
-            // so here we sleep for 20 seconds to observe the exception information.
-            if (NativeUtils.inNativeImage()) {
+            // so here we sleep for 60 seconds to observe the exception information.
+            if (NativeDetector.inNativeImage()) {
                 t.printStackTrace();
-                Thread.sleep(20000);
+                Thread.sleep(60000);
             }
 
             throw t;
