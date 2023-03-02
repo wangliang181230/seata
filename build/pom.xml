@@ -89,7 +89,7 @@
 
         <!-- Maven plugin versions -->
         <!-- Build -->
-        <flatten-maven-plugin.version>1.1.0</flatten-maven-plugin.version>
+        <easyj-maven-plugin.version>1.1.5</easyj-maven-plugin.version>
         <!-- Compiler -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
@@ -271,31 +271,24 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Flatten -->
+            <!-- Easyj -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
-                <version>${flatten-maven-plugin.version}</version>
-                <configuration>
-                    <updatePomFile>true</updatePomFile>
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                </configuration>
+                <groupId>icu.easyj.maven.plugins</groupId>
+                <artifactId>easyj-maven-plugin</artifactId>
+                <version>${easyj-maven-plugin.version}</version>
+                <!-- This goal can replace flatten-maven-plugin to flatten the pom, and replace '${revision}' to the actual version. -->
                 <executions>
                     <execution>
-                        <id>flatten</id>
-                        <phase>process-resources</phase>
+                        <id>simplify-pom</id>
                         <goals>
-                            <goal>flatten</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>flatten.clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
+                            <goal>simplify-pom</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <simplifiedPomFileName>.flattened-pom.xml</simplifiedPomFileName>
+                    <useTabIndent>true</useTabIndent>
+                </configuration>
             </plugin>
             <!-- Enforcer -->
             <plugin>
