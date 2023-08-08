@@ -25,7 +25,7 @@ import net.logstash.logback.encoder.LogstashEncoder;
  * The type Enhanced logstash encoder
  *
  * @author wang.liang
- * @since 1.4.2
+ * @since 1.5.0
  */
 public class EnhancedLogstashEncoder extends LogstashEncoder {
 

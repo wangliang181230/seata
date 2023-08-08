@@ -48,13 +48,13 @@ public class RootContext {
 
     /**
      * The constant MDC_KEY_XID for logback
-     * @since 1.4.2
+     * @since 1.5.0
      */
     public static final String MDC_KEY_XID = "X-TX-XID";
 
     /**
      * The constant MDC_KEY_BRANCH_ID for logback
-     * @since 1.4.2
+     * @since 1.5.0
      */
     public static final String MDC_KEY_BRANCH_ID = "X-TX-BRANCH-ID";
 
