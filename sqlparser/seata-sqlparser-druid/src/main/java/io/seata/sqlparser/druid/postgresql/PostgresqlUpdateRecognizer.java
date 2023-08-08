@@ -30,6 +30,7 @@ import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGOutputVisitor;
 import io.seata.common.exception.NotSupportYetException;
+import io.seata.sqlparser.util.ColumnUtils;
 import io.seata.sqlparser.ParametersHolder;
 import io.seata.sqlparser.SQLType;
 import io.seata.sqlparser.SQLUpdateRecognizer;
@@ -71,8 +72,8 @@ public class PostgresqlUpdateRecognizer extends BasePostgresqlRecognizer impleme
                 if (owner instanceof SQLIdentifierExpr) {
                     list.add(((SQLIdentifierExpr) owner).getName() + "." + ((SQLPropertyExpr) expr).getName());
                     //This is table Field Full path, like update xxx_database.xxx_tbl set xxx_database.xxx_tbl.xxx_field...
-                } else if (((SQLPropertyExpr) expr).getOwnernName().split("\\.").length > 1) {
-                    list.add(((SQLPropertyExpr)expr).getOwnernName()  + "." + ((SQLPropertyExpr)expr).getName());
+                } else if (((SQLPropertyExpr) expr).getOwnerName().split("\\.").length > 1) {
+                    list.add(((SQLPropertyExpr)expr).getOwnerName()  + "." + ((SQLPropertyExpr)expr).getName());
                 }
             } else {
                 wrapSQLParsingException(expr);
@@ -96,6 +97,12 @@ public class PostgresqlUpdateRecognizer extends BasePostgresqlRecognizer impleme
             }
         }
         return list;
+    }
+
+    @Override
+    public List<String> getUpdateColumnsUnEscape() {
+        List<String> updateColumns = getUpdateColumns();
+        return ColumnUtils.delEscape(updateColumns, getDbType());
     }
 
     @Override
@@ -143,4 +150,32 @@ public class PostgresqlUpdateRecognizer extends BasePostgresqlRecognizer impleme
         return sb.toString();
     }
 
+    @Override
+    public String getLimitCondition() {
+        //postgre does not have limit condition in update statement
+        return null;
+    }
+
+    @Override
+    public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+        //postgre does not have limit condition in update statement
+        return null;
+    }
+
+    @Override
+    public String getOrderByCondition() {
+        //postgre does not have order by condition in update statement
+        return null;
+    }
+
+    @Override
+    public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+        //postgre does not have order by condition in update statement
+        return null;
+    }
+
+    @Override
+    protected SQLStatement getAst() {
+        return ast;
+    }
 }

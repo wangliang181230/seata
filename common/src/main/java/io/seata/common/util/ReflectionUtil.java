@@ -64,6 +64,16 @@ public final class ReflectionUtil {
      */
     private static final Map<Class<?>, Field[]> CLASS_FIELDS_CACHE = new ConcurrentHashMap<>();
 
+    /**
+     * The cache FIELD_CACHE: Class -> fieldName -> Field
+     */
+    private static final Map<Class<?>, Map<String, Field>> FIELD_CACHE = new ConcurrentHashMap<>();
+
+    /**
+     * The cache METHOD_CACHE: Class -> methodName|paramClassName1,paramClassName2,...,paramClassNameN -> Method
+     */
+    private static final Map<Class<?>, Map<String, Method>> METHOD_CACHE = new ConcurrentHashMap<>();
+
     //endregion
 
 
@@ -78,6 +88,65 @@ public final class ReflectionUtil {
      */
     public static Class<?> getClassByName(String className) throws ClassNotFoundException {
         return Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
+     * Get the wrapped class
+     *
+     * @param clazz the class
+     * @return the wrapped class
+     */
+    public static Class<?> getWrappedClass(Class<?> clazz) {
+        if (clazz.isPrimitive()) {
+            if (clazz.equals(byte.class)) {
+                return Byte.class;
+            }
+            if (clazz.equals(boolean.class)) {
+                return Boolean.class;
+            }
+            if (clazz.equals(char.class)) {
+                return Character.class;
+            }
+            if (clazz.equals(short.class)) {
+                return Short.class;
+            }
+            if (clazz.equals(int.class)) {
+                return Integer.class;
+            }
+            if (clazz.equals(long.class)) {
+                return Long.class;
+            }
+            if (clazz.equals(float.class)) {
+                return Float.class;
+            }
+            if (clazz.equals(double.class)) {
+                return Double.class;
+            }
+            if (clazz.equals(void.class)) {
+                return Void.class;
+            }
+        }
+
+        return clazz;
+    }
+
+    public static boolean isJavaClass(Class<?> clazz) {
+        return clazz != null && clazz.getClassLoader() == null;
+    }
+
+    /**
+     * Whether the class exists
+     *
+     * @param className the class name
+     * @return the boolean
+     */
+    public static boolean existsClass(String className) {
+        try {
+            getClassByName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     //endregion
@@ -165,16 +234,28 @@ public final class ReflectionUtil {
      * @throws SecurityException    the security exception
      */
     public static Field getField(final Class<?> clazz, final String fieldName) throws NoSuchFieldException, SecurityException {
-        Class<?> cl = clazz;
-        while (cl != null && cl != Object.class && !cl.isInterface()) {
-            try {
-                return cl.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException e) {
-                cl = cl.getSuperclass();
+        Map<String, Field> fieldMap = CollectionUtils.computeIfAbsent(FIELD_CACHE, clazz, k -> new ConcurrentHashMap<>());
+        Field field = CollectionUtils.computeIfAbsent(fieldMap, fieldName, k -> {
+            Class<?> cl = clazz;
+            while (cl != null && cl != Object.class && !cl.isInterface()) {
+                try {
+                    return cl.getDeclaredField(fieldName);
+                } catch (NoSuchFieldException e) {
+                    cl = cl.getSuperclass();
+                }
             }
+            return null;
+        });
+
+        if (field == null) {
+            throw new NoSuchFieldException("field not found: " + clazz.getName() + ", field: " + fieldName);
         }
 
-        throw new NoSuchFieldException("field not found: " + clazz.getName() + ", field: " + fieldName);
+        if (!field.isAccessible()) {
+            field.setAccessible(true);
+        }
+
+        return field;
     }
 
     /**
@@ -284,6 +365,8 @@ public final class ReflectionUtil {
 
     /**
      * modify `static` or `static final` field value
+     * <p>
+     * In java17, this method cannot be used for final fields.
      *
      * @param staticField the static field
      * @param newValue    the new value
@@ -304,6 +387,7 @@ public final class ReflectionUtil {
 
         // remove the `final` keyword from the field
         if (Modifier.isFinal(staticField.getModifiers())) {
+            // In java17, can't get the field `modifiers` from class `java.lang.reflect.Field`.
             Field modifiers = staticField.getClass().getDeclaredField("modifiers");
             modifiers.setAccessible(true);
             modifiers.setInt(staticField, staticField.getModifiers() & ~Modifier.FINAL);
@@ -362,16 +446,41 @@ public final class ReflectionUtil {
             throw new IllegalArgumentException("clazz must be not null");
         }
 
-        Class<?> cl = clazz;
-        while (cl != null) {
-            try {
-                return cl.getDeclaredMethod(methodName, parameterTypes);
-            } catch (NoSuchMethodException e) {
-                cl = cl.getSuperclass();
+        Map<String, Method> methodMap = CollectionUtils.computeIfAbsent(METHOD_CACHE, clazz, k -> new ConcurrentHashMap<>());
+
+        String cacheKey = generateMethodCacheKey(methodName, parameterTypes);
+        Method method = CollectionUtils.computeIfAbsent(methodMap, cacheKey, k -> {
+            Class<?> cl = clazz;
+            while (cl != null) {
+                try {
+                    return cl.getDeclaredMethod(methodName, parameterTypes);
+                } catch (NoSuchMethodException e) {
+                    cl = cl.getSuperclass();
+                }
             }
+            return null;
+        });
+
+        if (method == null) {
+            throw new NoSuchMethodException("method not found: " + methodToString(clazz, methodName, parameterTypes));
         }
 
-        throw new NoSuchMethodException("method not found: " + methodToString(clazz, methodName, parameterTypes));
+        if (!method.isAccessible()) {
+            method.setAccessible(true);
+        }
+
+        return method;
+    }
+
+    private static String generateMethodCacheKey(String methodName, Class<?>[] parameterTypes) {
+        StringBuilder key = new StringBuilder(methodName);
+        if (parameterTypes != null && parameterTypes.length > 0) {
+            key.append("|");
+            for (Class<?> parameterType : parameterTypes) {
+                key.append(parameterType.getName()).append(",");
+            }
+        }
+        return key.toString();
     }
 
     /**

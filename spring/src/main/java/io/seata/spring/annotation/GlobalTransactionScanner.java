@@ -22,9 +22,12 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.annotation.Nullable;
 
+import io.seata.common.aot.NativeUtils;
 import io.seata.common.util.CollectionUtils;
+import io.seata.common.util.ReflectionUtil;
 import io.seata.common.util.StringUtils;
 import io.seata.config.ConfigurationCache;
 import io.seata.config.ConfigurationChangeEvent;
@@ -35,6 +38,7 @@ import io.seata.core.rpc.ShutdownHook;
 import io.seata.core.rpc.netty.RmNettyRemotingClient;
 import io.seata.core.rpc.netty.TmNettyRemotingClient;
 import io.seata.rm.RMClient;
+import io.seata.rm.tcc.api.LocalTCC;
 import io.seata.spring.annotation.scannercheckers.PackageScannerChecker;
 import io.seata.spring.tcc.TccActionInterceptor;
 import io.seata.spring.util.OrderUtil;
@@ -64,6 +68,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 
 import static io.seata.common.DefaultValues.DEFAULT_DISABLE_GLOBAL_TRANSACTION;
+import static io.seata.common.DefaultValues.DEFAULT_TX_GROUP;
+import static io.seata.common.DefaultValues.DEFAULT_TX_GROUP_OLD;
 
 /**
  * The type Global transaction scanner.
@@ -97,8 +103,8 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
     private final String applicationId;
     private final String txServiceGroup;
     private final int mode;
-    private String accessKey;
-    private String secretKey;
+    private static String accessKey;
+    private static String secretKey;
     private volatile boolean disableGlobalTransaction = ConfigurationFactory.getInstance().getBoolean(
             ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION, DEFAULT_DISABLE_GLOBAL_TRANSACTION);
     private final AtomicBoolean initialized = new AtomicBoolean(false);
@@ -106,6 +112,7 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
     private final FailureHandler failureHandlerHook;
 
     private ApplicationContext applicationContext;
+
 
     /**
      * Instantiates a new Global transaction scanner.
@@ -181,8 +188,8 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
      *
      * @param accessKey the access key
      */
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
+    public static void setAccessKey(String accessKey) {
+        GlobalTransactionScanner.accessKey = accessKey;
     }
 
     /**
@@ -190,8 +197,8 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
      *
      * @param secretKey the secret key
      */
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
+    public static void setSecretKey(String secretKey) {
+        GlobalTransactionScanner.secretKey = secretKey;
     }
 
     @Override
@@ -202,6 +209,12 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
     private void initClient() {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Initializing Global Transaction Clients ... ");
+        }
+        if (DEFAULT_TX_GROUP_OLD.equals(txServiceGroup)) {
+            LOGGER.warn("the default value of seata.tx-service-group: {} has already changed to {} since Seata 1.5, " +
+                    "please change your default configuration as soon as possible " +
+                    "and we don't recommend you to use default tx-service-group's value provided by seata",
+                    DEFAULT_TX_GROUP_OLD, DEFAULT_TX_GROUP);
         }
         if (StringUtils.isNullOrEmpty(applicationId) || StringUtils.isNullOrEmpty(txServiceGroup)) {
             throw new IllegalArgumentException(String.format("applicationId: %s, txServiceGroup: %s", applicationId, txServiceGroup));
@@ -229,7 +242,7 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
             ((ConfigurableApplicationContext) applicationContext).registerShutdownHook();
             ShutdownHook.removeRuntimeShutdownHook();
         }
-        ShutdownHook.getInstance().addDisposable(TmNettyRemotingClient.getInstance(applicationId, txServiceGroup));
+        ShutdownHook.getInstance().addDisposable(TmNettyRemotingClient.getInstance(applicationId, txServiceGroup, accessKey, secretKey));
         ShutdownHook.getInstance().addDisposable(RmNettyRemotingClient.getInstance(applicationId, txServiceGroup));
     }
 
@@ -268,6 +281,8 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
                 interceptor = null;
                 //check TCC proxy
                 if (TCCBeanParserUtils.isTccAutoProxy(bean, beanName, applicationContext)) {
+                    // init tcc fence clean task if enable useTccFence
+                    TCCBeanParserUtils.initTccFenceCleanTask(TCCBeanParserUtils.getRemotingDesc(beanName), applicationContext);
                     //TCC interceptor, proxy bean of sofa:reference/dubbo:reference, and LocalTCC
                     interceptor = new TccActionInterceptor(TCCBeanParserUtils.getRemotingDesc(beanName));
                     ConfigurationCache.addConfigListener(ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION,
@@ -276,8 +291,8 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
                     Class<?> serviceInterface = SpringProxyUtils.findTargetClass(bean);
                     Class<?>[] interfacesIfJdk = SpringProxyUtils.findInterfaces(bean);
 
-                    if (!existsAnnotation(new Class[]{serviceInterface})
-                        && !existsAnnotation(interfacesIfJdk)) {
+                    if (!existsAnnotation(serviceInterface)
+                            && !existsAnnotation(interfacesIfJdk)) {
                         return bean;
                     }
 
@@ -290,7 +305,7 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
                     interceptor = globalTransactionalInterceptor;
                 }
 
-                LOGGER.info("Bean[{}] with name [{}] would use interceptor [{}]", bean.getClass().getName(), beanName, interceptor.getClass().getName());
+                LOGGER.info("Bean [{}] with name [{}] would use interceptor [{}]", bean.getClass().getName(), beanName, interceptor.getClass().getName());
                 if (!AopUtils.isAopProxy(bean)) {
                     bean = super.wrapIfNecessary(bean, beanName, cacheKey);
                 } else {
@@ -313,7 +328,7 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
 
     private boolean doCheckers(Object bean, String beanName) {
         if (PROXYED_SET.contains(beanName) || EXCLUDE_BEAN_NAME_SET.contains(beanName)
-            || FactoryBean.class.isAssignableFrom(bean.getClass())) {
+                || FactoryBean.class.isAssignableFrom(bean.getClass())) {
             return false;
         }
 
@@ -449,7 +464,7 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
     //endregion the methods about findAddSeataAdvisorPosition  END
 
 
-    private boolean existsAnnotation(Class<?>[] classes) {
+    private boolean existsAnnotation(Class<?>... classes) {
         if (CollectionUtils.isNotEmpty(classes)) {
             for (Class<?> clazz : classes) {
                 if (clazz == null) {
@@ -480,9 +495,31 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
         return new MethodDesc(anno, method);
     }
 
+    public static boolean isTccAutoProxy(Class<?> beanClass) {
+        Set<Class<?>> interfaceClasses = ReflectionUtil.getInterfaces(beanClass);
+        for (Class<?> interClass : interfaceClasses) {
+            if (interClass.isAnnotationPresent(LocalTCC.class)) {
+                return true;
+            }
+        }
+        return beanClass.isAnnotationPresent(LocalTCC.class);
+    }
+
     @Override
     protected Object[] getAdvicesAndAdvisorsForBean(Class beanClass, String beanName, TargetSource customTargetSource)
             throws BeansException {
+        if (NativeUtils.isSpringAotProcessing()) {
+            if (isTccAutoProxy(beanClass)) {
+                LOGGER.info("Proxy TCC service: {}", beanName);
+                return new Object[]{new TccActionInterceptor()};
+            } else if (existsAnnotation(beanClass)) {
+                LOGGER.info("Proxy TM bean: {}", beanName);
+                return new Object[]{new GlobalTransactionalInterceptor(failureHandlerHook)};
+            } else {
+                return DO_NOT_PROXY;
+            }
+        }
+
         return new Object[]{interceptor};
     }
 
@@ -512,9 +549,10 @@ public class GlobalTransactionScanner extends AbstractAutoProxyCreator
         if (ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION.equals(event.getDataId())) {
             disableGlobalTransaction = Boolean.parseBoolean(event.getNewValue().trim());
             if (!disableGlobalTransaction && initialized.compareAndSet(false, true)) {
-                LOGGER.info("{} config changed, old value:{}, new value:{}", ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION,
-                        disableGlobalTransaction, event.getNewValue());
+                LOGGER.info("{} config changed, old value:true, new value:{}", ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION,
+                        event.getNewValue());
                 initClient();
+                ConfigurationCache.removeConfigListener(ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION, this);
             }
         }
     }

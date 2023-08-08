@@ -13,42 +13,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package io.seata.server.lock.redis;
 
 import java.io.IOException;
+
+import com.github.microwww.redis.RedisServer;
 import io.seata.core.exception.TransactionException;
 import io.seata.core.lock.Locker;
 import io.seata.server.lock.LockManager;
 import io.seata.server.session.BranchSession;
-import io.seata.server.storage.redis.JedisPooledFactory;
+import io.seata.server.session.redis.MockRedisServer;
 import io.seata.server.storage.redis.lock.RedisLockManager;
 import io.seata.server.storage.redis.lock.RedisLocker;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.embedded.RedisServer;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author funkye
  */
+@SpringBootTest
 public class RedisLockManagerTest {
-    static RedisServer server = null;
     static LockManager lockManager = null;
 
     @BeforeAll
-    public static void start() throws IOException {
-        int port = 6789;
-        server = RedisServer.builder().setting("maxheap 8M").setting("maxmemory 8M").port(port)
-            .setting("bind localhost").build();
-        server.start();
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-        poolConfig.setMinIdle(1);
-        poolConfig.setMaxIdle(10);
-        JedisPooledFactory.getJedisPoolInstance(new JedisPool(poolConfig, "127.0.0.1", port, 60000));
+    public static void start(ApplicationContext context) throws IOException {
+        MockRedisServer.getInstance();
         lockManager = new RedisLockManagerForTest();
     }
 
@@ -91,12 +83,6 @@ public class RedisLockManagerTest {
         branchSession2.setLockKey("t1:8");
         Assertions.assertTrue(lockManager.isLockable(branchSession2.getXid(), branchSession2.getResourceId(),
             branchSession2.getLockKey()));
-    }
-
-    @AfterAll
-    public static void after() {
-        server.stop();
-        server = null;
     }
 
     public static class RedisLockManagerForTest extends RedisLockManager {

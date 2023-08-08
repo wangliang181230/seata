@@ -30,6 +30,7 @@ import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
 import io.seata.common.exception.NotSupportYetException;
+import io.seata.sqlparser.util.ColumnUtils;
 import io.seata.sqlparser.ParametersHolder;
 import io.seata.sqlparser.SQLType;
 import io.seata.sqlparser.SQLUpdateRecognizer;
@@ -73,8 +74,8 @@ public class OracleUpdateRecognizer extends BaseOracleRecognizer implements SQLU
                 if (owner instanceof SQLIdentifierExpr) {
                     list.add(((SQLIdentifierExpr)owner).getName() + "." + ((SQLPropertyExpr)expr).getName());
                     //This is table Field Full path, like update xxx_database.xxx_tbl set xxx_database.xxx_tbl.xxx_field...
-                } else if (((SQLPropertyExpr) expr).getOwnernName().split("\\.").length > 1) {
-                    list.add(((SQLPropertyExpr)expr).getOwnernName()  + "." + ((SQLPropertyExpr)expr).getName());
+                } else if (((SQLPropertyExpr) expr).getOwnerName().split("\\.").length > 1) {
+                    list.add(((SQLPropertyExpr)expr).getOwnerName()  + "." + ((SQLPropertyExpr)expr).getName());
                 }
             } else {
                 wrapSQLParsingException(expr);
@@ -101,6 +102,12 @@ public class OracleUpdateRecognizer extends BaseOracleRecognizer implements SQLU
     }
 
     @Override
+    public List<String> getUpdateColumnsUnEscape() {
+        List<String> updateColumns = getUpdateColumns();
+        return ColumnUtils.delEscape(updateColumns, getDbType());
+    }
+
+    @Override
     public String getWhereCondition(final ParametersHolder parametersHolder,
         final ArrayList<List<Object>> paramAppenderList) {
         SQLExpr where = ast.getWhere();
@@ -111,6 +118,30 @@ public class OracleUpdateRecognizer extends BaseOracleRecognizer implements SQLU
     public String getWhereCondition() {
         SQLExpr where = ast.getWhere();
         return super.getWhereCondition(where);
+    }
+
+    @Override
+    public String getLimitCondition() {
+        //oracle does not support limit or rownum yet
+        return null;
+    }
+
+    @Override
+    public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+        //oracle does not support limit or rownum yet
+        return null;
+    }
+
+    @Override
+    public String getOrderByCondition() {
+        //oracle does not support order by yet
+        return null;
+    }
+
+    @Override
+    public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+        //oracle does not support order by yet
+        return null;
     }
 
     @Override
@@ -145,4 +176,8 @@ public class OracleUpdateRecognizer extends BaseOracleRecognizer implements SQLU
         return sb.toString();
     }
 
+    @Override
+    protected SQLStatement getAst() {
+        return ast;
+    }
 }
