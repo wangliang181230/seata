@@ -41,11 +41,7 @@
         <module>dependencies</module>
         <module>discovery</module>
         <module>distribution</module>
-        <module>integration/dubbo</module>
         <module>integration/dubbo-alibaba</module>
-        <!--<module>integration/sofa-rpc</module>
-        <module>integration/motan</module>
-        <module>integration/grpc</module>-->
         <module>integration/http</module>
         <module>integration/http-jakarta</module>
         <module>integration/hsf</module>
