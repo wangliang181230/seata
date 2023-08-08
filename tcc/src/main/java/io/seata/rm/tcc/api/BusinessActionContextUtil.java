@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import io.seata.common.Constants;
 import io.seata.common.exception.FrameworkException;
 import io.seata.common.util.CollectionUtils;
 import io.seata.core.exception.TransactionException;
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * the api of sharing business action context to tcc phase 2
  *
  * @author tanzj
- * @date 2021/4/16
  */
 public final class BusinessActionContextUtil {
 
@@ -109,7 +109,7 @@ public final class BusinessActionContextUtil {
                     actionContext.getXid(),
                     actionContext.getBranchId(),
                     BranchStatus.Registered,
-                    JSON.toJSONString(actionContext)
+                    JSON.toJSONString(Collections.singletonMap(Constants.TCC_ACTION_CONTEXT, actionContext.getActionContext()))
             );
 
             // reset to un_updated
