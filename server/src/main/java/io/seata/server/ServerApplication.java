@@ -27,14 +27,7 @@ public class ServerApplication {
 
     public static void main(String[] args) throws Throwable {
         try {
-			System.out.println("args: " + args);
-
-			// get rpc port first, use to logback-spring.xml, @see the class named `SystemPropertyLoggerContextListener`
-			int port = PortHelper.getPort(args);
-			System.out.println("端口号：" + port);
-			System.setProperty(ConfigurationKeys.SERVER_RPC_PORT, Integer.toString(port));
-
-			// run the spring-boot application
+            // run the spring-boot application
             SpringApplication.run(ServerApplication.class, args);
         } catch (Throwable t) {
             // This exception is used to end `spring-boot-maven-plugin:process-aot`, so ignore it.
