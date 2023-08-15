@@ -1,4 +1,5 @@
 已合并的分支：
-gitee:custom/build/optimize-dependencies
-gitee:custom/build/upgrade-version
-gitee:custom/others
+1. gitee:custom/build/optimize-dependencies
+2. gitee:custom/build/upgrade-version
+3. gitee:custom/optimize/seata-server/enhanced-start-command
+4. gitee:custom/others
