@@ -134,8 +134,9 @@ public class UpdateExecutor<T, S extends Statement> extends AbstractDMLBaseExecu
                     needUpdateColumns.add(getColumnNamesWithTablePrefix(table,tableAlias,pkNameList));
                 }
             }
-            needUpdateColumns.addAll(unescapeUpdateColumns.stream()
-                .map(unescapeUpdateColumn -> ColumnUtils.addEscape(unescapeUpdateColumn, getDbType(), tableMeta)).collect(Collectors.toList()));
+            List<String> columns = unescapeUpdateColumns.stream()
+                    .map(unescapeUpdateColumn -> ColumnUtils.addEscape(unescapeUpdateColumn, getDbType(), tableMeta)).collect(Collectors.toList());
+            needUpdateColumns.addAll(columns);
 
             // The on update xxx columns will be auto update by db, so it's also the actually updated columns
             List<String> onUpdateColumns = tableMeta.getOnUpdateColumnsOnlyName();
