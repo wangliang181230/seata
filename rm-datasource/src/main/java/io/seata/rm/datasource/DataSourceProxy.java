@@ -258,6 +258,7 @@ public class DataSourceProxy extends AbstractDataSourceProxy implements Resource
             String[] urlParams = paramUrl.split("&");
             for (String urlParam : urlParams) {
                 if (urlParam.contains("schema")) {
+                    // remove the '"'
                     if (urlParam.contains("\"")) {
                         urlParam = urlParam.replaceAll("\"", "");
                     }
