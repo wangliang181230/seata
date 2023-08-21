@@ -43,7 +43,14 @@ seata:
     type: file
   store:
     # support: file 、 db 、 redis
-    mode: file
+    mode: db
+    db:
+      datasource: druid
+      db-type: dm
+      driver-class-name: dm.jdbc.driver.DmDriver
+      url: jdbc:dm://${DM_ADDRESS:127.0.0.1}:${DM_PORT:5236}?schema=SEATA
+      user: SYSDBA
+      password: SYSDBA001
 #  server:
 #    service-port: 8091 #If not configured, the default is '${server.port} + 1000'
   security:
