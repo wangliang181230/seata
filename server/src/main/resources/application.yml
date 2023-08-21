@@ -48,7 +48,7 @@ seata:
       datasource: druid
       db-type: dm
       driver-class-name: dm.jdbc.driver.DmDriver
-      url: jdbc:dm://${DM_ADDRESS:127.0.0.1}:${DM_PORT:5236}?schema=SEATA
+      url: jdbc:dm://${DM_ADDRESS:127.0.0.1}:${DM_PORT:5236}?schema=${DM_SCHEMA:SEATA}
       user: ${DM_USER:SYSDBA}
       password: ${DM_PASSWORD:SYSDBA001}
 #  server:
