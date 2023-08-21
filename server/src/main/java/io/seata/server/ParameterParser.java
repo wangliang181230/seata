@@ -18,12 +18,14 @@ package io.seata.server;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import io.seata.common.util.NumberUtils;
 import io.seata.common.util.StringUtils;
 import io.seata.config.Configuration;
 import io.seata.config.ConfigurationFactory;
 import io.seata.server.env.ContainerHelper;
 import io.seata.server.store.StoreConfig;
 
+import static io.seata.common.DefaultValues.SERVICE_DEFAULT_PORT;
 import static io.seata.config.ConfigurationFactory.ENV_PROPERTY_KEY;
 
 /**
@@ -95,6 +97,14 @@ public class ParameterParser {
     }
 
     private void getEnvParameters() {
+        if (StringUtils.isBlank(this.host) && StringUtils.isNotBlank(System.getProperty("seata.host"))) {
+            this.host = System.getProperty("seata.host");
+            System.out.println("读取到 -Dseata.host=" + this.host);
+        }
+        if (this.port == SERVICE_DEFAULT_PORT && StringUtils.isNotBlank(System.getProperty("seata.port"))) {
+            this.port = NumberUtils.toInt(System.getProperty("seata.port"), SERVICE_DEFAULT_PORT);
+            System.out.println("读取到 -Dseata.port=" + this.port);
+        }
         if (StringUtils.isBlank(seataEnv)) {
             seataEnv = ContainerHelper.getEnv();
         }
