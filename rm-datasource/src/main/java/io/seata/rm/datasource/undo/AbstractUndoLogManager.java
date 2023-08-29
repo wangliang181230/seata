@@ -15,6 +15,7 @@
  */
 package io.seata.rm.datasource.undo;
 
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -354,6 +355,15 @@ public abstract class AbstractUndoLogManager implements UndoLogManager {
                     LOGGER.info("xid {} branch {}, undo_log inserted, retry rollback", xid, branchId);
                 }
             } catch (Throwable e) {
+                // 处理达梦驱动问题：唯一键冲突时，未抛出 SQLIntegrityConstraintViolationException 异常
+                if (e instanceof BatchUpdateException && e.getMessage() != null && e.getMessage().contains("唯一性约束")) {
+                    // Possible undo_log has been inserted into the database by other processes, retrying rollback undo_log
+                    if (LOGGER.isInfoEnabled()) {
+                        LOGGER.info("xid {} branch {}, undo_log inserted, retry rollback", xid, branchId);
+                    }
+                    return;
+                }
+
                 if (conn != null) {
                     try {
                         conn.rollback();
