@@ -25,7 +25,6 @@ import io.seata.rm.tcc.store.TCCFenceDO;
 import io.seata.rm.tcc.store.TCCFenceStore;
 import io.seata.rm.tcc.store.db.sql.TCCFenceStoreSqls;
 
-import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -130,14 +129,13 @@ public class TCCFenceStoreDataBaseDAO implements TCCFenceStore {
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new TCCFenceException(String.format("Insert tcc fence record duplicate key exception. xid= %s, branchId= %s", tccFenceDO.getXid(), tccFenceDO.getBranchId()),
                     FrameworkErrorCode.DuplicateKeyException);
-        } catch (BatchUpdateException e) {
+        } catch (SQLException e) {
             // 处理达梦驱动问题：唯一键冲突时，未抛出 SQLIntegrityConstraintViolationException 异常
             if (e.getMessage() != null && e.getMessage().contains("唯一性约束")) {
                 throw new TCCFenceException(String.format("Insert tcc fence record duplicate key exception. xid= %s, branchId= %s", tccFenceDO.getXid(), tccFenceDO.getBranchId()),
                         FrameworkErrorCode.DuplicateKeyException);
             }
-            throw new StoreException(e);
-        } catch (SQLException e) {
+
             throw new StoreException(e);
         } finally {
             IOUtil.close(ps);
