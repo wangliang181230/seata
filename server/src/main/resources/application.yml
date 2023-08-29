@@ -48,9 +48,9 @@ seata:
       datasource: druid
       db-type: dm
       driver-class-name: dm.jdbc.driver.DmDriver
-      url: jdbc:dm://${DM_ADDRESS:127.0.0.1}:${DM_PORT:5236}?schema=SEATA
-      user: SYSDBA
-      password: SYSDBA001
+      url: jdbc:dm://${DM_HOST:127.0.0.1}:${DM_PORT:5236}?schema=${DM_SCHEMA:SEATA}
+      user: ${DM_USER:SYSDBA}
+      password: ${DM_PASSWORD:SYSDBA001}
 #  server:
 #    service-port: 8091 #If not configured, the default is '${server.port} + 1000'
   security:

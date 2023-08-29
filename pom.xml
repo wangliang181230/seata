@@ -162,7 +162,7 @@
         <profile>
             <id>release-image-based-on-java8</id>
             <properties>
-                <image.tags>${project.version},latest</image.tags>
+                <image.tags>${project.version}</image.tags>
             </properties>
         </profile>
         <!-- profile: release-image-based-on-java8-slim -->

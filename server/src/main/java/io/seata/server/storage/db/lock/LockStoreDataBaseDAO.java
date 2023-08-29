@@ -15,6 +15,7 @@
  */
 package io.seata.server.storage.db.lock;
 
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -338,6 +339,12 @@ public class LockStoreDataBaseDAO implements LockStore {
             if (e instanceof SQLIntegrityConstraintViolationException) {
                 return false;
             }
+
+            // 处理达梦驱动问题：唯一键冲突时，未抛出 SQLIntegrityConstraintViolationException 异常
+            if (e instanceof BatchUpdateException && e.getMessage() != null && e.getMessage().contains("唯一性约束")) {
+                return false;
+            }
+
             throw new StoreException(e);
         } finally {
             IOUtil.close(ps);
@@ -374,6 +381,11 @@ public class LockStoreDataBaseDAO implements LockStore {
             //return false,let the caller go to conn.rollabck()
             return false;
         } catch (SQLException e) {
+            // 处理达梦驱动问题：唯一键冲突时，未抛出 SQLIntegrityConstraintViolationException 异常
+            if (e instanceof BatchUpdateException && e.getMessage() != null && e.getMessage().contains("唯一性约束")) {
+                return false;
+            }
+
             throw e;
         } finally {
             IOUtil.close(ps);
