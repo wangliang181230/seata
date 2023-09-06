@@ -63,7 +63,7 @@
 
     <properties>
         <!-- seata version -->
-        <revision>1.7.1-DM-SNAPSHOT</revision>
+        <revision>1.8.0-DM-SNAPSHOT</revision>
 
         <!-- Compiler settings properties -->
         <java.version>1.8</java.version>
