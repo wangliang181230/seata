@@ -28,7 +28,6 @@ import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
 import io.seata.common.util.CollectionUtils;
 import io.seata.sqlparser.SQLInsertRecognizer;
-import io.seata.sqlparser.SQLParsingException;
 import io.seata.sqlparser.SQLType;
 import io.seata.sqlparser.struct.NotPlaceholderExpr;
 import io.seata.sqlparser.struct.Null;
@@ -102,7 +101,7 @@ public class DmInsertRecognizer extends BaseDmRecognizer implements SQLInsertRec
             if (expr instanceof SQLIdentifierExpr) {
                 list.add(((SQLIdentifierExpr)expr).getName());
             } else {
-                throw new SQLParsingException("Unknown SQLExpr: " + expr.getClass() + " " + expr);
+                wrapSQLParsingException(expr);
             }
         }
         return list;
@@ -133,7 +132,7 @@ public class DmInsertRecognizer extends BaseDmRecognizer implements SQLInsertRec
                     row.add(new SqlSequenceExpr(sequence, function));
                 } else {
                     if (primaryKeyIndex.contains(i)) {
-                        throw new SQLParsingException("Unknown SQLExpr: " + expr.getClass() + " " + expr);
+                        wrapSQLParsingException(expr);
                     }
                     row.add(NotPlaceholderExpr.get());
                 }
