@@ -29,7 +29,6 @@ import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
 import io.seata.common.exception.NotSupportYetException;
 import io.seata.sqlparser.ParametersHolder;
-import io.seata.sqlparser.SQLParsingException;
 import io.seata.sqlparser.SQLType;
 import io.seata.sqlparser.SQLUpdateRecognizer;
 import io.seata.sqlparser.util.ColumnUtils;
@@ -80,7 +79,7 @@ public class DmUpdateRecognizer extends BaseDmRecognizer implements SQLUpdateRec
                     list.add(((SQLPropertyExpr)expr).getOwnernName()  + "." + ((SQLPropertyExpr)expr).getName());
                 }
             } else {
-                throw new SQLParsingException("Unknown SQLExpr: " + expr.getClass() + " " + expr);
+                wrapSQLParsingException(expr);
             }
         }
         return list;
@@ -97,7 +96,7 @@ public class DmUpdateRecognizer extends BaseDmRecognizer implements SQLUpdateRec
             } else if (expr instanceof SQLVariantRefExpr) {
                 list.add(new VMarker());
             } else {
-                throw new SQLParsingException("Unknown SQLExpr: " + expr.getClass() + " " + expr);
+                wrapSQLParsingException(expr);
             }
         }
         return list;
