@@ -19,9 +19,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>io.seata</groupId>
-        <artifactId>seata-build</artifactId>
+        <artifactId>seata-dependencies</artifactId>
         <version>${revision}</version>
-        <relativePath>./build/pom.xml</relativePath>
+        <relativePath>./dependencies/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -103,18 +103,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-dependencies</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <profiles>
         <!-- profile: licenseCheck -->
