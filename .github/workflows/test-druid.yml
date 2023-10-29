@@ -2,7 +2,7 @@ name: "test-druid"
 
 on:
   push:
-    branches: [ test*, "*.*.*" ]
+    branches: [ strength_console ]
 
 jobs:
   test-druid:

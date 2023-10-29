@@ -2,9 +2,7 @@ name: "build"
 
 on:
   push:
-    branches: [ 2.x, develop, master ]
-  pull_request:
-    branches: [ 2.x, develop, master ]
+    branches: [ strength_console ]
 
 jobs:
   # job 1: Test based on java 8 and 17. Do not checkstyle.
