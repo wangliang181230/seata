@@ -43,7 +43,7 @@ seata:
     type: file
   store:
     # support: file 、 db 、 redis
-    mode: db
+    mode: ${STORE_MODE:db}
     db:
       datasource: ${DB_DATASOURCE:druid}
       db-type: ${DB_TYPE:dm}
