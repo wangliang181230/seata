@@ -32,7 +32,7 @@
         <spring-boot-for-server.version>${spring-boot.version}</spring-boot-for-server.version>
         <spring-framework-for-server.version>${spring-framework.version}</spring-framework-for-server.version>
         <native-build-tools-plugin.version>0.9.20</native-build-tools-plugin.version>
-        <primeton-starter.version>6.5.0.2-SP2.1X</primeton-starter.version>
+        <primeton-starter.version>6.5.0.2-SP2.6X</primeton-starter.version>
 
         <!-- jedis version for seata-server -->
         <jedis.version>3.8.0</jedis.version>
