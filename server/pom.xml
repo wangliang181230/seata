@@ -31,6 +31,9 @@
     <properties>
         <native-build-tools-plugin.version>0.9.20</native-build-tools-plugin.version>
         <primeton-starter.version>6.5.0.2-SP2.1X</primeton-starter.version>
+
+        <!-- jedis version for seata-server -->
+        <jedis.version>3.8.0</jedis.version>
     </properties>
 
     <dependencies>
@@ -173,6 +176,7 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
         </dependency>
 
         <dependency>
