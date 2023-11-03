@@ -32,6 +32,7 @@
         <spring-boot-for-server.version>${spring-boot.version}</spring-boot-for-server.version>
         <spring-framework-for-server.version>${spring-framework.version}</spring-framework-for-server.version>
         <native-build-tools-plugin.version>0.9.20</native-build-tools-plugin.version>
+        <primeton-starter.version>6.5.0.2-SP2.1X</primeton-starter.version>
 
         <!-- jedis version for seata-server -->
         <jedis.version>3.8.0</jedis.version>
@@ -84,7 +85,16 @@
                     <artifactId>log4j-to-slf4j</artifactId>
                     <groupId>org.apache.logging.log4j</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.primeton.appserver</groupId>
+            <artifactId>pas-spring-boot-starter</artifactId>
+            <version>${primeton-starter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
