@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 server:
-  port: 7091
+  port: ${SEATA_HTTP_PORT:7091}
 
 spring:
   application:
@@ -45,12 +45,12 @@ seata:
     # support: file 、 db 、 redis
     mode: db
     db:
-      datasource: druid
-      db-type: dm
-      driver-class-name: dm.jdbc.driver.DmDriver
-      url: jdbc:dm://${DM_HOST:127.0.0.1}:${DM_PORT:5236}?schema=${DM_SCHEMA:SEATA}
-      user: ${DM_USER:SYSDBA}
-      password: ${DM_PASSWORD:SYSDBA001}
+      datasource: ${DB_DATASOURCE:druid}
+      db-type: ${DB_TYPE:dm}
+      driver-class-name: ${DB_DRIVER_CLASS_NAME:dm.jdbc.driver.DmDriver}
+      url: ${DB_URL:jdbc:dm://${DM_HOST:127.0.0.1}:${DM_PORT:5236}?schema=${DM_SCHEMA:SEATA}}
+      user: ${DB_USER:SYSDBA}
+      password: ${DB_PASSWORD:SYSDBA001}
 #  server:
 #    service-port: 8091 #If not configured, the default is '${server.port} + 1000'
   security:
