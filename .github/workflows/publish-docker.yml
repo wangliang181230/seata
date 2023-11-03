@@ -2,7 +2,7 @@ name: "Publish Docker Image"
 
 on:
   push:
-    branches: [ snapshot, "release-image-for-dm" ]
+    branches: [ snapshot, "release-image-for-dm*" ]
     #tags: [ "*" ]
 
   #This schedule only takes effect in the default branch
