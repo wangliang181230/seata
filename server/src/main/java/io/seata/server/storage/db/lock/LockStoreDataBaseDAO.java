@@ -382,6 +382,7 @@ public class LockStoreDataBaseDAO implements LockStore {
         } catch (SQLException e) {
             // 处理达梦驱动问题：唯一键冲突时，未抛出 SQLIntegrityConstraintViolationException 异常
             if (e.getMessage() != null && e.getMessage().contains("唯一性约束")) {
+                LOGGER.error("Global lock batch acquire error: {}", e.getMessage(), e);
                 return false;
             }
 

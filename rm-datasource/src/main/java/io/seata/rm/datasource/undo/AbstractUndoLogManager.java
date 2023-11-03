@@ -357,9 +357,7 @@ public abstract class AbstractUndoLogManager implements UndoLogManager {
                 // 处理达梦驱动问题：唯一键冲突时，未抛出 SQLIntegrityConstraintViolationException 异常
                 if (e instanceof SQLException && e.getMessage() != null && e.getMessage().contains("唯一性约束")) {
                     // Possible undo_log has been inserted into the database by other processes, retrying rollback undo_log
-                    if (LOGGER.isInfoEnabled()) {
-                        LOGGER.info("xid {} branch {}, undo_log inserted, retry rollback", xid, branchId);
-                    }
+                    LOGGER.info("xid {} branch {}, undo_log inserted, retry rollback", xid, branchId);
                     return;
                 }
 
