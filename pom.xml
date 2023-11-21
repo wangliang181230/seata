@@ -65,7 +65,7 @@
         <module>sqlparser</module>
         <module>server</module>
         <module>ext/apm-seata-skywalking-plugin</module>
-        <!--<module>seata-plugin</module>-->
+        <module>seata-plugin</module>
     </modules>
 
     <!--test-->
