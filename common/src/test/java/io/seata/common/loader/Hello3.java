@@ -16,21 +16,7 @@
 package io.seata.common.loader;
 
 /**
- * The DependsOn Exception
- *
  * @author wang.liang
  */
-class DependsOnException extends Exception {
-
-    public DependsOnException(String message) {
-        super(message);
-    }
-
-    public DependsOnException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public DependsOnException(Throwable cause) {
-        super(cause);
-    }
+interface Hello3 {
 }

@@ -16,21 +16,10 @@
 package io.seata.common.loader;
 
 /**
- * The DependsOn Exception
+ * The type Africa hello.
  *
  * @author wang.liang
  */
-class DependsOnException extends Exception {
-
-    public DependsOnException(String message) {
-        super(message);
-    }
-
-    public DependsOnException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public DependsOnException(Throwable cause) {
-        super(cause);
-    }
+@LoadLevel(name = "AfricaHello", dependsOnClasses = String.class, dependsOnClassNames = "java.lang.Integer")
+public class AfricaHello implements Hello3 {
 }
