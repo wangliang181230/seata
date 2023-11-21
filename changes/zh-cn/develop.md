@@ -6,10 +6,14 @@
 - [[#PR_NO](https://github.com/seata/seata/pull/PR_NO)] 准确简要的PR描述
 
 ### bugfix:
-- [[#PR_NO](https://github.com/seata/seata/pull/PR_NO)] 准确简要的PR描述
+- [[#5887](https://github.com/seata/seata/pull/5887)] 修复全局事务钩子重复执行
+- [[#5991](https://github.com/seata/seata/pull/5991)] 修复redis sentinel master node 宕机时，lua脚本未同步的问题
+- [[#6025](https://github.com/seata/seata/pull/6025)] 修复控制台点击事务信息页面中的"查看全局锁"按钮之后白屏的问题
+- [[#6026](https://github.com/seata/seata/pull/6026)] 修复异常的打点
+- [[#6068](https://github.com/seata/seata/pull/6068)] 修复 “MySql中的 `TINYINT(1)` 类型字段被解析为`BIT`，导致回滚后的值要么是0，要么是1。而不是原来的值。” 的问题。
 
 ### optimize:
-- [[#PR_NO](https://github.com/seata/seata/pull/PR_NO)] 准确简要的PR描述
+- [[#6044](https://github.com/seata/seata/pull/6044)] 优化MySQL衍生数据库判断逻辑
 
 ### security:
 - [[#PR_NO](https://github.com/seata/seata/pull/PR_NO)] 准确简要的PR描述
@@ -21,7 +25,9 @@
 
 <!-- 请确保您的 GitHub ID 在以下列表中 -->
 - [slievrly](https://github.com/slievrly)
-- [GitHub_ID](https://github.com/GitHub_ID)
-
+- [jsbxyyx](https://github.com/jsbxyyx)
+- [liuqiufeng](https://github.com/liuqiufeng)
+- [ptyin](https://github.com/ptyin)
+- [wangliang181230](https://github.com/wangliang181230)
 
 同时，我们收到了社区反馈的很多有价值的issue和建议，非常感谢大家。
