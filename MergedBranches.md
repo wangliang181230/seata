@@ -3,3 +3,5 @@
 2. gitee:custom/build/upgrade-version
 3. gitee:custom/optimize/seata-server/enhanced-start-command
 4. gitee:custom/others
+5. origin/bugfix-tinyint1
+6. ...
