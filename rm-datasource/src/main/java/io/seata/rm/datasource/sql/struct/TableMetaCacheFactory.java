@@ -114,28 +114,36 @@ public class TableMetaCacheFactory {
             this.tableMetaRefreshQueue = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
 
             tableMetaRefreshExecutor.execute(() -> {
-                while (true) {
-                    // 1. check table meta
-                    if (ENABLE_TABLE_META_CHECKER_ENABLE
-                        && System.currentTimeMillis() - lastRefreshFinishTime > TABLE_META_CHECKER_INTERVAL) {
-                        tableMetaRefreshEvent(dataSource.getResourceId());
-                    }
-
-                    // 2. refresh table meta
-                    try {
-                        Long eventTime = tableMetaRefreshQueue.take();
-                        // if it has bean refreshed not long ago, skip
-                        if (eventTime - lastRefreshFinishTime > TABLE_META_REFRESH_INTERVAL_TIME) {
-                            try (Connection connection = dataSource.getConnection()) {
-                                TableMetaCache tableMetaCache =
-                                    TableMetaCacheFactory.getTableMetaCache(dataSource.getDbType());
-                                tableMetaCache.refresh(connection, dataSource.getResourceId());
+                try {
+                    while (true) {
+                        // 1. check table meta
+                        if (ENABLE_TABLE_META_CHECKER_ENABLE
+                                && System.currentTimeMillis() - lastRefreshFinishTime > TABLE_META_CHECKER_INTERVAL) {
+                            try {
+                                tableMetaRefreshEvent(dataSource.getResourceId());
+                            } catch (Exception e) {
+                                LOGGER.error("invoke table meta refresh event error:", e);
                             }
-                            lastRefreshFinishTime = System.currentTimeMillis();
                         }
-                    } catch (Exception exx) {
-                        LOGGER.error("table refresh error:{}", exx.getMessage(), exx);
+
+                        // 2. refresh table meta
+                        try {
+                            Long eventTime = tableMetaRefreshQueue.take();
+                            // if it has been refreshed not long ago, skip
+                            if (eventTime - lastRefreshFinishTime > TABLE_META_REFRESH_INTERVAL_TIME) {
+                                try (Connection connection = dataSource.getConnection()) {
+                                    TableMetaCache tableMetaCache =
+                                            TableMetaCacheFactory.getTableMetaCache(dataSource.getDbType());
+                                    tableMetaCache.refresh(connection, dataSource.getResourceId());
+                                }
+                                lastRefreshFinishTime = System.currentTimeMillis();
+                            }
+                        } catch (Exception exx) {
+                            LOGGER.error("table refresh error: {}", exx.getMessage(), exx);
+                        }
                     }
+                } catch (Throwable t) {
+                    LOGGER.error("The table meta refresh executor will stop due to an exception:", t);
                 }
             });
         }

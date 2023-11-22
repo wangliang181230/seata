@@ -287,8 +287,9 @@ public class TableRecords implements java.io.Serializable {
         if (col == null) {
             throw new TableMetaException(tmeta.getTableName(), colName,
                 "The meta of the column '" + colName + "' not found, " +
-                    "please confirm if the structure of table '" + tmeta.getTableName() + "' has been adjusted during runtime. " +
-                        "If so, please restart the current application.");
+                "please confirm if the structure of table '" + tmeta.getTableName() + "' has been adjusted during runtime. " +
+                "The current columns in table meta: " + tmeta.getAllColumns().keySet()
+            );
         }
         return col;
     }

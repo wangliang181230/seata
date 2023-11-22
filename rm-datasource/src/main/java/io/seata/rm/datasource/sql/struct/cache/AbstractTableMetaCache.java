@@ -90,10 +90,10 @@ public abstract class AbstractTableMetaCache implements TableMetaCache {
                     TableMeta tableMeta = fetchSchema(connection, entry.getValue().getTableName());
                     if (!tableMeta.equals(entry.getValue())) {
                         TABLE_META_CACHE.put(entry.getKey(), tableMeta);
-                        LOGGER.info("table meta change was found, update table meta cache automatically.");
+                        LOGGER.info("'{}' table meta change was found, update table meta cache automatically.", entry.getKey());
                     }
                 } catch (SQLException e) {
-                    LOGGER.error("get table meta error:{}", e.getMessage(), e);
+                    LOGGER.error("get '{}' table meta error: {}", entry.getKey(), e.getMessage(), e);
                 }
             }
         }
