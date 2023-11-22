@@ -20,10 +20,16 @@ import java.sql.SQLException;
  * @author Bughue
  */
 public class TableMetaException extends SQLException {
-    private String columnName;
-    private String tableName;
+    private final String columnName;
+    private final String tableName;
 
     public TableMetaException(String tableName, String columnName) {
+        this.columnName = columnName;
+        this.tableName = tableName;
+    }
+
+    public TableMetaException(String tableName, String columnName, String reason) {
+        super(reason);
         this.columnName = columnName;
         this.tableName = tableName;
     }

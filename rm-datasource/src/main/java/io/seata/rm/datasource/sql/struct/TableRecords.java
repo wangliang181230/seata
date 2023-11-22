@@ -285,7 +285,10 @@ public class TableRecords implements java.io.Serializable {
     private static ColumnMeta getColumnMeta(TableMeta tmeta , String colName) throws SQLException {
         ColumnMeta col = tmeta.getColumnMeta(colName);
         if (col == null) {
-            throw new TableMetaException(tmeta.getTableName(), colName);
+            throw new TableMetaException(tmeta.getTableName(), colName,
+                "The meta of the column '" + colName + "' not found, " +
+                    "please confirm if the structure of table '" + tmeta.getTableName() + "' has been adjusted during runtime. " +
+                        "If so, please restart the current application.");
         }
         return col;
     }
