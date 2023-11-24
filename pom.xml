@@ -36,7 +36,7 @@
         <module>bom</module>
         <module>common</module>
         <module>config</module>
-        <module>console</module>
+        <!--<module>console</module>-->
         <module>core</module>
         <module>dependencies</module>
         <module>discovery</module>
@@ -63,7 +63,7 @@
         <module>compressor</module>
         <module>saga</module>
         <module>sqlparser</module>
-        <module>server</module>
+        <!--<module>server</module>-->
         <module>ext/apm-seata-skywalking-plugin</module>
         <module>seata-plugin</module>
     </modules>
