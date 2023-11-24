@@ -40,7 +40,7 @@
         <module>core</module>
         <module>dependencies</module>
         <module>discovery</module>
-        <module>distribution</module>
+        <!--<module>distribution</module>-->
         <module>integration/dubbo-alibaba</module>
         <module>integration/http</module>
         <module>integration/http-jakarta</module>
@@ -64,7 +64,7 @@
         <module>saga</module>
         <module>sqlparser</module>
         <!--<module>server</module>-->
-        <module>ext/apm-seata-skywalking-plugin</module>
+        <!--<module>ext/apm-seata-skywalking-plugin</module>-->
         <module>seata-plugin</module>
     </modules>
 
