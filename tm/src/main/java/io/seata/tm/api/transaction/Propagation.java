@@ -37,7 +37,7 @@ public enum Propagation {
      *
      * <p>
      * The logic is similar to the following code:
-     * <code><pre>
+     * <pre>{@code
      *     if (tx == null) {
      *         try {
      *             tx = beginNewTransaction(); // begin new transaction, is not existing
@@ -51,7 +51,7 @@ public enum Propagation {
      *     } else {
      *         return business.execute(); // execute with current transaction
      *     }
-     * </pre></code>
+     * }</pre>
      * </p>
      */
     REQUIRED,
@@ -65,7 +65,7 @@ public enum Propagation {
      *
      * <p>
      * The logic is similar to the following code:
-     * <code><pre>
+     * <pre>{@code
      *     try {
      *         if (tx != null) {
      *             suspendedResource = suspendTransaction(tx); // suspend current transaction
@@ -84,7 +84,7 @@ public enum Propagation {
      *             resumeTransaction(suspendedResource); // resume transaction
      *         }
      *     }
-     * </pre></code>
+     * }</pre>
      * </p>
      */
     REQUIRES_NEW,
@@ -98,7 +98,7 @@ public enum Propagation {
      *
      * <p>
      * The logic is similar to the following code:
-     * <code><pre>
+     * <pre>{@code
      *     try {
      *         if (tx != null) {
      *             suspendedResource = suspendTransaction(tx); // suspend current transaction
@@ -109,7 +109,7 @@ public enum Propagation {
      *             resumeTransaction(suspendedResource); // resume transaction
      *         }
      *     }
-     * </pre></code>
+     * }</pre>
      * </p>
      */
     NOT_SUPPORTED,
@@ -124,13 +124,13 @@ public enum Propagation {
      *
      * <p>
      * The logic is similar to the following code:
-     * <code><pre>
+     * <pre>{@code
      *     if (tx != null) {
      *         return business.execute(); // execute with current transaction
      *     } else {
      *         return business.execute(); // execute without transaction
      *     }
-     * </pre></code>
+     * }</pre>
      * </p>
      */
     SUPPORTS,
@@ -145,12 +145,12 @@ public enum Propagation {
      *
      * <p>
      * The logic is similar to the following code:
-     * <code><pre>
+     * <pre>{@code
      *     if (tx != null) {
      *         throw new TransactionException("existing transaction");
      *     }
      *     return business.execute(); // execute without transaction
-     * </pre></code>
+     * }</pre>
      * </p>
      */
     NEVER,
@@ -165,12 +165,12 @@ public enum Propagation {
      *
      * <p>
      * The logic is similar to the following code:
-     * <code><pre>
+     * <pre>{@code
      *     if (tx == null) {
      *         throw new TransactionException("not existing transaction");
      *     }
      *     return business.execute(); // execute with current transaction
-     * </pre></code>
+     * }</pre>
      * </p>
      */
     MANDATORY
