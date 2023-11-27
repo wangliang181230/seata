@@ -16,9 +16,6 @@ jobs:
       # step 1
       - name: "Checkout"
         uses: actions/checkout@v3
-      - name: "Test docker"
-        run: |
-          docker pull alpine:latest;
       # step 2
       - name: "Set up QEMU"
         id: qemu
