@@ -5,8 +5,6 @@ on:
     branches: [ "test-docker" ]
 
 jobs:
-  # job 3:
-
   test-alpine-linux:
     name: "test-alpine-linux"
     runs-on: ubuntu-latest
