@@ -2,7 +2,7 @@ name: "test-alpine-linux"
 
 on:
   push:
-    branches: [ "test-docker" ]
+    branches: [ "test-alpine-linux" ]
 
 jobs:
   test-alpine-linux:
