@@ -29,6 +29,11 @@ public interface SeataInterceptor {
      */
     void setOrder(int order);
 
+    /**
+     * Gets order.
+     *
+     * @return the order
+     */
     int getOrder();
 
     /**

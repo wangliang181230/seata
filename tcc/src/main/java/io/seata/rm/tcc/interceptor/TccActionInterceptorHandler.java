@@ -49,12 +49,12 @@ public class TccActionInterceptorHandler extends AbstractProxyInvocationHandler 
     private static final int ORDER_NUM = ConfigurationFactory.getInstance().getInt(TCC_ACTION_INTERCEPTOR_ORDER,
             DefaultValues.TCC_ACTION_INTERCEPTOR_ORDER);
 
-    private ActionInterceptorHandler actionInterceptorHandler = new ActionInterceptorHandler();
+    private final ActionInterceptorHandler actionInterceptorHandler = new ActionInterceptorHandler();
 
-    private Set<String> methodsToProxy;
-    private RemotingDesc remotingDesc;
+    private final Set<String> methodsToProxy;
+    private final RemotingDesc remotingDesc;
 
-    private Map<Method, TwoPhaseBusinessAction> parseAnnotationCache = new ConcurrentHashMap<>();
+    private final Map<Method, TwoPhaseBusinessAction> parseAnnotationCache = new ConcurrentHashMap<>();
 
     public TccActionInterceptorHandler(RemotingDesc remotingDesc, Set<String> methodsToProxy) {
         this.remotingDesc = remotingDesc;
@@ -110,30 +110,27 @@ public class TccActionInterceptorHandler extends AbstractProxyInvocationHandler 
         return invocation.proceed();
     }
 
-    private TwoPhaseBusinessAction parseAnnotation(Method methodKey) throws NoSuchMethodException {
-        TwoPhaseBusinessAction result = parseAnnotationCache.computeIfAbsent(methodKey, method -> {
+    private TwoPhaseBusinessAction parseAnnotation(Method methodKey) {
+        return parseAnnotationCache.computeIfAbsent(methodKey, method -> {
             TwoPhaseBusinessAction businessAction = method.getAnnotation(TwoPhaseBusinessAction.class);
             if (businessAction == null && remotingDesc.getServiceClass() != null) {
                 Set<Class<?>> interfaceClasses = ReflectionUtil.getInterfaces(remotingDesc.getServiceClass());
-                if (interfaceClasses != null) {
-                    for (Class<?> interClass : interfaceClasses) {
-                        try {
-                            Method m = interClass.getMethod(method.getName(), method.getParameterTypes());
-                            businessAction = m.getAnnotation(TwoPhaseBusinessAction.class);
-                            if (businessAction != null) {
-                                // init common fence clean task if enable useTccFence
-                                initCommonFenceCleanTask(businessAction);
-                                break;
-                            }
-                        } catch (NoSuchMethodException e) {
-                            throw new RuntimeException(e);
+                for (Class<?> interClass : interfaceClasses) {
+                    try {
+                        Method m = interClass.getMethod(method.getName(), method.getParameterTypes());
+                        businessAction = m.getAnnotation(TwoPhaseBusinessAction.class);
+                        if (businessAction != null) {
+                            // init common fence clean task if enable useTccFence
+                            initCommonFenceCleanTask(businessAction);
+                            break;
                         }
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }
             return businessAction;
         });
-        return result;
     }
 
     /**

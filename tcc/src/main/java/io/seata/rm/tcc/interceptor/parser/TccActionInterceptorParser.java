@@ -25,6 +25,7 @@ import io.seata.integration.tx.api.remoting.parser.DefaultRemotingParser;
 import io.seata.rm.tcc.api.TwoPhaseBusinessAction;
 import io.seata.rm.tcc.interceptor.TccActionInterceptorHandler;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,9 +49,8 @@ public class TccActionInterceptorParser implements InterfaceParser {
                 if (remotingDesc.isReference()) {
                     //if it is a tcc remote reference
                     Set<String> methodsToProxy = tccProxyTargetMethod(remotingDesc);
-                    if (remotingDesc != null && !methodsToProxy.isEmpty()) {
-                        ProxyInvocationHandler proxyInvocationHandler = new TccActionInterceptorHandler(remotingDesc, methodsToProxy);
-                        return proxyInvocationHandler;
+                    if (!methodsToProxy.isEmpty()) {
+                        return new TccActionInterceptorHandler(remotingDesc, methodsToProxy);
                     }
                 }
             }
@@ -64,8 +64,8 @@ public class TccActionInterceptorParser implements InterfaceParser {
      * @param remotingDesc the remoting desc
      * @return boolean boolean
      */
-    private Set<String> tccProxyTargetMethod(RemotingDesc remotingDesc) {
-        if (!remotingDesc.isReference() || remotingDesc == null) {
+    private Set<String> tccProxyTargetMethod(@Nonnull RemotingDesc remotingDesc) {
+        if (!remotingDesc.isReference()) {
             return Collections.emptySet();
         }
         Set<String> methodsToProxy = new HashSet<>();
@@ -73,10 +73,8 @@ public class TccActionInterceptorParser implements InterfaceParser {
         Class<?> tccServiceClazz = remotingDesc.getServiceClass();
         Set<Method> methods = new HashSet<>(Arrays.asList(tccServiceClazz.getMethods()));
         Set<Class<?>> interfaceClasses = ReflectionUtil.getInterfaces(tccServiceClazz);
-        if (interfaceClasses != null) {
-            for (Class<?> interClass : interfaceClasses) {
-                methods.addAll(Arrays.asList(interClass.getMethods()));
-            }
+        for (Class<?> interClass : interfaceClasses) {
+            methods.addAll(Arrays.asList(interClass.getMethods()));
         }
 
         TwoPhaseBusinessAction twoPhaseBusinessAction;

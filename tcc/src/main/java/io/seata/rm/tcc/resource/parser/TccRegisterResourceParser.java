@@ -52,10 +52,8 @@ public class TccRegisterResourceParser implements RegisterResourceParser {
                         Class<?> serviceClass = remotingDesc.getServiceClass();
                         Set<Method> methods = new HashSet<>(Arrays.asList(serviceClass.getMethods()));
                         Set<Class<?>> interfaceClasses = ReflectionUtil.getInterfaces(serviceClass);
-                        if (interfaceClasses != null) {
-                            for (Class<?> interClass : interfaceClasses) {
-                                methods.addAll(Arrays.asList(interClass.getMethods()));
-                            }
+                        for (Class<?> interClass : interfaceClasses) {
+                            methods.addAll(Arrays.asList(interClass.getMethods()));
                         }
                         Object targetBean = remotingDesc.getTargetBean();
                         for (Method m : methods) {

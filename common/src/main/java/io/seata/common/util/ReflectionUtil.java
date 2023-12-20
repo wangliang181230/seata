@@ -15,6 +15,7 @@
  */
 package io.seata.common.util;
 
+import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -141,6 +142,7 @@ public final class ReflectionUtil {
      * @param clazz the clazz
      * @return set
      */
+    @Nonnull
     public static Set<Class<?>> getInterfaces(Class<?> clazz) {
         if (clazz.isInterface()) {
             return Collections.singleton(clazz);
