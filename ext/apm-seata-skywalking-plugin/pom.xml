@@ -39,7 +39,6 @@
         <agent-config.dir>${agent.dir}/config</agent-config.dir>
     </properties>
 
-
     <dependencies>
         <dependency>
             <groupId>org.apache.skywalking</groupId>
