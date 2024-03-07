@@ -37,7 +37,6 @@
 
     <properties>
         <spring-boot.version>2.5.15</spring-boot.version>
-        <spring-framework.version>5.3.27</spring-framework.version>
 
         <dubbo-seata.version>1.0.2</dubbo-seata.version>
         <brpc.version>2.5.9</brpc.version>
@@ -157,15 +156,6 @@
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
                 <version>${junit-jupiter.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- spring-framework CVE-2022-22965-->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring-framework.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

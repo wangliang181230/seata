@@ -47,9 +47,8 @@
         <kafka-appender.version>0.2.0-RC2</kafka-appender.version>
         <kafka-clients.version>3.6.1</kafka-clients.version>
 
-        <!-- spring -->
+        <!-- spring-boot -->
         <spring-boot-for-server.version>2.7.18</spring-boot-for-server.version>
-        <spring-framework-for-server.version>5.3.31</spring-framework-for-server.version>
 
         <!-- mysql -->
         <mysql5.version>5.1.42</mysql5.version>
@@ -132,26 +131,11 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- spring-framework -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring-framework-for-server.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
             <!-- spring-boot -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot-for-server.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-framework-bom</artifactId>
-                    </exclusion>
-                </exclusions>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

@@ -107,7 +107,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- for database -->
+        <!-- Database Connection Pooling -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
@@ -120,20 +120,21 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
         </dependency>
+        <!-- Database Driver -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
-        <!-- if you run seata-server in IDE and use mysql8 as session store, please rewrite version to ${mysql8.version}-->
+        <!-- if you run seata-server in IDE and use mysql8 as session store, please rewrite version to ${mysql8.version} -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.mariadb.jdbc</groupId>-->
-<!--            <artifactId>mariadb-java-client</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+        <!--<dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <scope>provided</scope>
+        </dependency>-->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -183,10 +184,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-        </dependency>
         <!-- logback appenders -->
         <dependency>
             <groupId>net.logstash.logback</groupId>
@@ -195,10 +192,6 @@
         <dependency>
             <groupId>com.github.danielwegener</groupId>
             <artifactId>logback-kafka-appender</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alipay.sofa</groupId>
@@ -245,36 +238,37 @@
                             <stripVersion>false</stripVersion>
                             <silent>true</silent>
                             <overWriteIfNewer>true</overWriteIfNewer>
+                            <!--resolve slf4j-simple conflicts-->
                             <includeScope>runtime</includeScope>
                             <excludeGroupIds>org.apache.logging.log4j,log4j,mysql</excludeGroupIds>
                             <skip>${dependencies.copy.skip}</skip>
                         </configuration>
                     </execution>
-<!--                    <execution>-->
-<!--                        <id>copy-mysql</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>copy</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <artifactItems>-->
-<!--                                <artifactItem>-->
-<!--                                    <groupId>mysql</groupId>-->
-<!--                                    <artifactId>mysql-connector-java</artifactId>-->
-<!--                                    <version>${mysql5.version}</version>-->
-<!--                                </artifactItem>-->
-<!--                                <artifactItem>-->
-<!--                                    <groupId>mysql</groupId>-->
-<!--                                    <artifactId>mysql-connector-java</artifactId>-->
-<!--                                    <version>${mysql8.version}</version>-->
-<!--                                </artifactItem>-->
-<!--                            </artifactItems>-->
-<!--                            <outputDirectory>-->
-<!--                                ${project.build.directory}/lib/jdbc-->
-<!--                            </outputDirectory>-->
-<!--                            <skip>${dependencies.copy.skip}</skip>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                    <!--<execution>
+                        <id>copy-mysql</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>mysql</groupId>
+                                    <artifactId>mysql-connector-java</artifactId>
+                                    <version>${mysql5.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>mysql</groupId>
+                                    <artifactId>mysql-connector-java</artifactId>
+                                    <version>${mysql8.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>
+                                ${project.build.directory}/lib/jdbc
+                            </outputDirectory>
+                            <skip>${dependencies.copy.skip}</skip>
+                        </configuration>
+                    </execution>-->
                 </executions>
             </plugin>
             <plugin>

@@ -50,18 +50,6 @@
             <version>${project.version}</version>
         </dependency>
 
-<!-- The actual spring-related dependencies that take effect are from the seata-dependencies module, not the seata-server module-->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>seata-server</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.seata</groupId>
-                    <artifactId>seata-spring-autoconfigure-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>seata-rm-datasource</artifactId>
@@ -74,14 +62,29 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>seata-mock-server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>seata-spring</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+
+        <!-- The actual spring-related dependencies that take effect are from the seata-dependencies module, not the seata-server module -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>seata-server</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>seata-spring-autoconfigure-server</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>seata-mock-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>com.h2database</groupId>
