@@ -245,7 +245,6 @@
                             <stripVersion>false</stripVersion>
                             <silent>true</silent>
                             <overWriteIfNewer>true</overWriteIfNewer>
-                            <!--resolve slf4j-simple conflicts-->
                             <includeScope>runtime</includeScope>
                             <excludeGroupIds>org.apache.logging.log4j,log4j,mysql</excludeGroupIds>
                             <skip>${dependencies.copy.skip}</skip>
