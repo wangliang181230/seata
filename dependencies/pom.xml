@@ -114,8 +114,6 @@
         <hikari.version>3.4.3</hikari.version>
         <!-- sql parser -->
         <antlr4.version>4.8</antlr4.version>
-        <!-- rocketmq -->
-        <rocketmq-version>5.0.0</rocketmq-version>
 
         <!-- # for kotlin -->
         <kotlin.version>1.4.32</kotlin.version>
@@ -737,11 +735,6 @@
                 <groupId>org.codehaus.janino</groupId>
                 <artifactId>commons-compiler</artifactId>
                 <version>${janino-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.rocketmq</groupId>
-                <artifactId>rocketmq-client</artifactId>
-                <version>${rocketmq-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

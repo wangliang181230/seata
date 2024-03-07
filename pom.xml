@@ -43,6 +43,7 @@
         <module>core</module>
         <module>compatible</module>
         <module>dependencies</module>
+        <module>dependencies-client</module>
         <module>dependencies-server</module>
         <module>discovery</module>
         <module>distribution</module>

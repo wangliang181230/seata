@@ -22,28 +22,31 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.apache.seata</groupId>
-        <artifactId>seata-dependencies-client</artifactId>
+        <artifactId>seata-parent</artifactId>
         <version>${revision}</version>
-        <relativePath>../dependencies-client/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>seata-plugin</artifactId>
+    <artifactId>seata-dependencies-client</artifactId>
     <packaging>pom</packaging>
-    <name>seata-plugin ${project.version}</name>
-    <description>plugin for Seata built with Maven</description>
 
-    <modules>
-        <module>seata-jackson-parser-oracle</module>
-    </modules>
+    <name>Seata dependencies-client ${project.version}</name>
+    <description>dependencies for Seata client built with Maven</description>
 
-    <repositories>
-        <repository>
-            <id>ICM</id>
-            <url>https://maven.icm.edu.pl/artifactory/repo/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-    </repositories>
+    <properties>
+        <!-- RocketMQ -->
+        <rocketmq-version>5.0.0</rocketmq-version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- RocketMQ -->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-client</artifactId>
+                <version>${rocketmq-version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 </project>
