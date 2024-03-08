@@ -35,62 +35,66 @@
     <description>dependencies for Seata server and console built with Maven</description>
 
     <properties>
-        <!-- jcommander -->
-        <jcommander.version>1.82</jcommander.version>
-        <!-- jwt -->
-        <jwt.version>0.10.5</jwt.version>
-        <!-- snakeyaml -->
-        <snakeyaml.version>2.0</snakeyaml.version>
+        <!-- spring-boot version for server -->
+        <spring-boot-for-server.version>2.7.18</spring-boot-for-server.version>
+
+        <!-- MySQL drivers -->
+        <mysql5.version>${mysql.version}</mysql5.version>
+        <mysql8.version>8.0.27</mysql8.version>
+
+        <!-- jraft -->
+        <jraft.version>1.3.14</jraft.version>
+
+        <!-- jjwt -->
+        <jjwt.version>0.10.5</jjwt.version>
+
+        <!-- prometheus -->
+        <prometheus.client.version>0.6.0</prometheus.client.version>
         <!-- skywalking -->
         <skywalking.version>8.6.0</skywalking.version>
+
         <!-- for logback appenders -->
         <logstash-logback-encoder.version>6.5</logstash-logback-encoder.version>
         <kafka-appender.version>0.2.0-RC2</kafka-appender.version>
         <kafka-clients.version>3.6.1</kafka-clients.version>
 
-        <!-- spring-boot -->
-        <spring-boot-for-server.version>2.7.18</spring-boot-for-server.version>
+        <jcommander.version>1.82</jcommander.version>
 
-        <!-- mysql -->
-        <mysql5.version>5.1.42</mysql5.version>
-        <mysql8.version>8.0.27</mysql8.version>
+        <!-- janino -->
+        <janino.version>3.1.9</janino.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- jraft -->
             <dependency>
-                <groupId>com.beust</groupId>
-                <artifactId>jcommander</artifactId>
-                <version>${jcommander.version}</version>
+                <groupId>com.alipay.sofa</groupId>
+                <artifactId>jraft-core</artifactId>
+                <version>${jraft.version}</version>
             </dependency>
 
-            <!-- jwt -->
-            <!--<dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
-                <version>${jwt.version}</version>
-            </dependency>-->
+            <!-- jjwt -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
-                <version>${jwt.version}</version>
+                <version>${jjwt.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-impl</artifactId>
-                <version>${jwt.version}</version>
+                <version>${jjwt.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-jackson</artifactId>
-                <version>${jwt.version}</version>
+                <version>${jjwt.version}</version>
             </dependency>
 
-            <!-- snakeyaml -->
+            <!-- prometheus -->
             <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${snakeyaml.version}</version>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient_httpserver</artifactId>
+                <version>${prometheus.client.version}</version>
             </dependency>
 
             <!-- skywalking -->
@@ -100,27 +104,46 @@
                 <version>${skywalking.version}</version>
             </dependency>
 
-            <!-- for logback appenders -->
+            <!-- # for logback appenders -->
+            <!-- ## for logback logstash-appender -->
             <dependency>
                 <groupId>net.logstash.logback</groupId>
                 <artifactId>logstash-logback-encoder</artifactId>
                 <version>${logstash-logback-encoder.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.github.danielwegener</groupId>
-                <artifactId>logback-kafka-appender</artifactId>
-                <version>${kafka-appender.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.kafka</groupId>
-                        <artifactId>kafka-clients</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+            <!-- ## for logback kafka-appender -->
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
                 <version>${kafka-clients.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.danielwegener</groupId>
+                <artifactId>logback-kafka-appender</artifactId>
+                <version>${kafka-appender.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.beust</groupId>
+                <artifactId>jcommander</artifactId>
+                <version>${jcommander.version}</version>
+            </dependency>
+
+            <!-- janino -->
+            <dependency>
+                <groupId>org.codehaus.janino</groupId>
+                <artifactId>janino</artifactId>
+                <version>${janino.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.janino</groupId>
+                <artifactId>commons-compiler</artifactId>
+                <version>${janino.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.janino</groupId>
+                <artifactId>commons-compiler-jdk</artifactId>
+                <version>${janino.version}</version>
             </dependency>
 
             <!-- junit5 -->
@@ -181,5 +204,4 @@
             </properties>
         </profile>
     </profiles>
-
 </project>

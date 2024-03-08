@@ -125,7 +125,7 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
-        <!-- if you run seata-server in IDE and use mysql8 as session store, please rewrite version to ${mysql8.version} -->
+        <!-- If you run seata-server in IDE and use mysql8 as session store, please rewrite version to ${mysql8.version}. -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -196,16 +196,6 @@
         <dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>jraft-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.alipay.sofa</groupId>
-                    <artifactId>bolt</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.alipay.sofa</groupId>
-            <artifactId>bolt</artifactId>
         </dependency>
         <dependency>
             <groupId>org.codehaus.janino</groupId>

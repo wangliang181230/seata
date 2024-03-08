@@ -31,10 +31,10 @@ jobs:
     steps:
       # step 1
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
       # step 2
       - name: "Set up Java JDK"
-        uses: actions/setup-java@v3.12.0
+        uses: actions/setup-java@v4.1.0
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
@@ -77,10 +77,10 @@ jobs:
     steps:
       # step 1
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
       # step 2
       - name: "Set up Java JDK"
-        uses: actions/setup-java@v3.12.0
+        uses: actions/setup-java@v4.1.0
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
@@ -110,25 +110,25 @@ jobs:
       fail-fast: false
       matrix:
         springboot: [
-          #2.7.18, # The maven-compiler-plugin will throw an error for an unknown reason.
-          #2.6.15, # The maven-compiler-plugin will throw an error for an unknown reason.
-          #2.5.15, # The maven-compiler-plugin will throw an error for an unknown reason.
+          2.7.18,
+          2.6.15,
+          2.5.15,
           2.4.13,
           2.3.12.RELEASE,
           2.2.13.RELEASE,
           #2.1.18.RELEASE,
-          #2.0.9.RELEASE
+          #2.0.9.RELEASE,
         ]
     steps:
       # step 1
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
       # step 2
       - name: "Set up QEMU"
         id: qemu
         uses: docker/setup-qemu-action@v3
       # step 3
-      - name: "Build with Maven on 'arm64v8/ubuntu:20.04' OS (Skip tests)"
+      - name: "Test with Maven on 'arm64v8/ubuntu:20.04' OS"
         run: |
           docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
             arm64v8/ubuntu:20.04 \
@@ -138,6 +138,5 @@ jobs:
                        mvn -T 4C clean install \
                            -Dspring-boot.version=${{ matrix.springboot }} \
                            -Prelease-seata \
-                           -DskipTests \
                            -Dmaven.git-commit-id.skip=true \
                            -e -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
